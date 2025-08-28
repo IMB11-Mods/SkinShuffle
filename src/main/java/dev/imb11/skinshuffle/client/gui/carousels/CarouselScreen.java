@@ -252,7 +252,7 @@ public abstract class CarouselScreen extends SpruceScreen {
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double hozAmount, double verticalAmount) {
         var sign = SkinShuffleConfig.get().invertCarouselScroll ? -1 : 1;
-        scrollCarousel(-verticalAmount / 4 * SkinShuffleConfig.get().carouselScrollSensitivity * sign, false);
+        scrollCarousel((-verticalAmount + hozAmount) / 4 * SkinShuffleConfig.get().carouselScrollSensitivity * sign, false);
         return true;
     }
 
