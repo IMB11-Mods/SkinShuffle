@@ -1,13 +1,94 @@
 name: Feature Request
-description: Suggest a new feature or change for our mod.
-labels: ["Feature"]
+description: Have an idea to improve the mod? Let us know by submitting a feature request.
+labels:
+  - feature request
 body:
-  - type: textarea
-    id: description
+  - type: markdown
     attributes:
-      label: Describe your suggestion
-      description: |
-        A clear and concise description of your suggestion. 
-        Feel free to use references like images or links if it helps explain your idea.
+      value: >-
+        ***
+        
+        # 🛠️ Feature Request
+        
+        Thank you for taking the time to suggest a new feature! Your ideas help us enhance the mod and improve the experience for everyone. Please fill out the following form with as much detail as possible—include descriptions, use cases, potential benefits, and any other relevant information. The more information you provide, the easier it will be for us to understand and implement the feature.
+        
+        ### ⚠️ Compatibility Notice
+        
+        This mod is developed and tested exclusively with specific loaders and game versions. 
+        If you choose to request a feature that may not be compatible with certain loaders or versions, please understand that:
+        
+        - We cannot guarantee stability or functionality.
+        - We will not provide support or address issues arising from unsupported setups.
+        
+        **Please ensure your feature request aligns with the supported environments.**
+        ***
+  
+  - type: checkboxes
+    id: read
+    attributes:
+      label: Have you read the compatibility information above?
+      description: Please ensure your feature request is compatible with the supported mod loaders and game versions.
+      options:
+        - label: 'Yes, I have read and understand the compatibility note.'
+          required: true
+
+  - type: dropdown
+    id: loader
+    attributes:
+      label: Mod Loader
+      description: Which mod loader are you using?
+      options:
+        - Fabric
+        - NeoForge
     validations:
       required: true
+
+  - type: dropdown
+    id: game_version
+    attributes:
+      label: Game Version
+      description: What version of the game are you running?
+      options:
+        - "1.21-1.21.1"
+        - "1.21.6-1.21.8"
+    validations:
+      required: true
+
+  - type: input
+    id: mod_version
+    attributes:
+      label: Mod Version
+      description: Which version of this mod are you using? (e.g., 1.0.0)
+      placeholder: 1.0.0
+    validations:
+      required: true
+
+  - type: textarea
+    id: feature_description
+    attributes:
+      label: Describe the Feature
+      description: >-
+        Provide a detailed description of the feature you'd like to see. Include any relevant use cases, benefits, or examples.
+      placeholder: Describe the feature you’d like to have...
+    validations:
+      required: true
+
+  - type: textarea
+    id: use_case
+    attributes:
+      label: Use Case
+      description: >-
+        How would this feature benefit you or enhance your experience? Please provide specific scenarios or examples.
+      placeholder: Explain how this feature would be useful...
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional_information
+    attributes:
+      label: Additional Information
+      description: >-
+        Provide any other relevant information that might help in implementing this feature, such as related features, inspirations, or references.
+      placeholder: Any additional details...
+    validations:
+      required: false

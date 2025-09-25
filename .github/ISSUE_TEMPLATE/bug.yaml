@@ -1,0 +1,116 @@
+name: Bug Report
+description: Found an issue with the mod or encountered an incompatibility? Please provide detailed information to help us resolve it.
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        ***
+        
+        # 🪲 Bug Report
+        
+        Thank you for taking the time to report a bug! Your willingness to share detailed information helps us understand what’s going wrong and ultimately improve the mod for everyone. Please fill out the following form with as much detail as possible—include any relevant logs, screenshots, steps to reproduce, and context about your setup. The more information you provide, the easier it will be for us to identify, troubleshoot, and fix the issue.
+
+        ### ⚠️ Compatibility Notice
+
+        This mod is developed and tested exclusively with specific loaders and game versions. 
+        
+        If you choose to run it on unsupported loaders or game versions, please understand that:
+        
+        - We cannot guarantee stability or functionality.
+        
+        - We will not provide support or address issues arising from unsupported setups.
+
+        
+        **If you've intentionally used this mod in an unsupported environment and encountered problems, please refrain from opening a new issue.** Instead, consider using the officially supported loader and versions for the best experience.
+
+  - type: checkboxes
+    id: read
+    attributes:
+      label: Have you read the compatibility information above?
+      description: Please ensure you are using the correct mod loader and game version.
+      options:
+        - label: 'Yes, I have read and understand the compatibility note.'
+          required: true
+
+  - type: dropdown
+    id: loader
+    attributes:
+      label: Mod Loader
+      description: Which mod loader are you using?
+      options:
+        - Fabric
+        - NeoForge
+    validations:
+      required: true
+
+  - type: dropdown
+    id: game_version
+    attributes:
+      label: Game Version
+      description: What version of the game are you running?
+      options:
+        - "1.21-1.21.1"
+        - "1.21.6-1.21.8"
+    validations:
+      required: true
+
+  - type: input
+    id: mod_version
+    attributes:
+      label: Mod Version
+      description: Which version of this mod are you using? (e.g., 1.0.0)
+      placeholder: 1.0.0
+    validations:
+      required: true
+
+  - type: dropdown
+    id: environment_type
+    attributes:
+      label: Environment Type
+      description: In what environment are you experiencing this issue?
+      options:
+        - Singleplayer
+        - Multiplayer (Client)
+        - Multiplayer (Server)
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: logs
+    attributes:
+      label: Provide Your Logs
+      description: >-
+        Please use [mclo.gs](https://mclo.gs/) to upload your logs and paste the link here. Even if there are no crashes, logs help identify version details and potential error messages.
+        
+        **Do not paste raw logs directly here** as they may contain sensitive information.
+      placeholder: https://mclo.gs/your-log-link
+    validations:
+      required: true
+      pattern: '^https://mclo\.gs/.*$'
+      message: 'Please provide a valid mclo.gs URL for your logs.'
+
+  - type: textarea
+    id: issue
+    attributes:
+      label: Describe Your Issue
+      description: >-
+        Provide a detailed description of the issue you're encountering. Feel free to include images or videos to better illustrate the problem.
+      placeholder: The mod crashes when I ...
+    validations:
+      required: true
+      
+  - type: textarea
+    id: steps_to_reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: >-
+        Please list the steps that lead to the issue. Be as specific as possible so we can attempt to replicate it. If you are unsure what caused the crash, please provide a detailed description of your actions and the in-game context at the time the crash occurred.
+        
+        1. Do X
+        2. Do Y
+        3. Crash/bug occurs
+    validations:
+      required: true
