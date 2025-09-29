@@ -31,6 +31,8 @@
   "skinshuffle.config.popups.description": "Configuration options regarding toasts and other popups that appear in-game in certain circumstances.",
   "skinshuffle.config.popups.reconnect.name": "Disable Skin Visibility Toast",
   "skinshuffle.config.popups.reconnect.description": "Disable the toast that appears when you do not reconnect after changing your skin.\n\nThis only shows on servers without the mod installed.",
+  "skinshuffle.config.popups.offline.name": "Disable Offline Mode Toast",
+  "skinshuffle.config.popups.offline.description": "Disable the toast that appears when you do not have access to the internet or Mojang servers.",
   "skinshuffle.config.general.title": "General Options",
   "skinshuffle.config.general.description": "General configuration options that change or toggle functionality.",
   "skinshuffle.config.general.behaviour.title": "Behaviour",

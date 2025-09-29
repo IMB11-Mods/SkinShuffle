@@ -35,6 +35,8 @@ public class SkinShuffleConfig {
     @SerialEntry
     public boolean disableReconnectToast = false;
     @SerialEntry
+    public boolean disableOfflineToast = false;
+    @SerialEntry
     public boolean disableAPIUpload = false;
     @SerialEntry
     public boolean displayInPauseMenu = true;
@@ -158,6 +160,13 @@ public class SkinShuffleConfig {
                             .binding(defaults.disableReconnectToast, () -> config.disableReconnectToast, val -> config.disableReconnectToast = val)
                             .controller(TickBoxControllerBuilder::create).build();
 
+                    // Popup Options
+                    var disableOfflineToast = Option.<Boolean>createBuilder()
+                            .name(translatable("skinshuffle.config.popups.offline.name"))
+                            .description(OptionDescription.createBuilder().text(translatable("skinshuffle.config.popups.offline.description")).build())
+                            .binding(defaults.disableOfflineToast, () -> config.disableOfflineToast, val -> config.disableOfflineToast = val)
+                            .controller(TickBoxControllerBuilder::create).build();
+
                     var playKeybindSound = Option.<Boolean>createBuilder()
                             .name(translatable("skinshuffle.config.popups.keybind_sound.name"))
                             .description(OptionDescription.createBuilder().text(translatable("skinshuffle.config.popups.keybind_sound.description")).build())
@@ -194,7 +203,7 @@ public class SkinShuffleConfig {
                             ).category(ConfigCategory.createBuilder()
                                     .name(translatable("skinshuffle.config.popups.title"))
                                     .tooltip(translatable("skinshuffle.config.popups.description"))
-                                    .options(List.of(disableRnnoctToast, playKeybindSound))
+                                    .options(List.of(disableRnnoctToast, disableOfflineToast, playKeybindSound))
                                     .build())
                             .save(() -> {
                                 HANDLER.save();

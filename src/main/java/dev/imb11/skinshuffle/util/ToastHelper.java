@@ -20,7 +20,8 @@ public class ToastHelper {
     }
 
     public static void showOfflineModeToast() {
-        showToast("skinshuffle.toasts.offline");
+        if (!SkinShuffleConfig.get().disableOfflineToast)
+            showToast("skinshuffle.toasts.offline");
     }
 
     public static void showEditorFailToast() {
