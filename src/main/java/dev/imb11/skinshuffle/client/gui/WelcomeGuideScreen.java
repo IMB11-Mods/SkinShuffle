@@ -1,11 +1,12 @@
 package dev.imb11.skinshuffle.client.gui;
 
 import dev.lambdaurora.spruceui.Position;
-import dev.lambdaurora.spruceui.navigation.NavigationDirection;
+import dev.lambdaurora.spruceui.navigation.NavigationEvent;
 import dev.lambdaurora.spruceui.render.SpruceGuiGraphics;
 import dev.lambdaurora.spruceui.screen.SpruceScreen;
 import dev.lambdaurora.spruceui.widget.SpruceButtonWidget;
 import dev.lambdaurora.spruceui.widget.container.SpruceContainerWidget;
+import net.minecraft.client.gui.navigation.NavigationDirection;
 import net.minecraft.client.gui.screen.ConfirmLinkScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.screen.ScreenTexts;
@@ -191,8 +192,8 @@ public class WelcomeGuideScreen extends SpruceScreen {
         }
 
         @Override
-        public boolean onNavigation(NavigationDirection direction, boolean tab) {
-            return super.onNavigation(direction, tab);
+        public boolean onNavigation(NavigationEvent direction) {
+            return super.onNavigation(direction);
         }
     }
 }

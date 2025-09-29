@@ -5,6 +5,7 @@ import dev.lambdaurora.spruceui.Position;
 import dev.lambdaurora.spruceui.render.SpruceGuiGraphics;
 import dev.lambdaurora.spruceui.widget.AbstractSpruceWidget;
 import net.minecraft.client.gl.RenderPipelines;
+import net.minecraft.client.gui.Click;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
@@ -38,12 +39,12 @@ public class CarouselMoveButton extends AbstractSpruceWidget {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        return this.isMouseOver(mouseX, mouseY) && this.onMouseClick(mouseX, mouseY, button);
+    public boolean mouseClicked(Click event, boolean doubleClick) {
+        return this.isMouseOver(event.x(), event.y()) && this.onMouseClick(event, doubleClick);
     }
 
     @Override
-    protected boolean onMouseClick(double mouseX, double mouseY, int button) {
+    protected boolean onMouseClick(Click event, boolean doubleClick) {
         if (this.action != null) {
             try {
                 this.action.run();

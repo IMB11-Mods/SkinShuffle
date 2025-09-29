@@ -14,7 +14,7 @@ public class ServerSkinHandling {
         SkinShuffle.LOGGER.info("Recieved skin refresh packet from: " + player.getName().getString());
 
         server.execute(() -> {
-            var properties = player.getGameProfile().getProperties();
+            var properties = player.getGameProfile().properties();
             try {
                 properties.removeAll("textures");
             } catch (Exception ignored) {

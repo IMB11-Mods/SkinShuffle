@@ -12,7 +12,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.util.SkinTextures;
+import net.minecraft.entity.player.SkinTextures;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
@@ -24,6 +24,7 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 
 public class SkinShuffle implements ModInitializer {
     public static final String MOD_ID = "skinshuffle";
@@ -57,7 +58,7 @@ public class SkinShuffle implements ModInitializer {
         MixinStatics.INITIAL_SKIN_TEXTURES = CompletableFuture.supplyAsync(this::getInitialSkinTextures);
     }
 
-    private Optional<SkinTextures> getInitialSkinTextures() {
+    private Supplier<SkinTextures> getInitialSkinTextures() {
         while (MinecraftClient.getInstance() == null) {
             Thread.onSpinWait();
         }
@@ -69,18 +70,14 @@ public class SkinShuffle implements ModInitializer {
 
         try {
             assert client != null;
-            var tex = MojangSkinAPI.getPlayerSkinTexture(String.valueOf(client.getGameProfile().getId()));
+            var tex = MojangSkinAPI.getPlayerSkinTexture(String.valueOf(client.getGameProfile().id()));
             var texProperty = tex.toProperty();
             var dummyProfile = new GameProfile(UUID.randomUUID(), "dummyname");
-            dummyProfile.getProperties().put("textures", texProperty);
-            //? if <1.21.4 {
-            /*return client.getSkinProvider().fetchSkinTextures(dummyProfile).thenApply(Optional::of).get();
-             *///?} else {
-            return client.getSkinProvider().fetchSkinTextures(dummyProfile).get();
-            //?}
+            dummyProfile.properties().put("textures", texProperty);
+            return client.getSkinProvider().supplySkinTextures(dummyProfile, false);
         } catch (Exception error) {
             LOGGER.error("Failed to fetch initial skin textures from Mojang's API.", error);
-            return Optional.of(client.getSkinProvider().getSkinTextures(client.getGameProfile()));
+            return client.getSkinProvider().supplySkinTextures(client.getGameProfile(), false);
         }
     }
 

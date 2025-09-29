@@ -145,7 +145,7 @@ public class SkinPresetManager {
         SKIN_SHUFFLE_API = new SkinShuffleAPI(SkinShuffleConfig.get().mineskinProxyDomain);
 
         if (SkinShuffleConfig.get().enableMultiAccountSupport) {
-            var username = MinecraftClient.getInstance().getGameProfile().getName();
+            var username = MinecraftClient.getInstance().getGameProfile().name();
             PRESETS = getAccountPresetsPath(username);
         } else {
             PRESETS = getGlobalPresetsPath();

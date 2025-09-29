@@ -12,6 +12,7 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 
 /**
@@ -21,7 +22,7 @@ public class KeybindManager {
 
     private static final int MAX_KEYBIND_COUNT = 9;
     private static final String TRANSLATION_KEY_PREFIX = "key.skinshuffle.preset_";
-    private static final String KEYBIND_CATEGORY = "category.skinshuffle.presets";
+    private static final KeyBinding.Category KEYBIND_CATEGORY = new KeyBinding.Category(Identifier.of("skinshuffle", "presets"));
 
     private static KeyBinding[] presetKeybindings;
 

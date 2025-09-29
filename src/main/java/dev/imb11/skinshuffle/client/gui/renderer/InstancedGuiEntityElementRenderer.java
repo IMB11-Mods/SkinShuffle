@@ -172,7 +172,7 @@ import net.minecraft.client.gui.render.EntityGuiElementRenderer;
 import net.minecraft.client.gui.render.state.GuiRenderState;
 import net.minecraft.client.gui.render.state.special.EntityGuiElementRenderState;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.render.entity.EntityRenderManager;
 
 /**
  * Specialization of a {@code SpecialGuiElementRenderer} that allows for rendering multiple instances of the same element with
@@ -183,7 +183,7 @@ import net.minecraft.client.render.entity.EntityRenderDispatcher;
 public class InstancedGuiEntityElementRenderer extends EntityGuiElementRenderer {
     private boolean usedThisFrame;
 
-    public InstancedGuiEntityElementRenderer(VertexConsumerProvider.Immediate vertexConsumers, EntityRenderDispatcher entityRenderDispatcher) {
+    public InstancedGuiEntityElementRenderer(VertexConsumerProvider.Immediate vertexConsumers, EntityRenderManager entityRenderDispatcher) {
         super(vertexConsumers, entityRenderDispatcher);
     }
 

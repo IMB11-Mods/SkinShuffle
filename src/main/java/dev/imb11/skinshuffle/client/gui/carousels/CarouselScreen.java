@@ -19,6 +19,7 @@ import dev.lambdaurora.spruceui.tooltip.Tooltip;
 import dev.lambdaurora.spruceui.widget.SpruceButtonWidget;
 import dev.lambdaurora.spruceui.widget.SpruceIconButtonWidget;
 import dev.lambdaurora.spruceui.widget.SpruceWidget;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.GlfwUtil;
@@ -259,10 +260,10 @@ public abstract class CarouselScreen extends SpruceScreen {
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+    public boolean mouseReleased(Click event) {
         carouselWidgets.forEach(widget -> widget.setDragging(false));
 
-        return super.mouseReleased(mouseX, mouseY, button);
+        return super.mouseReleased(event);
     }
 
     protected abstract int getRows();

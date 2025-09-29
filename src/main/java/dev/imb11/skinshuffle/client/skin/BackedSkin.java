@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.AbstractTexture;
+import net.minecraft.util.AssetInfo;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
@@ -73,7 +74,27 @@ public abstract class BackedSkin implements Skin, AutoCloseable {
     }
 
     @Override
-    public @Nullable Identifier getTexture() {
+    public AssetInfo.@Nullable TextureAsset getTextureAsset() {
+        // Fetch the skin if it hasn't been fetched yet and isn't being fetched
+        if (textureId == null && !fetching && !fetched) {
+            fetchSkin();
+        }
+
+        return new AssetInfo.TextureAsset() {
+            @Override
+            public Identifier texturePath() {
+                return textureId;
+            }
+
+            @Override
+            public Identifier id() {
+                return textureId;
+            }
+        };
+    }
+
+    @Override
+    public Identifier getTexture() {
         // Fetch the skin if it hasn't been fetched yet and isn't being fetched
         if (textureId == null && !fetching && !fetched) {
             fetchSkin();

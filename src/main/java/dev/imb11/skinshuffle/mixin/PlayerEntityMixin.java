@@ -9,8 +9,8 @@ import dev.imb11.skinshuffle.util.SkinShuffleClientPlayer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.client.util.SkinTextures;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.SkinTextures;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -32,8 +32,8 @@ public abstract class PlayerEntityMixin extends PlayerEntity implements SkinShuf
         super(world, profile);
     }
 
-    @Inject(method = "getSkinTextures", at = @At("TAIL"), cancellable = true)
-    private void modifySkinTextures(CallbackInfoReturnable<net.minecraft.client.util.SkinTextures> cir) {
+    @Inject(method = "getSkin", at = @At("TAIL"), cancellable = true)
+    private void modifySkinTextures(CallbackInfoReturnable<SkinTextures> cir) {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.world != null && client.player != null) {
             if (this.getUuid().equals(client.player.getUuid())) {

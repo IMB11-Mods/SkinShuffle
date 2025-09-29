@@ -6,6 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.imb11.skinshuffle.SkinShuffle;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.ResourceTexture;
+import net.minecraft.util.AssetInfo;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,17 +20,32 @@ public final class ResourceSkin implements Skin {
             Identifier.CODEC.fieldOf("texture").forGetter(ResourceSkin::getTexture),
             Codec.STRING.fieldOf("model").forGetter(ResourceSkin::getModel)
     ).apply(instance, ResourceSkin::new));
-    private final Identifier texture;
+    private final AssetInfo.TextureAsset texture;
     private String model;
 
     public ResourceSkin(Identifier texture, String model) {
-        this.texture = texture;
+        this.texture = new AssetInfo.TextureAsset() {
+            @Override
+            public Identifier texturePath() {
+                return texture;
+            }
+
+            @Override
+            public Identifier id() {
+                return texture;
+            }
+        };
         this.model = model;
     }
 
     @Override
-    public @Nullable Identifier getTexture() {
+    public AssetInfo.@Nullable TextureAsset getTextureAsset() {
         return texture;
+    }
+
+    @Override
+    public Identifier getTexture() {
+        return texture.texturePath();
     }
 
     @Override
@@ -77,10 +93,6 @@ public final class ResourceSkin implements Skin {
         //?}
 
         return configSkin;
-    }
-
-    public Identifier texture() {
-        return texture;
     }
 
     public String model() {

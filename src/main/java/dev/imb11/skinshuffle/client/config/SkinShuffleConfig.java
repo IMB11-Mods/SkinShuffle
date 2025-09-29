@@ -219,7 +219,7 @@ public class SkinShuffleConfig {
                                 HANDLER.save();
 
                                 if (HANDLER.instance().enableMultiAccountSupport) {
-                                    var path = SkinPresetManager.getAccountPresetsPath(MinecraftClient.getInstance().getGameProfile().getName());
+                                    var path = SkinPresetManager.getAccountPresetsPath(MinecraftClient.getInstance().getGameProfile().name());
                                     if (!Files.exists(path)) {
                                         try {
                                             Files.copy(SkinPresetManager.getGlobalPresetsPath(), path);

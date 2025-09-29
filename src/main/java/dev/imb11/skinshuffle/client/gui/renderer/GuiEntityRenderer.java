@@ -7,6 +7,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.render.state.special.EntityGuiElementRenderState;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -51,7 +52,7 @@ public class GuiEntityRenderer {
         // Render the entity within the scissor area
         context.enableScissor(x1, y1, x2, y2);
 
-        var state = new EntityGuiElementRenderState(renderState, entityPosition, baseRotation, null, x1, y1, x2, y2, (float) size, context.scissorStack.peekLast());
+        EntityGuiElementRenderState state = new EntityGuiElementRenderState(renderState, entityPosition, baseRotation, null, x1, y1, x2, y2, (float) size, context.scissorStack.peekLast());
 
         ((InstancedGuiEntityRenderState) (Object) state).setAlpha(alpha);
 
@@ -92,9 +93,9 @@ public class GuiEntityRenderer {
         state.usingRiptide = false;
         state.hurt = false;
         state.invisibleToPlayer = false;
-        state.hasOutline = false;
+        state.outlineColor = 0;
         state.sleepingDirection = null;
-        state.customName = null;
+        state.displayName = null;
         state.pose = EntityPose.STANDING;
 
         // Biped state - keep everything neutral
@@ -114,12 +115,10 @@ public class GuiEntityRenderer {
 
         // Player-specific properties
         state.skinTextures = skin.getSkinTextures();
-        state.name = String.valueOf(skin.hashCode());
+        state.playerName = Text.of(String.valueOf(skin.hashCode()));
         state.spectator = false;
         state.stuckArrowCount = 0;
         state.stingerCount = 0;
-        state.itemUseTimeLeft = 0;
-        state.handSwinging = false;
         state.glidingTicks = 0.0F;
         state.applyFlyingRotation = false;
         state.flyingRotation = 0.0F;

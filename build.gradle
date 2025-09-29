@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.10-SNAPSHOT'
+    id 'fabric-loom' version '1.11-SNAPSHOT'
     id 'maven-publish'
 }
 
@@ -58,16 +58,16 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${property('deps.loader')}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${property('deps.fabric_api')}"
 
-    modLocalRuntime modCompileOnly("maven.modrinth:modmenu:${property('runtime.modmenu')}")
+    modCompileOnly("maven.modrinth:modmenu:${property('runtime.modmenu')}")
     modCompileOnly("maven.modrinth:minecraftcapes:${property('runtime.minecraftcapes')}")
-    modLocalRuntime modCompileOnly("maven.modrinth:capes:${property('runtime.capes')}")
+    modCompileOnly("maven.modrinth:capes:${property('runtime.capes')}")
     modCompileOnly("maven.modrinth:entitytexturefeatures:${property('runtime.etf')}")
 
     include implementation('com.konghq:unirest-java:3.11.09:standalone')
 
     include modImplementation("dev.lambdaurora:spruceui:${property('deps.spruceui')}")
     modImplementation(include("dev.isxander:yet-another-config-lib:${property('deps.yacl')}"))
-
+    include("dev.yumi.mc.core:yumi-mc-foundation:1.0.0-alpha.16+1.21.1")
     include implementation("org.jsoup:jsoup:1.16.1")
 
     include implementation("commons-validator:commons-validator:1.7")

@@ -9,7 +9,7 @@ import dev.imb11.skinshuffle.client.skin.UrlSkin;
 import dev.imb11.skinshuffle.util.NetworkingUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.session.Session;
-import net.minecraft.client.util.SkinTextures;
+import net.minecraft.entity.player.SkinTextures;
 import net.minecraft.util.Identifier;
 
 public class SkinPreset {
@@ -47,11 +47,11 @@ public class SkinPreset {
             Skin skin = new ResourceSkin(Identifier.of("minecraft:textures/entity/player/wide/steve.png"), "default");
             return new SkinPreset(skin, name, -1);
         } else {
-            var skinQueryResult = MojangSkinAPI.getPlayerSkinTexture(String.valueOf(client.getGameProfile().getId()));
+            var skinQueryResult = MojangSkinAPI.getPlayerSkinTexture(String.valueOf(client.getGameProfile().id()));
 
             if (skinQueryResult.usesDefaultSkin()) {
-                SkinTextures skinTexture = client.getSkinProvider().getSkinTextures(client.getGameProfile());
-                Skin skin = new ResourceSkin(skinTexture.texture(), skinTexture.texture().getPath().contains("/slim/") ? "slim" : "default");
+                SkinTextures skinTexture = client.getSkinProvider().supplySkinTextures(client.getGameProfile(), false).get();
+                Skin skin = new ResourceSkin(skinTexture.body().texturePath(), skinTexture.model().name());
 
                 return new SkinPreset(skin, name, -1);
             }

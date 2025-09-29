@@ -29,7 +29,7 @@ public class SkinPreviewRenderer {
      */
     public void renderPreviewArea(DrawContext graphics, int previewCenterX, int previewCenterY,
                                   int previewSpanX, int previewSpanY) {
-        graphics.drawBorder(previewCenterX - previewSpanX, previewCenterY - previewSpanY,
+        graphics.drawStrokedRectangle(previewCenterX - previewSpanX, previewCenterY - previewSpanY,
                 previewSpanX * 2, previewSpanY * 2, 0xDF000000);
         graphics.fill(previewCenterX - previewSpanX + 1, previewCenterY - previewSpanY + 1,
                 previewCenterX + previewSpanX - 1, previewCenterY + previewSpanY - 1, 0x7F000000);

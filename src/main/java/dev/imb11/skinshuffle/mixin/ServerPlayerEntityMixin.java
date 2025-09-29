@@ -4,11 +4,13 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.datafixers.util.Pair;
 import dev.imb11.skinshuffle.networking.ServerSkinHandling;
 import dev.imb11.skinshuffle.util.SkinShufflePlayer;
+import net.minecraft.entity.EntityPosition;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.*;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -47,7 +49,11 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Sk
     public abstract boolean isDisconnected();
 
     @Shadow
-    public abstract ServerWorld getWorld();
+    public abstract ServerWorld getEntityWorld();
+
+    @Shadow
+    @Final
+    private MinecraftServer server;
 
     /**
      * @author Pyrofab
@@ -63,11 +69,11 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Sk
         if (this.isDisconnected()) return;
 
         // Refreshing in tablist for each player
-        PlayerManager playerManager = this.getServer().getPlayerManager();
+        PlayerManager playerManager = this.server.getPlayerManager();
         playerManager.sendToAll(new PlayerRemoveS2CPacket(new ArrayList<>(Collections.singleton(this.getUuid()))));
         playerManager.sendToAll(PlayerListS2CPacket.entryFromPlayer(Collections.singleton((ServerPlayerEntity) (Object) this)));
 
-        ServerChunkManager manager = this.getWorld().getChunkManager();
+        ServerChunkManager manager = this.getEntityWorld().getChunkManager();
 
         var storage = manager.chunkLoadingManager;
         var trackerEntry = storage.entityTrackers.get(this.getId());
@@ -81,7 +87,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Sk
 
         if (!ServerSkinHandling.attemptPlayerListEntryRefresh((ServerPlayerEntity) (Object) this, this.getId())) {
             // If we could not send refresh packet, we change the player entity on the client
-            ServerWorld level = this.getWorld();
+            ServerWorld level = this.getEntityWorld();
 
             this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(
 
@@ -100,7 +106,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Sk
             );
 
 
-            this.networkHandler.sendPacket(new PlayerPositionLookS2CPacket(0, net.minecraft.entity.player.PlayerPosition.fromEntity(this), Collections.emptySet()));
+            this.networkHandler.sendPacket(new PlayerPositionLookS2CPacket(0, EntityPosition.fromEntity(this), Collections.emptySet()));
             this.networkHandler.sendPacket(new UpdateSelectedSlotS2CPacket(this.getInventory().getSelectedSlot()));
             this.networkHandler.sendPacket(new DifficultyS2CPacket(level.getDifficulty(), level.getLevelProperties().isDifficultyLocked()));
             this.networkHandler.sendPacket(new ExperienceBarUpdateS2CPacket(this.experienceProgress, this.totalExperience, this.experienceLevel));

@@ -7,6 +7,7 @@ import dev.imb11.skinshuffle.client.preset.SkinPreset;
 import dev.lambdaurora.spruceui.Position;
 import dev.lambdaurora.spruceui.render.SpruceGuiGraphics;
 import dev.lambdaurora.spruceui.widget.SpruceWidget;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.util.GlfwUtil;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -78,16 +79,16 @@ public class CompactPresetWidget extends PresetWidget<CompactCarouselScreen> {
     }
 
     @Override
-    protected boolean onMouseClick(double mouseX, double mouseY, int button) {
+    protected boolean onMouseClick(Click event, boolean doubleClick) {
         for (SpruceWidget widget : this) {
-            if (widget.mouseClicked(mouseX, mouseY, button)) {
+            if (widget.mouseClicked(event, doubleClick)) {
                 return true;
             }
         }
 
-        if (button == GLFW.GLFW_MOUSE_BUTTON_1) {
+        if (event.button() == GLFW.GLFW_MOUSE_BUTTON_1) {
             this.setDragging(true);
-            this.setDragStart(mouseX - getX(), mouseY - getY());
+            this.setDragStart(event.x() - getX(), event.y() - getY());
             return true;
         }
 

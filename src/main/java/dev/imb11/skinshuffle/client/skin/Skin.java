@@ -5,12 +5,16 @@ import com.mojang.serialization.MapCodec;
 import dev.imb11.skinshuffle.MixinStatics;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.DefaultSkinHelper;
-import net.minecraft.client.util.SkinTextures;
+import net.minecraft.entity.player.SkinTextures;
+import net.minecraft.util.AssetInfo;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 
 public interface Skin {
@@ -27,21 +31,24 @@ public interface Skin {
     static ResourceSkin randomDefaultSkin() {
         var uuid = UUID.randomUUID();
         var txt = DefaultSkinHelper.getSkinTextures(uuid);
-        return new ResourceSkin(txt.texture(), txt.model().getName());
+        return new ResourceSkin(txt.body().texturePath(), txt.model().name());
     }
 
-    @Nullable Identifier getTexture();
+    @Nullable AssetInfo.TextureAsset getTextureAsset();
+
+    Identifier getTexture();
+
 
     default SkinTextures getSkinTextures() {
         MinecraftClient client = MinecraftClient.getInstance();
-        Supplier<SkinTextures> textureSupplier = () ->
-                client.getSkinProvider().getSkinTextures(client.getGameProfile());
+        Supplier<SkinTextures> textureSupplier =
+                client.getSkinProvider().supplySkinTextures(client.getGameProfile(), false);
 
-        SkinTextures clientTexture = MixinStatics.INITIAL_SKIN_TEXTURES.isDone()
-                ? MixinStatics.INITIAL_SKIN_TEXTURES.join().orElseGet(textureSupplier)
-                : textureSupplier.get();
+        Supplier<SkinTextures> clientTexture;
+        if (MixinStatics.INITIAL_SKIN_TEXTURES.isDone()) clientTexture = MixinStatics.INITIAL_SKIN_TEXTURES.join();
+        else clientTexture = textureSupplier;
 
-        return new SkinTextures(this.getTexture(), null, clientTexture.capeTexture(), clientTexture.elytraTexture(), SkinTextures.Model.fromName(this.getModel()), false);
+        return new SkinTextures(this.getTextureAsset(), clientTexture.get().cape(), clientTexture.get().elytra(), clientTexture.get().model(), false);
     }
 
     boolean isLoading();
