@@ -47,6 +47,8 @@ public class SkinShuffleConfig {
     @SerialEntry
     public boolean invertCarouselScroll = false;
     @SerialEntry
+    public boolean invertCarouselHorizontalScroll = false;
+    @SerialEntry
     public SkinRenderStyle widgetSkinRenderStyle = SkinRenderStyle.CURSOR;
     @SerialEntry
     public SkinRenderStyle carouselSkinRenderStyle = SkinRenderStyle.ROTATION;
@@ -64,6 +66,8 @@ public class SkinShuffleConfig {
     public String mineskinProxyDomain = "skinshuffle.imb11.dev";
     @SerialEntry
     public boolean playKeybindSoundEffect = true;
+    @SerialEntry
+    public boolean naturalScrolling = true;
 
     public static SkinShuffleConfig get() {
         return HANDLER.instance();
@@ -153,6 +157,12 @@ public class SkinShuffleConfig {
                             .binding(defaults.invertCarouselScroll, () -> config.invertCarouselScroll, val -> config.invertCarouselScroll = val)
                             .controller(TickBoxControllerBuilder::create).build();
 
+                    var invertCarouselHorizontalScroll = Option.<Boolean>createBuilder()
+                            .name(translatable("skinshuffle.config.general.invert_carousel_horizontal_scroll.name"))
+                            .description(OptionDescription.createBuilder().text(translatable("skinshuffle.config.general.invert_carousel_horizontal_scroll.description")).build())
+                            .binding(defaults.invertCarouselHorizontalScroll, () -> config.invertCarouselHorizontalScroll, val -> config.invertCarouselHorizontalScroll = val)
+                            .controller(TickBoxControllerBuilder::create).build();
+
                     // Popup Options
                     var disableRnnoctToast = Option.<Boolean>createBuilder()
                             .name(translatable("skinshuffle.config.popups.reconnect.name"))
@@ -187,7 +197,7 @@ public class SkinShuffleConfig {
                                     .tooltip(translatable("skinshuffle.config.general.description"))
                                     .group(OptionGroup.createBuilder()
                                             .name(translatable("skinshuffle.config.general.behaviour.title"))
-                                            .options(List.of(disableApi, carouselScrollSensitivity, invertCarouselScroll))
+                                            .options(List.of(disableApi, carouselScrollSensitivity, invertCarouselScroll, invertCarouselHorizontalScroll))
                                             .build())
                                     .group(OptionGroup.createBuilder()
                                             .name(translatable("skinshuffle.config.general.display.title"))

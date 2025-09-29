@@ -47,6 +47,8 @@
   "skinshuffle.config.general.carousel_scroll_sensitivity.description": "How sensitive should the carousel be to mouse scrolling?",
   "skinshuffle.config.general.invert_carousel_scroll.name": "Invert Carousel Scroll",
   "skinshuffle.config.general.invert_carousel_scroll.description": "Should the carousel scroll direction be inverted?",
+  "skinshuffle.config.general.invert_carousel_horizontal_scroll.name": "Invert Carousel Horizontal Scroll",
+  "skinshuffle.config.general.invert_carousel_horizontal_scroll.description": "Should the carousel scroll direction be inverted when scrolling horizontally?",
   "skinshuffle.config.rendering.title": "Rendering Options",
   "skinshuffle.config.rendering.description": "Configuration options regarding how skin presets are rendered in the title screen, pause menu, carousel and edit screens.",
   "skinshuffle.config.rendering.rotation": "Rotation",
