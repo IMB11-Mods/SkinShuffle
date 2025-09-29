@@ -66,11 +66,12 @@ public class TitleScreenMixin extends Screen {
              - Small icon button
              - Bedrock-style skin preview
          */
+        if (SkinShuffleConfig.get().displayInTitleScreen) {
+            this.openCarouselWidgets = GeneratedScreens.createCarouselWidgets(this);
 
-        this.openCarouselWidgets = GeneratedScreens.createCarouselWidgets(this);
-
-        for (ClickableWidget carouselWidget : this.openCarouselWidgets) {
-            this.addDrawableChild(carouselWidget);
+            for (ClickableWidget carouselWidget : this.openCarouselWidgets) {
+                this.addDrawableChild(carouselWidget);
+            }
         }
     }
 }
