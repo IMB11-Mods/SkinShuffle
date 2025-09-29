@@ -128,7 +128,7 @@ public abstract class CarouselScreen extends SpruceScreen {
     }
 
     public void handleCloseBehaviour() {
-        if (this.client.world != null && !ClientSkinHandling.isInstalledOnServer()) {
+        if (this.client.world != null && !SkinShuffleConfig.get().disableAPIUpload && !ClientSkinHandling.isInstalledOnServer()) {
             this.client.setScreen(GeneratedScreens.getReconnectScreen(this.parent));
         } else {
             this.close();

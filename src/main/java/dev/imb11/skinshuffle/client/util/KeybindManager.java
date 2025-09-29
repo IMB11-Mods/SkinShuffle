@@ -81,7 +81,7 @@ public class KeybindManager {
             SkinShuffle.LOGGER.info("Applied skin preset with keybind ID: " + presetId);
 
             // If the mod is not installed on server, prompt for reconnect
-            if (client.world != null && !ClientSkinHandling.isInstalledOnServer()) {
+            if (client.world != null && !SkinShuffleConfig.get().disableAPIUpload && !ClientSkinHandling.isInstalledOnServer()) {
                 client.setScreen(GeneratedScreens.getReconnectScreen(client.currentScreen));
             } else {
                 if (SkinShuffleConfig.get().playKeybindSoundEffect) {
