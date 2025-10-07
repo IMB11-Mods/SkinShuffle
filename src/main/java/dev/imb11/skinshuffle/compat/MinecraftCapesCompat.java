@@ -2,6 +2,7 @@ package dev.imb11.skinshuffle.compat;
 
 import dev.imb11.skinshuffle.compat.api.CompatHandler;
 import net.minecraft.entity.player.SkinTextures;
+import net.minecraft.util.AssetInfo;
 import net.minecraft.util.Identifier;
 import net.minecraftcapes.config.MinecraftCapesConfig;
 import net.minecraftcapes.player.PlayerHandler;
@@ -14,22 +15,42 @@ public class MinecraftCapesCompat implements CompatHandler {
     public static SkinTextures loadTextures(UUID uuid, SkinTextures textures) {
         PlayerHandler playerHandler = PlayerHandler.get(uuid);
 
-        Identifier capeTexture = textures.cape().texturePath();
-        Identifier elytraTexture = textures.elytra().texturePath();
+        AssetInfo.TextureAsset capeTexture = textures.cape();
+        AssetInfo.TextureAsset elytraTexture = textures.elytra();
 
         if (MinecraftCapesConfig.isCapeVisible() && playerHandler.getCapeLocation() != null) {
-            capeTexture = playerHandler.getCapeLocation();
-            elytraTexture = playerHandler.getCapeLocation();
+            SkinTextures finalTextures = textures;
+            capeTexture = new AssetInfo.TextureAsset() {
+                @Override
+                public Identifier texturePath() {
+                    return playerHandler.getCapeLocation();
+                }
+
+                @Override
+                public Identifier id() {
+                    return finalTextures.cape().id();
+                }
+            };
+            elytraTexture = new AssetInfo.TextureAsset() {
+                @Override
+                public Identifier texturePath() {
+                    return finalTextures.elytra().texturePath();
+                }
+
+                @Override
+                public Identifier id() {
+                    return finalTextures.elytra().id();
+                }
+            };
         }
 
-        //FIXME
-//        textures = new SkinTextures(
-//                textures.body(),
-//                capeTexture,
-//                elytraTexture,
-//                textures.model(),
-//                textures.secure()
-//        );
+        textures = new SkinTextures(
+                textures.body(),
+                capeTexture,
+                elytraTexture,
+                textures.model(),
+                textures.secure()
+        );
 
         return textures;
     }

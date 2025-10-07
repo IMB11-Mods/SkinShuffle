@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import dev.imb11.skinshuffle.compat.api.CompatHandler;
 import me.cael.capes.handler.PlayerHandler;
 import net.minecraft.entity.player.SkinTextures;
+import net.minecraft.util.AssetInfo;
 import net.minecraft.util.Identifier;
 
 public class CapesCompat implements CompatHandler {
@@ -12,8 +13,8 @@ public class CapesCompat implements CompatHandler {
     public static SkinTextures loadTextures(GameProfile profile, SkinTextures textures) {
         PlayerHandler handler = PlayerHandler.Companion.fromProfile(profile);
 
-        Identifier capeTexture = textures.cape().texturePath();
-        Identifier elytraTexture = textures.elytra().texturePath();
+        AssetInfo.TextureAsset capeTexture = textures.cape();
+        AssetInfo.TextureAsset elytraTexture = textures.elytra();
 
         if (handler.getHasCape()) {
             capeTexture = handler.getCape();
@@ -22,15 +23,13 @@ public class CapesCompat implements CompatHandler {
                 elytraTexture = capeTexture;
         }
 
-        //FIXME
-//        textures = new SkinTextures(
-//                textures.texture(),
-//                textures.textureUrl(),
-//                capeTexture,
-//                elytraTexture,
-//                textures.model(),
-//                textures.secure()
-//        );
+        textures = new SkinTextures(
+                textures.body(),
+                capeTexture,
+                elytraTexture,
+                textures.model(),
+                textures.secure()
+        );
 
         return textures;
     }

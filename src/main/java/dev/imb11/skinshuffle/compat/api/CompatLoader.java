@@ -10,7 +10,8 @@ public class CompatLoader {
     private static final ArrayList<CompatHandler> HELPERS = new ArrayList<>();
 
     static {
-        HELPERS.add(new MinecraftCapesCompat());
+        //FIXME this is probably broken
+//        HELPERS.add(new MinecraftCapesCompat());
         HELPERS.add(new CapesCompat());
     }
 
