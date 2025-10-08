@@ -94,6 +94,8 @@ public class GuiEntityRenderer {
         state.hurt = false;
         state.invisibleToPlayer = false;
         state.outlineColor = 0;
+        state.shadowPieces.clear();
+        state.light = 15728880;
         state.sleepingDirection = null;
         state.displayName = null;
         state.pose = EntityPose.STANDING;
