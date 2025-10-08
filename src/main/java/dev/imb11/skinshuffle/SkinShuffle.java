@@ -24,7 +24,6 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Supplier;
 
 public class SkinShuffle implements ModInitializer {
     public static final String MOD_ID = "skinshuffle";
@@ -58,7 +57,7 @@ public class SkinShuffle implements ModInitializer {
         MixinStatics.INITIAL_SKIN_TEXTURES = CompletableFuture.supplyAsync(this::getInitialSkinTextures);
     }
 
-    private Supplier<SkinTextures> getInitialSkinTextures() {
+    private CompletableFuture<Optional<SkinTextures>> getInitialSkinTextures() {
         while (MinecraftClient.getInstance() == null) {
             Thread.onSpinWait();
         }
@@ -71,13 +70,11 @@ public class SkinShuffle implements ModInitializer {
         try {
             assert client != null;
             var tex = MojangSkinAPI.getPlayerSkinTexture(String.valueOf(client.getGameProfile().id()));
-            var texProperty = tex.toProperty();
             var dummyProfile = new GameProfile(UUID.randomUUID(), "dummyname");
-            dummyProfile.properties().put("textures", texProperty);
-            return client.getSkinProvider().supplySkinTextures(dummyProfile, false);
+            return client.getSkinProvider().fetchSkinTextures(dummyProfile);
         } catch (Exception error) {
             LOGGER.error("Failed to fetch initial skin textures from Mojang's API.", error);
-            return client.getSkinProvider().supplySkinTextures(client.getGameProfile(), false);
+            return client.getSkinProvider().fetchSkinTextures(client.getGameProfile());
         }
     }
 

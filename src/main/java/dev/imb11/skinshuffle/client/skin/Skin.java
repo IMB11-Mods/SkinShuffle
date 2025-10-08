@@ -41,14 +41,18 @@ public interface Skin {
 
     default SkinTextures getSkinTextures() {
         MinecraftClient client = MinecraftClient.getInstance();
-        Supplier<SkinTextures> textureSupplier =
-                client.getSkinProvider().supplySkinTextures(client.getGameProfile(), false);
+        CompletableFuture<Optional<SkinTextures>> textureSupplier =
+                client.getSkinProvider().fetchSkinTextures(client.getGameProfile());
 
-        Supplier<SkinTextures> clientTexture;
+        CompletableFuture<Optional<SkinTextures>> clientTexture;
         if (MixinStatics.INITIAL_SKIN_TEXTURES.isDone()) clientTexture = MixinStatics.INITIAL_SKIN_TEXTURES.join();
         else clientTexture = textureSupplier;
 
-        return new SkinTextures(this.getTextureAsset(), clientTexture.get().cape(), clientTexture.get().elytra(), clientTexture.get().model(), false);
+        try {
+            return new SkinTextures(this.getTextureAsset(), clientTexture.get().get().cape(), clientTexture.get().get().elytra(), clientTexture.get().get().model(), false);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     boolean isLoading();

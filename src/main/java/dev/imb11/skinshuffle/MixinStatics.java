@@ -11,5 +11,5 @@ import java.util.function.Supplier;
 public class MixinStatics {
     public static InstancedGuiEntityRenderState RENDERING_STATE;
     public static boolean APPLIED_SKIN_MANAGER_CONFIGURATION = false;
-    public static CompletableFuture<Supplier<SkinTextures>> INITIAL_SKIN_TEXTURES = null;
+    public static CompletableFuture<CompletableFuture<Optional<SkinTextures>>> INITIAL_SKIN_TEXTURES = null;
 }
