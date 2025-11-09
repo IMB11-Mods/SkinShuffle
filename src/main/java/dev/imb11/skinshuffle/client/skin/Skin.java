@@ -5,6 +5,7 @@ import com.mojang.serialization.MapCodec;
 import dev.imb11.skinshuffle.MixinStatics;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.DefaultSkinHelper;
+import net.minecraft.entity.player.PlayerSkinType;
 import net.minecraft.entity.player.SkinTextures;
 import net.minecraft.util.AssetInfo;
 import net.minecraft.util.Identifier;
@@ -49,10 +50,29 @@ public interface Skin {
         else clientTexture = textureSupplier;
 
         try {
-            return new SkinTextures(this.getTextureAsset(), clientTexture.get().get().cape(), clientTexture.get().get().elytra(), clientTexture.get().get().model(), false);
+            return new SkinTextures(this.getTextureAsset(), clientTexture.get().get().cape(), clientTexture.get().get().elytra(), getModelEnum(), false);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    default PlayerSkinType getModelEnum() {
+        String modelString = getModel();
+        if (modelString == null) {
+            return PlayerSkinType.WIDE;
+        }
+
+        return switch (modelString.toLowerCase()) {
+            case "slim" -> PlayerSkinType.SLIM;
+            case "classic", "wide", "default" -> PlayerSkinType.WIDE;
+            default -> {
+                try {
+                    yield PlayerSkinType.valueOf(modelString.toUpperCase());
+                } catch (IllegalArgumentException e) {
+                    yield PlayerSkinType.WIDE;
+                }
+            }
+        };
     }
 
     boolean isLoading();
