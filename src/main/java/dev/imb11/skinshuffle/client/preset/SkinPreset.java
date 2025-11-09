@@ -50,7 +50,13 @@ public class SkinPreset {
             var skinQueryResult = MojangSkinAPI.getPlayerSkinTexture(String.valueOf(client.getGameProfile().id()));
 
             if (skinQueryResult.usesDefaultSkin()) {
-                SkinTextures skinTexture = client.getSkinProvider().supplySkinTextures(client.getGameProfile(), false).get();
+                var provider = client.getSkinProvider();
+
+                if (provider == null) {
+                    return new SkinPreset(new ResourceSkin(Identifier.of("minecraft:textures/entity/player/wide/steve.png"), "default"));
+                }
+
+                SkinTextures skinTexture = provider.supplySkinTextures(client.getGameProfile(), false).get();
                 Skin skin = new ResourceSkin(skinTexture.body().texturePath(), skinTexture.model().name());
 
                 return new SkinPreset(skin, name, -1);
