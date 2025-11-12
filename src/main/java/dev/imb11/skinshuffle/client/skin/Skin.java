@@ -3,12 +3,6 @@ package dev.imb11.skinshuffle.client.skin;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import dev.imb11.skinshuffle.MixinStatics;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.util.DefaultSkinHelper;
-import net.minecraft.entity.player.PlayerSkinType;
-import net.minecraft.entity.player.SkinTextures;
-import net.minecraft.util.AssetInfo;
-import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -17,9 +11,15 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.DefaultPlayerSkin;
+import net.minecraft.core.ClientAsset;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.PlayerModelType;
+import net.minecraft.world.entity.player.PlayerSkin;
 
 public interface Skin {
-    Map<Identifier, MapCodec<? extends Skin>> TYPES = Map.of(
+    Map<ResourceLocation, MapCodec<? extends Skin>> TYPES = Map.of(
             UrlSkin.SERIALIZATION_ID, UrlSkin.CODEC,
             ResourceSkin.SERIALIZATION_ID, ResourceSkin.CODEC,
             ConfigSkin.SERIALIZATION_ID, ConfigSkin.CODEC,
@@ -27,49 +27,49 @@ public interface Skin {
             UsernameSkin.SERIALIZATION_ID, UsernameSkin.CODEC,
             UUIDSkin.SERIALIZATION_ID, UUIDSkin.CODEC
     );
-    Codec<Skin> CODEC = Identifier.CODEC.dispatch("type", Skin::getSerializationId, TYPES::get);
+    Codec<Skin> CODEC = ResourceLocation.CODEC.dispatch("type", Skin::getSerializationId, TYPES::get);
 
     static ResourceSkin randomDefaultSkin() {
         var uuid = UUID.randomUUID();
-        var txt = DefaultSkinHelper.getSkinTextures(uuid);
+        var txt = DefaultPlayerSkin.get(uuid);
         return new ResourceSkin(txt.body().texturePath(), txt.model().name());
     }
 
-    @Nullable AssetInfo.TextureAsset getTextureAsset();
+    @Nullable ClientAsset.Texture getTextureAsset();
 
-    Identifier getTexture();
+    ResourceLocation getTexture();
 
 
-    default SkinTextures getSkinTextures() {
-        MinecraftClient client = MinecraftClient.getInstance();
-        CompletableFuture<Optional<SkinTextures>> textureSupplier =
-                client.getSkinProvider().fetchSkinTextures(client.getGameProfile());
+    default PlayerSkin getSkinTextures() {
+        Minecraft client = Minecraft.getInstance();
+        CompletableFuture<Optional<PlayerSkin>> textureSupplier =
+                client.getSkinManager().get(client.getGameProfile());
 
-        CompletableFuture<Optional<SkinTextures>> clientTexture;
+        CompletableFuture<Optional<PlayerSkin>> clientTexture;
         if (MixinStatics.INITIAL_SKIN_TEXTURES.isDone()) clientTexture = MixinStatics.INITIAL_SKIN_TEXTURES.join();
         else clientTexture = textureSupplier;
 
         try {
-            return new SkinTextures(this.getTextureAsset(), clientTexture.get().get().cape(), clientTexture.get().get().elytra(), getModelEnum(), false);
+            return new PlayerSkin(this.getTextureAsset(), clientTexture.get().get().cape(), clientTexture.get().get().elytra(), getModelEnum(), false);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    default PlayerSkinType getModelEnum() {
+    default PlayerModelType getModelEnum() {
         String modelString = getModel();
         if (modelString == null) {
-            return PlayerSkinType.WIDE;
+            return PlayerModelType.WIDE;
         }
 
         return switch (modelString.toLowerCase()) {
-            case "slim" -> PlayerSkinType.SLIM;
-            case "classic", "wide", "default" -> PlayerSkinType.WIDE;
+            case "slim" -> PlayerModelType.SLIM;
+            case "classic", "wide", "default" -> PlayerModelType.WIDE;
             default -> {
                 try {
-                    yield PlayerSkinType.valueOf(modelString.toUpperCase());
+                    yield PlayerModelType.valueOf(modelString.toUpperCase());
                 } catch (IllegalArgumentException e) {
-                    yield PlayerSkinType.WIDE;
+                    yield PlayerModelType.WIDE;
                 }
             }
         };
@@ -81,7 +81,7 @@ public interface Skin {
 
     void setModel(String value);
 
-    Identifier getSerializationId();
+    ResourceLocation getSerializationId();
 
     /**
      * Saves this skin to the config and returns a new reference to it.

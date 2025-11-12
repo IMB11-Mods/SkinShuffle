@@ -5,10 +5,10 @@ import dev.imb11.skinshuffle.client.config.SkinPresetManager;
 import dev.imb11.skinshuffle.util.SkinShuffleClientPlayer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.AbstractClientPlayerEntity;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.Entity;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.world.entity.Entity;
 
 public class ClientSkinHandling {
     private static boolean handshakeTakenPlace = false;
@@ -37,7 +37,7 @@ public class ClientSkinHandling {
         });
 
         ClientPlayConnectionEvents.INIT.register((handler, client) -> {
-            if (client.world == null) return;
+            if (client.level == null) return;
             handshakeTakenPlace = false;
         });
 
@@ -53,12 +53,12 @@ public class ClientSkinHandling {
 
         ClientPlayNetworking.registerGlobalReceiver(RefreshPlayerListEntryPayload.PACKET_ID, (payload, context) -> {
             int id = payload.entityID();
-            MinecraftClient client = context.client();
+            Minecraft client = context.client();
             client.execute(() -> {
-                ClientWorld world = client.world;
+                ClientLevel world = client.level;
                 if (world != null) {
-                    Entity entity = world.getEntityById(id);
-                    if (entity instanceof AbstractClientPlayerEntity player) {
+                    Entity entity = world.getEntity(id);
+                    if (entity instanceof AbstractClientPlayer player) {
                         ((SkinShuffleClientPlayer) player).skinShuffle$refreshPlayerListEntry();
                     }
                 }

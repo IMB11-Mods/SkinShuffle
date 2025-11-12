@@ -172,11 +172,11 @@ import dev.imb11.skinshuffle.client.gui.renderer.InstancedGuiEntityElementRender
 import dev.imb11.skinshuffle.client.gui.renderer.InstancedGuiEntityRenderState;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.client.gui.render.GuiRenderer;
-import net.minecraft.client.gui.render.SpecialGuiElementRenderer;
+import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
 import net.minecraft.client.gui.render.state.GuiRenderState;
-import net.minecraft.client.gui.render.state.special.EntityGuiElementRenderState;
-import net.minecraft.client.gui.render.state.special.SpecialGuiElementRenderState;
-import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.gui.render.state.pip.GuiEntityRenderState;
+import net.minecraft.client.gui.render.state.pip.PictureInPictureRenderState;
+import net.minecraft.client.renderer.MultiBufferSource;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -198,17 +198,17 @@ public class GuiRendererMixin {
     private final Map<InstancedGuiEntityRenderState, InstancedGuiEntityElementRenderer> instancedRenderers = new Object2ObjectOpenHashMap<>();
     @Shadow
     @Final
-    GuiRenderState state;
+    GuiRenderState renderState;
     @Shadow
     @Final
-    private VertexConsumerProvider.Immediate vertexConsumers;
+    private MultiBufferSource.BufferSource bufferSource;
 
-    @Inject(method = "prepareSpecialElement", at = @At("HEAD"), cancellable = true)
-    private <T extends SpecialGuiElementRenderState> void skyblocker$instancedGuiElementRendering(SpecialGuiElementRenderState specialGuiElementRenderState, int windowScaleFactor, CallbackInfo ci) {
+    @Inject(method = "preparePictureInPictureState", at = @At("HEAD"), cancellable = true)
+    private <T extends PictureInPictureRenderState> void skyblocker$instancedGuiElementRendering(PictureInPictureRenderState specialGuiElementRenderState, int windowScaleFactor, CallbackInfo ci) {
         if (specialGuiElementRenderState instanceof InstancedGuiEntityRenderState instanced) {
-            InstancedGuiEntityElementRenderer renderer = this.instancedRenderers.computeIfAbsent(instanced, ignored -> instanced.newRenderer(this.vertexConsumers));
+            InstancedGuiEntityElementRenderer renderer = this.instancedRenderers.computeIfAbsent(instanced, ignored -> instanced.newRenderer(this.bufferSource));
             //noinspection DataFlowIssue
-            renderer.render((EntityGuiElementRenderState) (Object) instanced, this.state, windowScaleFactor);
+            renderer.prepare((GuiEntityRenderState) (Object) instanced, this.renderState, windowScaleFactor);
 
             ci.cancel();
         }
@@ -221,7 +221,7 @@ public class GuiRendererMixin {
 
     @Inject(method = "close", at = @At("TAIL"))
     public void skyblocker$closeInstancedRenderers(CallbackInfo ci) {
-        this.instancedRenderers.values().forEach(SpecialGuiElementRenderer::close);
+        this.instancedRenderers.values().forEach(PictureInPictureRenderer::close);
     }
 
     @Unique

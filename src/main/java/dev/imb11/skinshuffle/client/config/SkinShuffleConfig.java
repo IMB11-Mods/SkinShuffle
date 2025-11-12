@@ -9,22 +9,21 @@ import dev.isxander.yacl3.api.controller.TickBoxControllerBuilder;
 import dev.isxander.yacl3.config.v2.api.ConfigClassHandler;
 import dev.isxander.yacl3.config.v2.api.SerialEntry;
 import dev.isxander.yacl3.config.v2.api.serializer.GsonConfigSerializerBuilder;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 
-import static net.minecraft.text.Text.translatable;
+import static net.minecraft.network.chat.Component.translatable;
 
 public class SkinShuffleConfig {
     private static final Path CONFIG_FILE_PATH = SkinShuffle.DATA_DIR.resolve("config.json");
     private static final ConfigClassHandler<SkinShuffleConfig> HANDLER = ConfigClassHandler.
             createBuilder(SkinShuffleConfig.class)
-            .id(Identifier.of("skinshuffle", "skinshuffle"))
+            .id(ResourceLocation.fromNamespaceAndPath("skinshuffle", "skinshuffle"))
             .serializer(config -> GsonConfigSerializerBuilder.create(config)
                     .setPath(CONFIG_FILE_PATH)
                     .appendGsonBuilder(GsonBuilder::setPrettyPrinting)
@@ -92,7 +91,7 @@ public class SkinShuffleConfig {
                             .binding(defaults.carouselSkinRenderStyle, () -> config.carouselSkinRenderStyle, val -> config.carouselSkinRenderStyle = val)
                             .controller(opt -> EnumControllerBuilder.create(opt)
                                     .enumClass(SkinRenderStyle.class)
-                                    .valueFormatter(skinRenderStyle -> Text.translatable("skinshuffle.config.rendering." + skinRenderStyle.name().toLowerCase())))
+                                    .valueFormatter(skinRenderStyle -> Component.translatable("skinshuffle.config.rendering." + skinRenderStyle.name().toLowerCase())))
                             .build();
 
                     var presetEditScreenRenderStyle = Option.<SkinRenderStyle>createBuilder()
@@ -102,7 +101,7 @@ public class SkinShuffleConfig {
                             .binding(defaults.presetEditScreenRenderStyle, () -> config.presetEditScreenRenderStyle, val -> config.presetEditScreenRenderStyle = val)
                             .controller(opt -> EnumControllerBuilder.create(opt)
                                     .enumClass(SkinRenderStyle.class)
-                                    .valueFormatter(skinRenderStyle -> Text.translatable("skinshuffle.config.rendering." + skinRenderStyle.name().toLowerCase())))
+                                    .valueFormatter(skinRenderStyle -> Component.translatable("skinshuffle.config.rendering." + skinRenderStyle.name().toLowerCase())))
                             .build();
 
                     var widgetRenderStyle = Option.<SkinRenderStyle>createBuilder()
@@ -112,7 +111,7 @@ public class SkinShuffleConfig {
                             .binding(defaults.widgetSkinRenderStyle, () -> config.widgetSkinRenderStyle, val -> config.widgetSkinRenderStyle = val)
                             .controller(opt -> EnumControllerBuilder.create(opt)
                                     .enumClass(SkinRenderStyle.class)
-                                    .valueFormatter(skinRenderStyle -> Text.translatable("skinshuffle.config.rendering." + skinRenderStyle.name().toLowerCase())))
+                                    .valueFormatter(skinRenderStyle -> Component.translatable("skinshuffle.config.rendering." + skinRenderStyle.name().toLowerCase())))
                             .build();
 
                     var rotationMultiplier = Option.<Float>createBuilder()
@@ -184,8 +183,8 @@ public class SkinShuffleConfig {
                             .controller(TickBoxControllerBuilder::create).build();
 
                     var enableMltiAccount = Option.<Boolean>createBuilder()
-                            .name(Text.translatable("skinshuffle.config.general.enableMultiAccount.title"))
-                            .description(OptionDescription.of(Text.translatable("skinshuffle.config.general.enableMultiAccount.description")))
+                            .name(Component.translatable("skinshuffle.config.general.enableMultiAccount.title"))
+                            .description(OptionDescription.of(Component.translatable("skinshuffle.config.general.enableMultiAccount.description")))
                             .binding(defaults.enableMultiAccountSupport, () -> config.enableMultiAccountSupport, val -> config.enableMultiAccountSupport = val)
                             .flag(OptionFlag.GAME_RESTART)
                             .controller(TickBoxControllerBuilder::create).build();
@@ -219,7 +218,7 @@ public class SkinShuffleConfig {
                                 HANDLER.save();
 
                                 if (HANDLER.instance().enableMultiAccountSupport) {
-                                    var path = SkinPresetManager.getAccountPresetsPath(MinecraftClient.getInstance().getGameProfile().name());
+                                    var path = SkinPresetManager.getAccountPresetsPath(Minecraft.getInstance().getGameProfile().name());
                                     if (!Files.exists(path)) {
                                         try {
                                             Files.copy(SkinPresetManager.getGlobalPresetsPath(), path);

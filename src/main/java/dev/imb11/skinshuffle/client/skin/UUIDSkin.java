@@ -5,16 +5,16 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.imb11.skinshuffle.SkinShuffle;
 import dev.imb11.skinshuffle.api.MojangSkinAPI;
-import net.minecraft.client.texture.AbstractTexture;
-import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import net.minecraft.client.renderer.texture.AbstractTexture;
+import net.minecraft.resources.ResourceLocation;
 
 public class UUIDSkin extends UrlSkin {
-    public static final Identifier SERIALIZATION_ID = SkinShuffle.id("uuid");
+    public static final ResourceLocation SERIALIZATION_ID = SkinShuffle.id("uuid");
 
     public static final MapCodec<UUIDSkin> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.STRING.fieldOf("uuid").forGetter(skin -> skin.uuid.toString()),
@@ -55,7 +55,7 @@ public class UUIDSkin extends UrlSkin {
     }
 
     @Override
-    public Identifier getSerializationId() {
+    public ResourceLocation getSerializationId() {
         return SERIALIZATION_ID;
     }
 

@@ -2,15 +2,14 @@ package dev.imb11.skinshuffle.client.gui.components;
 
 import dev.imb11.skinshuffle.client.config.SkinPresetManager;
 import dev.imb11.skinshuffle.client.preset.SkinPreset;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.widget.CyclingButtonWidget;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.gui.widget.TextWidget;
-import net.minecraft.text.Text;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.components.CycleButton;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.StringWidget;
+import net.minecraft.network.chat.Component;
 
 /**
  * Tab component for customizing skin preset properties.
@@ -22,26 +21,26 @@ public class SkinCustomizationTabComponent extends TabComponent {
     /**
      * Constructor for the skin customization tab component.
      */
-    public SkinCustomizationTabComponent(TextRenderer textRenderer, SkinPreset preset) {
-        super(Text.translatable("skinshuffle.edit.customize.title"), textRenderer, preset);
+    public SkinCustomizationTabComponent(Font textRenderer, SkinPreset preset) {
+        super(Component.translatable("skinshuffle.edit.customize.title"), textRenderer, preset);
     }
 
     @Override
     public void initialize(int width, int height, int sideMargins) {
-        this.grid.getMainPositioner().marginLeft(width / 3).alignHorizontalCenter();
-        var gridAdder = this.grid.setRowSpacing(8).createAdder(1);
+        this.layout.defaultCellSetting().paddingLeft(width / 3).alignHorizontallyCenter();
+        var gridAdder = this.layout.rowSpacing(8).createRowHelper(1);
 
         // Add preset name field
-        var presetNameField = new TextFieldWidget(textRenderer, 0, 0, 256, 20, Text.empty());
-        presetNameField.setText(preset.getName());
-        presetNameField.setChangedListener(preset::setName);
+        var presetNameField = new EditBox(textRenderer, 0, 0, 256, 20, Component.empty());
+        presetNameField.setValue(preset.getName());
+        presetNameField.setResponder(preset::setName);
         presetNameField.setMaxLength(2048);
 
-        gridAdder.add(new TextWidget(Text.translatable("skinshuffle.edit.customize.preset_name"), textRenderer));
-        gridAdder.add(presetNameField);
+        gridAdder.addChild(new StringWidget(Component.translatable("skinshuffle.edit.customize.preset_name"), textRenderer));
+        gridAdder.addChild(presetNameField);
 
         // Add keybind ID selector
-        gridAdder.add(new TextWidget(Text.translatable("skinshuffle.edit.customize.keybind_id"), textRenderer));
+        gridAdder.addChild(new StringWidget(Component.translatable("skinshuffle.edit.customize.keybind_id"), textRenderer));
 
         // Create list of available keybind IDs (1-9 and None/-1)
         List<Integer> availableKeybindIds = new ArrayList<>();
@@ -71,23 +70,23 @@ public class SkinCustomizationTabComponent extends TabComponent {
         if (currentIndex < 0) currentIndex = 0; // Fallback to "None" if not found
 
         // Create the cycling button
-        var keybindIdButton = new CyclingButtonWidget<>(
+        var keybindIdButton = new CycleButton<>(
                 0, 0, 256, 20,
-                Text.translatable("skinshuffle.edit.customize.keybind_id_prefix").append(": ")
+                Component.translatable("skinshuffle.edit.customize.keybind_id_prefix").append(": ")
                         .append(formatKeybindIdText(preset.getKeybindId())),
-                Text.translatable("skinshuffle.edit.customize.keybind_id_prefix"),
+                Component.translatable("skinshuffle.edit.customize.keybind_id_prefix"),
                 currentIndex,
                 preset.getKeybindId(),
-                CyclingButtonWidget.Values.of(availableKeybindIds),
+                CycleButton.ValueListSupplier.create(availableKeybindIds),
                 this::formatKeybindIdText,
-                keybindIdCyclingButtonWidget -> Text.of("").copy(),
+                keybindIdCyclingButtonWidget -> Component.literal("").copy(),
                 (button, value) -> {
                     preset.setKeybindId(value);
                 },
                 value -> null,
                 false
         );
-        gridAdder.add(keybindIdButton);
+        gridAdder.addChild(keybindIdButton);
     }
 
     /**
@@ -96,9 +95,9 @@ public class SkinCustomizationTabComponent extends TabComponent {
      * @param keybindId The keybind ID to format
      * @return Formatted text for the given keybind ID
      */
-    private Text formatKeybindIdText(int keybindId) {
+    private Component formatKeybindIdText(int keybindId) {
         return keybindId < 0 ?
-                Text.translatable("skinshuffle.edit.customize.keybind_id.none") :
-                Text.of(String.valueOf(keybindId));
+                Component.translatable("skinshuffle.edit.customize.keybind_id.none") :
+                Component.nullToEmpty(String.valueOf(keybindId));
     }
 }

@@ -1,41 +1,41 @@
 package dev.imb11.skinshuffle.client.gui.renderer;
 
+import com.mojang.blaze3d.Blaze3D;
 import dev.imb11.skinshuffle.client.SkinShuffleClient;
 import dev.imb11.skinshuffle.client.config.SkinShuffleConfig;
 import dev.imb11.skinshuffle.client.preset.SkinPreset;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.util.GlfwUtil;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
 
 /**
  * Utility class for rendering skin previews in UI screens.
  */
 public class SkinPreviewRenderer {
 
-    private final MinecraftClient client;
+    private final Minecraft client;
 
-    public SkinPreviewRenderer(MinecraftClient client) {
+    public SkinPreviewRenderer(Minecraft client) {
         this.client = client;
     }
 
     public static float getEntityRotation() {
-        return (float) GlfwUtil.getTime() * 35f;
+        return (float) Blaze3D.getTime() * 35f;
     }
 
     /**
      * Draws a bordered preview region.
      */
-    public void renderPreviewArea(DrawContext graphics, int previewCenterX, int previewCenterY,
+    public void renderPreviewArea(GuiGraphics graphics, int previewCenterX, int previewCenterY,
                                   int previewSpanX, int previewSpanY) {
-        graphics.drawStrokedRectangle(previewCenterX - previewSpanX, previewCenterY - previewSpanY,
+        graphics.submitOutline(previewCenterX - previewSpanX, previewCenterY - previewSpanY,
                 previewSpanX * 2, previewSpanY * 2, 0xDF000000);
         graphics.fill(previewCenterX - previewSpanX + 1, previewCenterY - previewSpanY + 1,
                 previewCenterX + previewSpanX - 1, previewCenterY + previewSpanY - 1, 0x7F000000);
     }
 
-    public void renderSkinPreview(DrawContext graphics, SkinPreset preset,
+    public void renderSkinPreview(GuiGraphics graphics, SkinPreset preset,
                                   int mouseX, int mouseY,
                                   int x1, int y1, int x2, int y2, float sizeScaling,
                                   SkinShuffleConfig.SkinRenderStyle renderStyle,
@@ -58,7 +58,7 @@ public class SkinPreviewRenderer {
      * @param renderStyle Style (STATIC / FOLLOW / ROTATION)
      * @param isLoading   Whether the calling screen is still fetching a texture
      */
-    public void renderSkinPreview(DrawContext graphics, SkinPreset preset,
+    public void renderSkinPreview(GuiGraphics graphics, SkinPreset preset,
                                   int mouseX, int mouseY,
                                   int x1, int y1, int x2, int y2, float sizeScaling,
                                   SkinShuffleConfig.SkinRenderStyle renderStyle,
@@ -93,16 +93,16 @@ public class SkinPreviewRenderer {
         );
     }
 
-    public void renderLoadingIndicator(DrawContext graphics, int centerX, int centerY) {
-        TextRenderer textRenderer = client.textRenderer;
-        Text txt = Text.translatable("skinshuffle.edit.loading");
+    public void renderLoadingIndicator(GuiGraphics graphics, int centerX, int centerY) {
+        Font textRenderer = client.font;
+        Component txt = Component.translatable("skinshuffle.edit.loading");
 
-        int textWidth = textRenderer.getWidth(txt);
+        int textWidth = textRenderer.width(txt);
         float totalDeltaTick = SkinShuffleClient.TOTAL_TICK_DELTA * 5f;
         float hue = (totalDeltaTick % 360) / 360f;
 
         int color = java.awt.Color.HSBtoRGB(hue, 0.75f, 1f) | 0xFF000000;
-        graphics.drawTextWithShadow(textRenderer, txt,
-                centerX - textWidth / 2, centerY - textRenderer.fontHeight - 80, color);
+        graphics.drawString(textRenderer, txt,
+                centerX - textWidth / 2, centerY - textRenderer.lineHeight - 80, color);
     }
 }

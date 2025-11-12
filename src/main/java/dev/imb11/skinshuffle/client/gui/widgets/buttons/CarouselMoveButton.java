@@ -4,14 +4,14 @@ import dev.imb11.skinshuffle.SkinShuffle;
 import dev.lambdaurora.spruceui.Position;
 import dev.lambdaurora.spruceui.render.SpruceGuiGraphics;
 import dev.lambdaurora.spruceui.widget.AbstractSpruceWidget;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.Click;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 public class CarouselMoveButton extends AbstractSpruceWidget {
-    private static final Identifier ARROW_TEXTURES = SkinShuffle.id("textures/gui/carousel_arrows.png");
+    private static final ResourceLocation ARROW_TEXTURES = SkinShuffle.id("textures/gui/carousel_arrows.png");
     private final Type type;
     private @Nullable Runnable action;
 
@@ -39,12 +39,12 @@ public class CarouselMoveButton extends AbstractSpruceWidget {
     }
 
     @Override
-    public boolean mouseClicked(Click event, boolean doubleClick) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         return this.isMouseOver(event.x(), event.y()) && this.onMouseClick(event, doubleClick);
     }
 
     @Override
-    protected boolean onMouseClick(Click event, boolean doubleClick) {
+    protected boolean onMouseClick(MouseButtonEvent event, boolean doubleClick) {
         if (this.action != null) {
             try {
                 this.action.run();
@@ -58,9 +58,9 @@ public class CarouselMoveButton extends AbstractSpruceWidget {
 
     @Override
     protected void renderWidget(SpruceGuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
-        var matrices = guiGraphics.vanilla().getMatrices();
+        var matrices = guiGraphics.vanilla().pose();
         matrices.pushMatrix();
-        guiGraphics.vanilla().drawTexture(
+        guiGraphics.vanilla().blit(
                 RenderPipelines.GUI_TEXTURED,
                 ARROW_TEXTURES,
                 getX(),
@@ -78,8 +78,8 @@ public class CarouselMoveButton extends AbstractSpruceWidget {
     }
 
     @Override
-    protected @Nullable Text getNarrationMessage() {
-        return Text.translatable("skinshuffle.carousel." + this.type.name);
+    protected @Nullable Component getNarrationMessage() {
+        return Component.translatable("skinshuffle.carousel." + this.type.name);
     }
 
     public enum Type {

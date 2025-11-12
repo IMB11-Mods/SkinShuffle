@@ -15,7 +15,7 @@ import dev.imb11.skinshuffle.util.NetworkingUtil;
 import dev.imb11.skinshuffle.util.SkinCacheRegistry;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -35,7 +35,7 @@ public class MojangSkinAPI {
      * @param model   The skin model type.
      */
     public static boolean setSkinTexture(String skinURL, String model) {
-        UserApiService service = ((MinecraftClientAccessor) MinecraftClient.getInstance()).getUserApiService();
+        UserApiService service = ((MinecraftClientAccessor) Minecraft.getInstance()).getUserApiService();
 
         if (service instanceof YggdrasilUserApiService apiService) {
             try {
@@ -185,7 +185,7 @@ public class MojangSkinAPI {
      * @param model    The type of skin model.
      */
     public static boolean setSkinTexture(File skinFile, String model) {
-        UserApiService service = ((MinecraftClientAccessor) MinecraftClient.getInstance()).getUserApiService();
+        UserApiService service = ((MinecraftClientAccessor) Minecraft.getInstance()).getUserApiService();
 
         if (model.equals("default")) {
             model = "classic";

@@ -1,5 +1,6 @@
 package dev.imb11.skinshuffle.client.gui.carousels;
 
+import com.mojang.blaze3d.Blaze3D;
 import dev.imb11.skinshuffle.SkinShuffle;
 import dev.imb11.skinshuffle.client.config.CarouselView;
 import dev.imb11.skinshuffle.client.config.SkinPresetManager;
@@ -19,17 +20,15 @@ import dev.lambdaurora.spruceui.tooltip.Tooltip;
 import dev.lambdaurora.spruceui.widget.SpruceButtonWidget;
 import dev.lambdaurora.spruceui.widget.SpruceIconButtonWidget;
 import dev.lambdaurora.spruceui.widget.SpruceWidget;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.GlfwUtil;
-import net.minecraft.screen.ScreenTexts;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.MathHelper;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Optional;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 
 public abstract class CarouselScreen extends SpruceScreen {
     public static final double scaleFactor = 1.0D;
@@ -47,7 +46,7 @@ public abstract class CarouselScreen extends SpruceScreen {
     private double lastCardSwitchTime = 0;
 
     public CarouselScreen(Screen parent, CarouselView viewType, CarouselView nextViewType) {
-        super(Text.translatable("skinshuffle.carousel.title"));
+        super(Component.translatable("skinshuffle.carousel.title"));
         this.parent = parent;
         this.viewType = viewType;
         this.nextViewType = nextViewType;
@@ -70,7 +69,7 @@ public abstract class CarouselScreen extends SpruceScreen {
             SkinPreset unnamed = new SkinPreset(Skin.randomDefaultSkin());
             SkinPresetManager.addPreset(unnamed);
             var newWidget = this.loadPreset(unnamed);
-            this.addDrawableChild(newWidget);
+            this.addRenderableWidget(newWidget);
         });
         this.carouselWidgets.add(addPresetWidget);
 
@@ -88,31 +87,31 @@ public abstract class CarouselScreen extends SpruceScreen {
         }
 
         for (SpruceWidget presetCards : this.carouselWidgets) {
-            this.addDrawableChild(presetCards);
+            this.addRenderableWidget(presetCards);
         }
 
-        this.cancelButton = this.addDrawableChild(new SpruceButtonWidget(Position.of(this.width / 2 - 128 - 5, this.height - 23), 128, 20, ScreenTexts.CANCEL, button -> {
-            this.close();
+        this.cancelButton = this.addRenderableWidget(new SpruceButtonWidget(Position.of(this.width / 2 - 128 - 5, this.height - 23), 128, 20, CommonComponents.GUI_CANCEL, button -> {
+            this.onClose();
         }));
 
-        this.configButton = this.addDrawableChild(new SkinShuffleIconButton(Position.of(2, 2), 20, 20, Text.empty(),
-                (btn) -> this.client.setScreenAndRender(GeneratedScreens.getConfigScreen(this)),
+        this.configButton = this.addRenderableWidget(new SkinShuffleIconButton(Position.of(2, 2), 20, 20, Component.empty(),
+                (btn) -> this.minecraft.setScreenAndShow(GeneratedScreens.getConfigScreen(this)),
                 (btn) -> SkinShuffle.id("textures/gui/config-button-icon.png")));
-        this.configButton.setTooltip(Text.translatable("skinshuffle.carousel.config_button.tooltip"));
+        this.configButton.setTooltip(Component.translatable("skinshuffle.carousel.config_button.tooltip"));
 
-        this.viewTypeButton = this.addDrawableChild(new SkinShuffleIconButton(Position.of(24, 2), 20, 20, Text.empty(), (btn) -> {
-            this.client.setScreenAndRender(nextViewType.factory.apply(this.parent));
+        this.viewTypeButton = this.addRenderableWidget(new SkinShuffleIconButton(Position.of(24, 2), 20, 20, Component.empty(), (btn) -> {
+            this.minecraft.setScreenAndShow(nextViewType.factory.apply(this.parent));
             SkinShuffleConfig.get().carouselView = nextViewType;
             SkinShuffleConfig.save();
         }, (btn) -> viewType.iconTexture));
         this.viewTypeButton.setTooltip(viewType.tooltip);
 
-        this.selectButton = this.addDrawableChild(new SpruceButtonWidget(Position.of(this.width / 2 + 5, this.height - 23), 128, 20, Text.translatable("skinshuffle.carousel.save_button"), button -> {
+        this.selectButton = this.addRenderableWidget(new SpruceButtonWidget(Position.of(this.width / 2 + 5, this.height - 23), 128, 20, Component.translatable("skinshuffle.carousel.save_button"), button -> {
             if (Math.round(cardIndex) >= 0 && Math.round(cardIndex) < this.carouselWidgets.size()) {
                 SpruceWidget chosenPresetWidget = this.carouselWidgets.get((int) Math.round(cardIndex));
 
                 if (chosenPresetWidget instanceof AddCardWidget) {
-                    this.close();
+                    this.onClose();
                     return;
                 }
 
@@ -129,16 +128,16 @@ public abstract class CarouselScreen extends SpruceScreen {
     }
 
     public void handleCloseBehaviour() {
-        if (this.client.world != null && !SkinShuffleConfig.get().disableAPIUpload && !ClientSkinHandling.isInstalledOnServer()) {
-            this.client.setScreen(GeneratedScreens.getReconnectScreen(this.parent));
+        if (this.minecraft.level != null && !SkinShuffleConfig.get().disableAPIUpload && !ClientSkinHandling.isInstalledOnServer()) {
+            this.minecraft.setScreen(GeneratedScreens.getReconnectScreen(this.parent));
         } else {
-            this.close();
+            this.onClose();
         }
     }
 
     @Override
-    public void close() {
-        this.client.setScreen(parent);
+    public void onClose() {
+        this.minecraft.setScreen(parent);
 
         // Save all presets to config when closing the screen, skipping any we can't
         for (var preset : SkinPresetManager.getLoadedPresets()) {
@@ -156,10 +155,10 @@ public abstract class CarouselScreen extends SpruceScreen {
     public void render(SpruceGuiGraphics graphics, int mouseX, int mouseY, float delta) {
         var cardAreaWidth = getCardWidth() + getCardGap();
 
-        graphics.fill(0, this.textRenderer.fontHeight * 3, this.width, this.height - (this.textRenderer.fontHeight * 3), 0x7F000000);
+        graphics.fill(0, this.font.lineHeight * 3, this.width, this.height - (this.font.lineHeight * 3), 0x7F000000);
 
-        graphics.fillGradient(0, (int) (this.textRenderer.fontHeight * 2.75), this.width, this.textRenderer.fontHeight * 3, 0x00000000, 0x00000000, 0x7F000000, 0x7F000000);
-        graphics.fillGradient(0, this.height - (this.textRenderer.fontHeight * 3), this.width, (int) (this.height - (this.textRenderer.fontHeight * 2.75)), 0x7F000000, 0x7F000000, 0x00000000, 0x00000000);
+        graphics.fillGradient(0, (int) (this.font.lineHeight * 2.75), this.width, this.font.lineHeight * 3, 0x00000000, 0x00000000, 0x7F000000, 0x7F000000);
+        graphics.fillGradient(0, this.height - (this.font.lineHeight * 3), this.width, (int) (this.height - (this.font.lineHeight * 2.75)), 0x7F000000, 0x7F000000, 0x00000000, 0x00000000);
 
         // Carousel Widgets
         int rows = getRows();
@@ -224,8 +223,8 @@ public abstract class CarouselScreen extends SpruceScreen {
         Tooltip.renderAll(graphics.vanilla());
     }
 
-    public void renderTitle(DrawContext graphics, int mouseX, int mouseY, float delta) {
-        graphics.drawCenteredTextWithShadow(this.textRenderer, this.getTitle().asOrderedText(), this.width / 2, this.textRenderer.fontHeight, 0xFFFFFFFF);
+    public void renderTitle(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+        graphics.drawCenteredString(this.font, this.getTitle().getVisualOrderText(), this.width / 2, this.font.lineHeight, 0xFFFFFFFF);
     }
 
     public void scrollCarousel(double amount, boolean wrapAround) {
@@ -240,7 +239,7 @@ public abstract class CarouselScreen extends SpruceScreen {
             cardIndex = (cardIndex + this.carouselWidgets.size()) % this.carouselWidgets.size();
         }
         //noinspection IntegerDivisionInFloatingPointContext
-        cardIndex = MathHelper.clamp(cardIndex, 0, (this.carouselWidgets.size() - 1) / getRows() * getRows());
+        cardIndex = Mth.clamp(cardIndex, 0, (this.carouselWidgets.size() - 1) / getRows() * getRows());
 
         setCardIndex(cardIndex);
     }
@@ -260,7 +259,7 @@ public abstract class CarouselScreen extends SpruceScreen {
     }
 
     @Override
-    public boolean mouseReleased(Click event) {
+    public boolean mouseReleased(MouseButtonEvent event) {
         carouselWidgets.forEach(widget -> widget.setDragging(false));
 
         return super.mouseReleased(event);
@@ -287,10 +286,10 @@ public abstract class CarouselScreen extends SpruceScreen {
     protected abstract AbstractCardWidget widgetFromPreset(SkinPreset preset);
 
     private double getDeltaScrollIndex() {
-        var deltaTime = (GlfwUtil.getTime() - lastCardSwitchTime) * 5;
-        deltaTime = MathHelper.clamp(deltaTime, 0, 1);
+        var deltaTime = (Blaze3D.getTime() - lastCardSwitchTime) * 5;
+        deltaTime = Mth.clamp(deltaTime, 0, 1);
         deltaTime = Math.sin(deltaTime * Math.PI / 2);
-        return MathHelper.lerp(deltaTime, lastCardIndex, cardIndex);
+        return Mth.lerp(deltaTime, lastCardIndex, cardIndex);
     }
 
     public AbstractCardWidget loadPreset(SkinPreset preset) {
@@ -325,7 +324,7 @@ public abstract class CarouselScreen extends SpruceScreen {
 
     public void setCardIndex(double index) {
         lastCardIndex = getDeltaScrollIndex();
-        lastCardSwitchTime = GlfwUtil.getTime();
+        lastCardSwitchTime = Blaze3D.getTime();
         cardIndex = index;
     }
 

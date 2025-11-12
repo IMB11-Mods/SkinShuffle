@@ -14,9 +14,6 @@ import dev.imb11.skinshuffle.client.skin.UrlSkin;
 import dev.imb11.skinshuffle.networking.ClientSkinHandling;
 import dev.imb11.skinshuffle.util.NetworkingUtil;
 import dev.imb11.skinshuffle.util.SkinCacheRegistry;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.util.Util;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -26,6 +23,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
 
 public class SkinPresetManager {
     public static final Path PERSISTENT_SKINS_DIR = SkinShuffle.DATA_DIR.resolve("skins");
@@ -145,7 +144,7 @@ public class SkinPresetManager {
         SKIN_SHUFFLE_API = new SkinShuffleAPI(SkinShuffleConfig.get().mineskinProxyDomain);
 
         if (SkinShuffleConfig.get().enableMultiAccountSupport) {
-            var username = MinecraftClient.getInstance().getGameProfile().name();
+            var username = Minecraft.getInstance().getGameProfile().name();
             PRESETS = getAccountPresetsPath(username);
         } else {
             PRESETS = getGlobalPresetsPath();
@@ -251,7 +250,7 @@ public class SkinPresetManager {
     }
 
     public static void apply() {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         SkinPreset preset = getChosenPreset();
 
         if (SkinShuffleConfig.get().disableAPIUpload) {
@@ -275,7 +274,7 @@ public class SkinPresetManager {
                     successful = MojangSkinAPI.setSkinTexture(configSkin.getFile().toFile(), configSkin.getModel());
                 }
                 if (successful) setApiPreset(preset);
-                CompletableFuture.runAsync(() -> client.executeTask(() -> {
+                CompletableFuture.runAsync(() -> client.doRunTask(() -> {
                     try {
                         String cachedURL = SkinCacheRegistry.getCachedUploadedSkin(configSkin.getFile().toFile());
 
@@ -290,13 +289,13 @@ public class SkinPresetManager {
                             throw new Exception("Failed to upload skin to MineSkin proxy.");
                         }
 
-                        if (client.world != null && ClientSkinHandling.isInstalledOnServer()) {
+                        if (client.level != null && ClientSkinHandling.isInstalledOnServer()) {
                             ClientSkinHandling.sendRefresh(result);
                         }
                     } catch (Exception e) {
                         SkinShuffle.LOGGER.error(e.getMessage());
                     }
-                }), Util.getMainWorkerExecutor());
+                }), Util.backgroundExecutor());
             } catch (Exception e) {
                 SkinShuffle.LOGGER.error("Failed to apply skin preset.", e);
             }

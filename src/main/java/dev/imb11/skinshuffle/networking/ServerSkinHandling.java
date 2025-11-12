@@ -6,11 +6,11 @@ import dev.imb11.skinshuffle.util.SkinShufflePlayer;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 
 public class ServerSkinHandling {
 
-    private static void handleSkinRefresh(MinecraftServer server, ServerPlayerEntity player, Property skinData) {
+    private static void handleSkinRefresh(MinecraftServer server, ServerPlayer player, Property skinData) {
         SkinShuffle.LOGGER.info("Recieved skin refresh packet from: " + player.getName().getString());
 
         server.execute(() -> {
@@ -38,7 +38,7 @@ public class ServerSkinHandling {
      * @param entityID The entity ID of the player.
      * @return Whether the refresh was successful.
      */
-    public static boolean attemptPlayerListEntryRefresh(ServerPlayerEntity player, int entityID) {
+    public static boolean attemptPlayerListEntryRefresh(ServerPlayer player, int entityID) {
         if (ServerPlayNetworking.canSend(player, RefreshPlayerListEntryPayload.PACKET_ID)) {
             ServerPlayNetworking.send(player, new RefreshPlayerListEntryPayload(entityID));
             return true;

@@ -168,11 +168,11 @@
 
 package dev.imb11.skinshuffle.client.gui.renderer;
 
-import net.minecraft.client.gui.render.EntityGuiElementRenderer;
+import net.minecraft.client.gui.render.pip.GuiEntityRenderer;
 import net.minecraft.client.gui.render.state.GuiRenderState;
-import net.minecraft.client.gui.render.state.special.EntityGuiElementRenderState;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.EntityRenderManager;
+import net.minecraft.client.gui.render.state.pip.GuiEntityRenderState;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 
 /**
  * Specialization of a {@code SpecialGuiElementRenderer} that allows for rendering multiple instances of the same element with
@@ -180,10 +180,10 @@ import net.minecraft.client.render.entity.EntityRenderManager;
  * @source <a href="https://github.com/SkyblockerMod/Skyblocker/blob/ac452aea80dbe3c789a2a717fd22837f821cce67/src/main/java/de/hysky/skyblocker/utils/render/gui/special/InstancedGuiElementRenderer.java">SkyblockerMod</a>
  * @license <a href="https://github.com/SkyblockerMod/Skyblocker/blob/ac452aea80dbe3c789a2a717fd22837f821cce67/LICENSE">LGPL-3.0</a>
  */
-public class InstancedGuiEntityElementRenderer extends EntityGuiElementRenderer {
+public class InstancedGuiEntityElementRenderer extends GuiEntityRenderer {
     private boolean usedThisFrame;
 
-    public InstancedGuiEntityElementRenderer(VertexConsumerProvider.Immediate vertexConsumers, EntityRenderManager entityRenderDispatcher) {
+    public InstancedGuiEntityElementRenderer(MultiBufferSource.BufferSource vertexConsumers, EntityRenderDispatcher entityRenderDispatcher) {
         super(vertexConsumers, entityRenderDispatcher);
     }
 
@@ -196,8 +196,8 @@ public class InstancedGuiEntityElementRenderer extends EntityGuiElementRenderer 
     }
 
     @Override
-    public void renderElement(EntityGuiElementRenderState specialGuiElementRenderState, GuiRenderState guiRenderState) {
-        super.renderElement(specialGuiElementRenderState, guiRenderState);
+    protected void blitTexture(GuiEntityRenderState specialGuiElementRenderState, GuiRenderState guiRenderState) {
+        super.blitTexture(specialGuiElementRenderState, guiRenderState);
         this.usedThisFrame = true;
     }
 }

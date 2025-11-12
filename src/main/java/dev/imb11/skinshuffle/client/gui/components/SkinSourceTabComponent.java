@@ -6,29 +6,28 @@ import dev.imb11.skinshuffle.client.preset.SkinPreset;
 import dev.imb11.skinshuffle.client.util.SkinLoader;
 import dev.imb11.skinshuffle.client.util.ValidationUtils;
 import dev.imb11.skinshuffle.util.ToastHelper;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.widget.CyclingButtonWidget;
-import net.minecraft.client.gui.widget.MultilineTextWidget;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.text.Text;
-
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.components.CycleButton;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.MultiLineTextWidget;
+import net.minecraft.network.chat.Component;
 
 /**
  * Tab component for selecting and configuring skin sources.
  */
 public class SkinSourceTabComponent extends TabComponent {
-    private final MinecraftClient client;
+    private final Minecraft client;
     private final Consumer<Boolean> onValidationChanged;
 
-    private TextFieldWidget textFieldWidget;
-    private MultilineTextWidget errorLabel;
-    private CyclingButtonWidget<String> skinModelButton;
+    private EditBox textFieldWidget;
+    private MultiLineTextWidget errorLabel;
+    private CycleButton<String> skinModelButton;
     private IconButtonWidget loadButton;
     private SkinLoader.SourceType currentSourceType;
     private boolean loading = false;
@@ -41,9 +40,9 @@ public class SkinSourceTabComponent extends TabComponent {
      * @param client              The Minecraft client instance
      * @param onValidationChanged Callback when validation status changes
      */
-    public SkinSourceTabComponent(TextRenderer textRenderer, SkinPreset preset,
-                                  MinecraftClient client, Consumer<Boolean> onValidationChanged) {
-        super(Text.translatable("skinshuffle.edit.source.title"), textRenderer, preset);
+    public SkinSourceTabComponent(Font textRenderer, SkinPreset preset,
+                                  Minecraft client, Consumer<Boolean> onValidationChanged) {
+        super(Component.translatable("skinshuffle.edit.source.title"), textRenderer, preset);
         this.client = client;
         this.onValidationChanged = onValidationChanged;
         this.currentSourceType = SkinLoader.SourceType.UNCHANGED;
@@ -51,19 +50,19 @@ public class SkinSourceTabComponent extends TabComponent {
 
     @Override
     public void initialize(int width, int height, int sideMargins) {
-        this.grid.getMainPositioner().marginLeft(width / 3).marginRight(sideMargins).alignHorizontalCenter();
-        var gridAdder = this.grid.setRowSpacing(4).createAdder(1);
+        this.layout.defaultCellSetting().paddingLeft(width / 3).paddingRight(sideMargins).alignHorizontallyCenter();
+        var gridAdder = this.layout.rowSpacing(4).createRowHelper(1);
 
         // Create text field for source input
-        this.textFieldWidget = new TextFieldWidget(textRenderer, 0, 0, 230, 20, Text.empty());
+        this.textFieldWidget = new EditBox(textRenderer, 0, 0, 230, 20, Component.empty());
         this.textFieldWidget.setMaxLength(2048);
-        this.textFieldWidget.setChangedListener(str -> validateInput());
+        this.textFieldWidget.setResponder(str -> validateInput());
 
         // Create error label
-        this.errorLabel = new MultilineTextWidget(0, 0, Text.empty(), textRenderer) {
+        this.errorLabel = new MultiLineTextWidget(0, 0, Component.empty(), textRenderer) {
             @Override
             public int getHeight() {
-                int minHeight = textRenderer.fontHeight * 5;
+                int minHeight = textRenderer.lineHeight * 5;
                 return Math.max(super.getHeight(), minHeight);
             }
         };
@@ -82,42 +81,42 @@ public class SkinSourceTabComponent extends TabComponent {
         );
 
         // Create skin model selection button
-        this.skinModelButton = new CyclingButtonWidget.Builder<String>(Text::of)
-                .values("classic", "slim")
-                .build(0, 0, 192, 20, Text.translatable("skinshuffle.edit.source.skin_model"), (widget, val) -> {
+        this.skinModelButton = new CycleButton.Builder<String>(Component::nullToEmpty)
+                .withValues("classic", "slim")
+                .create(0, 0, 192, 20, Component.translatable("skinshuffle.edit.source.skin_model"), (widget, val) -> {
                     preset.getSkin().setModel(val);
                 });
 
         // Create source type selection button
-        gridAdder.add(new CyclingButtonWidget<>(
+        gridAdder.addChild(new CycleButton<>(
                 0, 0, 192, 20,
-                Text.translatable("skinshuffle.edit.source.cycle_prefix").append(": ")
-                        .append(Text.translatable(currentSourceType.getTranslationKey())),
-                Text.translatable("skinshuffle.edit.source.cycle_prefix"),
+                Component.translatable("skinshuffle.edit.source.cycle_prefix").append(": ")
+                        .append(Component.translatable(currentSourceType.getTranslationKey())),
+                Component.translatable("skinshuffle.edit.source.cycle_prefix"),
                 Arrays.stream(SkinLoader.SourceType.values()).toList().indexOf(this.currentSourceType),
                 currentSourceType,
-                CyclingButtonWidget.Values.of(List.of(SkinLoader.SourceType.values())),
-                sourceType -> Text.translatable(sourceType.getTranslationKey()),
-                sourceTypeCyclingButtonWidget -> Text.of("").copy(),
+                CycleButton.ValueListSupplier.create(List.of(SkinLoader.SourceType.values())),
+                sourceType -> Component.translatable(sourceType.getTranslationKey()),
+                sourceTypeCyclingButtonWidget -> Component.literal("").copy(),
                 (button, value) -> {
                     this.currentSourceType = value;
-                    this.errorLabel.setMessage(Text.empty());
+                    this.errorLabel.setMessage(Component.empty());
                     validateInput();
                 },
                 value -> null,
                 false
-        ), grid.copyPositioner().marginTop(Math.min(height / 2 - 60, 20)));
+        ), layout.newCellSettings().paddingTop(Math.min(height / 2 - 60, 20)));
 
-        gridAdder.add(skinModelButton);
+        gridAdder.addChild(skinModelButton);
 
         // Add text field and load button in a subgrid
-        var subGrid = new net.minecraft.client.gui.widget.GridWidget();
-        var subGridAdder = subGrid.setColumnSpacing(4).createAdder(2);
-        gridAdder.add(subGrid, grid.copyPositioner().marginTop(6).marginBottom(6));
-        subGridAdder.add(textFieldWidget);
-        subGridAdder.add(loadButton);
+        var subGrid = new net.minecraft.client.gui.layouts.GridLayout();
+        var subGridAdder = subGrid.columnSpacing(4).createRowHelper(2);
+        gridAdder.addChild(subGrid, layout.newCellSettings().paddingTop(6).paddingBottom(6));
+        subGridAdder.addChild(textFieldWidget);
+        subGridAdder.addChild(loadButton);
 
-        gridAdder.add(errorLabel, grid.copyPositioner().alignLeft());
+        gridAdder.addChild(errorLabel, layout.newCellSettings().alignHorizontallyLeft());
 
         // Initial validation
         validateInput();
@@ -130,7 +129,7 @@ public class SkinSourceTabComponent extends TabComponent {
         boolean isValid = true;
 
         if (currentSourceType != SkinLoader.SourceType.UNCHANGED) {
-            String input = textFieldWidget.getText();
+            String input = textFieldWidget.getValue();
 
             isValid = switch (currentSourceType) {
                 case URL -> ValidationUtils.isValidUrl(input);
@@ -143,9 +142,9 @@ public class SkinSourceTabComponent extends TabComponent {
 
             // Update error message
             if (!isValid) {
-                errorLabel.setMessage(Text.translatable(currentSourceType.getInvalidInputTranslationKey()));
+                errorLabel.setMessage(Component.translatable(currentSourceType.getInvalidInputTranslationKey()));
             } else {
-                errorLabel.setMessage(Text.empty());
+                errorLabel.setMessage(Component.empty());
             }
         }
 
@@ -164,7 +163,7 @@ public class SkinSourceTabComponent extends TabComponent {
      */
     public void loadSkin() {
         loading = true;
-        String skinSource = textFieldWidget.getText();
+        String skinSource = textFieldWidget.getValue();
         String model = skinModelButton.getValue();
 
         CompletableFuture<Void> future = SkinLoader.loadSkin(
@@ -179,8 +178,8 @@ public class SkinSourceTabComponent extends TabComponent {
     public void handleFileDrop(Path path) {
         if (ValidationUtils.isValidPngFilePath(path.toString())) {
             currentSourceType = SkinLoader.SourceType.FILE;
-            errorLabel.setMessage(Text.empty());
-            textFieldWidget.setText(path.toString());
+            errorLabel.setMessage(Component.empty());
+            textFieldWidget.setValue(path.toString());
             validateInput();
             loadSkin();
         } else {
@@ -198,7 +197,7 @@ public class SkinSourceTabComponent extends TabComponent {
     /**
      * Gets the source text field.
      */
-    public TextFieldWidget getTextFieldWidget() {
+    public EditBox getTextFieldWidget() {
         return textFieldWidget;
     }
 

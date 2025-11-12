@@ -1,16 +1,16 @@
 package dev.imb11.skinshuffle.client.skin;
 
+import com.mojang.blaze3d.platform.NativeImage;
 import dev.imb11.skinshuffle.SkinShuffle;
 import dev.imb11.skinshuffle.util.SkinTextureSafetyUtil;
-import net.minecraft.client.texture.AbstractTexture;
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.NativeImageBackedTexture;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import net.minecraft.client.renderer.texture.AbstractTexture;
+import net.minecraft.client.renderer.texture.DynamicTexture;
 
 public abstract class FileBackedSkin extends BackedSkin {
     @Nullable
@@ -43,7 +43,7 @@ public abstract class FileBackedSkin extends BackedSkin {
             //? if <1.21.5 {
             /*var texture = new NativeImageBackedTexture(image);
              *///?} else {
-            var texture = new NativeImageBackedTexture(() -> String.valueOf(Math.abs(getTextureUniqueness().hashCode())), image);
+            var texture = new DynamicTexture(() -> String.valueOf(Math.abs(getTextureUniqueness().hashCode())), image);
             //?}
 
             completionCallback.run();

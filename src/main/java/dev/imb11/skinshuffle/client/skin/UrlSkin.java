@@ -7,8 +7,8 @@ import dev.imb11.skinshuffle.SkinShuffle;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import kong.unirest.Unirest;
-import net.minecraft.client.texture.AbstractTexture;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.renderer.texture.AbstractTexture;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStream;
@@ -22,7 +22,7 @@ import java.util.Optional;
 public class UrlSkin extends FileBackedSkin {
     public static final Int2ObjectMap<String> MODEL_CACHE = new Int2ObjectOpenHashMap<>();
 
-    public static final Identifier SERIALIZATION_ID = SkinShuffle.id("url");
+    public static final ResourceLocation SERIALIZATION_ID = SkinShuffle.id("url");
 
     public static final MapCodec<UrlSkin> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.STRING.fieldOf("url").forGetter(skin -> skin.url),
@@ -61,7 +61,7 @@ public class UrlSkin extends FileBackedSkin {
     }
 
     @Override
-    public Identifier getSerializationId() {
+    public ResourceLocation getSerializationId() {
         return SERIALIZATION_ID;
     }
 

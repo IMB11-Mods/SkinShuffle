@@ -4,34 +4,34 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.imb11.skinshuffle.SkinShuffle;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.texture.ResourceTexture;
-import net.minecraft.util.AssetInfo;
-import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.Objects;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.SimpleTexture;
+import net.minecraft.core.ClientAsset;
+import net.minecraft.resources.ResourceLocation;
 
 public final class ResourceSkin implements Skin {
-    public static final Identifier SERIALIZATION_ID = SkinShuffle.id("resource");
+    public static final ResourceLocation SERIALIZATION_ID = SkinShuffle.id("resource");
 
     public static final MapCodec<ResourceSkin> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            Identifier.CODEC.fieldOf("texture").forGetter(ResourceSkin::getTexture),
+            ResourceLocation.CODEC.fieldOf("texture").forGetter(ResourceSkin::getTexture),
             Codec.STRING.fieldOf("model").forGetter(ResourceSkin::getModel)
     ).apply(instance, ResourceSkin::new));
-    private final AssetInfo.TextureAsset texture;
+    private final ClientAsset.Texture texture;
     private String model;
 
-    public ResourceSkin(Identifier texture, String model) {
-        this.texture = new AssetInfo.TextureAsset() {
+    public ResourceSkin(ResourceLocation texture, String model) {
+        this.texture = new ClientAsset.Texture() {
             @Override
-            public Identifier texturePath() {
+            public ResourceLocation texturePath() {
                 return texture;
             }
 
             @Override
-            public Identifier id() {
+            public ResourceLocation id() {
                 return texture;
             }
         };
@@ -39,12 +39,12 @@ public final class ResourceSkin implements Skin {
     }
 
     @Override
-    public AssetInfo.@Nullable TextureAsset getTextureAsset() {
+    public ClientAsset.@Nullable Texture getTextureAsset() {
         return texture;
     }
 
     @Override
-    public Identifier getTexture() {
+    public ResourceLocation getTexture() {
         return texture.texturePath();
     }
 
@@ -64,7 +64,7 @@ public final class ResourceSkin implements Skin {
     }
 
     @Override
-    public Identifier getSerializationId() {
+    public ResourceLocation getSerializationId() {
         return SERIALIZATION_ID;
     }
 
@@ -74,7 +74,7 @@ public final class ResourceSkin implements Skin {
         var configSkin = new ConfigSkin(textureName, getModel());
 
 
-        var resourceManager = MinecraftClient.getInstance().getResourceManager();
+        var resourceManager = Minecraft.getInstance().getResourceManager();
         //? if <1.21.4 {
         /*try (ResourceTexture.TextureData data = ResourceTexture.TextureData.load(resourceManager, getTexture())) {
             var nativeImage = data.getImage();
@@ -83,10 +83,10 @@ public final class ResourceSkin implements Skin {
             throw new RuntimeException("Failed to save ResourceSkin to config.", e);
         }
         *///?} else {
-        try (var resource = new ResourceTexture(getTexture())) {
+        try (var resource = new SimpleTexture(getTexture())) {
             var resourceTex = resource.loadContents(resourceManager);
             var image = resourceTex.image();
-            image.writeTo(configSkin.getFile());
+            image.writeToFile(configSkin.getFile());
         } catch (IOException e) {
             throw new RuntimeException("Failed to save ResourceSkin to config.", e);
         }

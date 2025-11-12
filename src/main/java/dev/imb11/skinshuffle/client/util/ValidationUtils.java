@@ -1,13 +1,13 @@
 package dev.imb11.skinshuffle.client.util;
 
-import net.minecraft.util.Identifier;
-import net.minecraft.util.PngMetadata;
 import org.apache.commons.validator.routines.UrlValidator;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.PngInfo;
 
 /**
  * Utility class for validation methods used in form inputs.
@@ -47,7 +47,7 @@ public class ValidationUtils {
 
             // Validate the png file's metadata.
             try {
-                PngMetadata metadata = PngMetadata.fromStream(Files.newInputStream(path));
+                PngInfo metadata = PngInfo.fromStream(Files.newInputStream(path));
 
                 // Width must be 64x64 or 64x32, and must be a png file.
                 int width = metadata.width(), height = metadata.height();
@@ -89,9 +89,9 @@ public class ValidationUtils {
     /**
      * Validates if a string is a valid resource identifier and exists in the resource manager.
      */
-    public static boolean isValidResourceLocation(String location, net.minecraft.client.MinecraftClient client) {
-        if (Identifier.validate(location).isSuccess()) {
-            return client.getResourceManager().getResource(Identifier.tryParse(location)).isPresent();
+    public static boolean isValidResourceLocation(String location, net.minecraft.client.Minecraft client) {
+        if (ResourceLocation.read(location).isSuccess()) {
+            return client.getResourceManager().getResource(ResourceLocation.tryParse(location)).isPresent();
         }
         return false;
     }

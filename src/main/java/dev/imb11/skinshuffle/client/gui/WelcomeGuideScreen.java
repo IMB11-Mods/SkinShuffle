@@ -6,12 +6,11 @@ import dev.lambdaurora.spruceui.render.SpruceGuiGraphics;
 import dev.lambdaurora.spruceui.screen.SpruceScreen;
 import dev.lambdaurora.spruceui.widget.SpruceButtonWidget;
 import dev.lambdaurora.spruceui.widget.container.SpruceContainerWidget;
-import net.minecraft.client.gui.navigation.NavigationDirection;
-import net.minecraft.client.gui.screen.ConfirmLinkScreen;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.screen.ScreenTexts;
-import net.minecraft.text.OrderedText;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.screens.ConfirmLinkScreen;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.FormattedCharSequence;
 import org.jetbrains.annotations.NotNull;
 
 public class WelcomeGuideScreen extends SpruceScreen {
@@ -19,7 +18,7 @@ public class WelcomeGuideScreen extends SpruceScreen {
     private ScrollableTextContainer textContainer;
 
     public WelcomeGuideScreen(Screen parent) {
-        super(Text.translatable("skinshuffle.welcome.title"));
+        super(Component.translatable("skinshuffle.welcome.title"));
         this.parent = parent;
     }
 
@@ -34,23 +33,23 @@ public class WelcomeGuideScreen extends SpruceScreen {
                 this.width,
                 containerHeight
         );
-        this.addDrawableChild(textContainer);
+        this.addRenderableWidget(textContainer);
 
         // Add Continue and More Info buttons
-        this.addDrawableChild(new SpruceButtonWidget(
+        this.addRenderableWidget(new SpruceButtonWidget(
                 Position.of(this.width / 2 - 128 - 5, this.height - 23),
                 128, 20,
-                ScreenTexts.CONTINUE,
-                button -> this.client.setScreen(parent)
+                CommonComponents.GUI_CONTINUE,
+                button -> this.minecraft.setScreen(parent)
         ));
 
-        this.addDrawableChild(new SpruceButtonWidget(
+        this.addRenderableWidget(new SpruceButtonWidget(
                 Position.of(this.width / 2 + 5, this.height - 23),
                 128, 20,
-                Text.translatable("skinshuffle.welcome.more_info"),
-                button -> this.client.setScreen(
+                Component.translatable("skinshuffle.welcome.more_info"),
+                button -> this.minecraft.setScreen(
                         new ConfirmLinkScreen(
-                                ignored -> close(),
+                                ignored -> onClose(),
                                 "https://youtu.be/CNMASU7GQBs",
                                 true
                         )
@@ -62,10 +61,10 @@ public class WelcomeGuideScreen extends SpruceScreen {
     public void render(@NotNull SpruceGuiGraphics graphics, int mouseX, int mouseY, float delta) {
         super.render(graphics, mouseX, mouseY, delta);
 
-        graphics.vanilla().drawTextWithShadow(
-                this.client.textRenderer,
+        graphics.vanilla().drawString(
+                this.minecraft.font,
                 this.title,
-                this.width / 2 - this.client.textRenderer.getWidth(this.title) / 2,
+                this.width / 2 - this.minecraft.font.width(this.title) / 2,
                 10,
                 0xFFFFFFFF
         );
@@ -77,38 +76,38 @@ public class WelcomeGuideScreen extends SpruceScreen {
     }
 
     @Override
-    public void close() {
-        this.client.setScreen(parent);
+    public void onClose() {
+        this.minecraft.setScreen(parent);
     }
 
     private static class ScrollableTextContainer extends SpruceContainerWidget {
-        private final Text[] lines;
+        private final Component[] lines;
         private double scrollOffset = 0;
         private double maxScrollOffset = 0;
 
         public ScrollableTextContainer(Position position, int width, int height) {
             super(position, width, height);
 
-            this.lines = new Text[]{
-                    Text.translatable("screen.skinshuffle.thankyou"),
-                    Text.translatable("screen.skinshuffle.read_info"),
-                    Text.translatable("screen.skinshuffle.blank"),
-                    Text.translatable("screen.skinshuffle.carousel_heading"),
-                    Text.translatable("screen.skinshuffle.carousel_desc1"),
-                    Text.translatable("screen.skinshuffle.carousel_desc2"),
-                    Text.translatable("screen.skinshuffle.carousel_desc3"),
-                    Text.translatable("screen.skinshuffle.carousel_desc4"),
-                    Text.translatable("screen.skinshuffle.blank"),
-                    Text.translatable("screen.skinshuffle.preset_edit_heading"),
-                    Text.translatable("screen.skinshuffle.preset_edit_desc1"),
-                    Text.translatable("screen.skinshuffle.preset_edit_desc2"),
-                    Text.translatable("screen.skinshuffle.blank"),
-                    Text.translatable("screen.skinshuffle.config_heading"),
-                    Text.translatable("screen.skinshuffle.config_desc"),
-                    Text.translatable("screen.skinshuffle.blank"),
-                    Text.translatable("screen.skinshuffle.hotswapping_heading"),
-                    Text.translatable("screen.skinshuffle.hotswapping_desc1"),
-                    Text.translatable("screen.skinshuffle.hotswapping_desc2")
+            this.lines = new Component[]{
+                    Component.translatable("screen.skinshuffle.thankyou"),
+                    Component.translatable("screen.skinshuffle.read_info"),
+                    Component.translatable("screen.skinshuffle.blank"),
+                    Component.translatable("screen.skinshuffle.carousel_heading"),
+                    Component.translatable("screen.skinshuffle.carousel_desc1"),
+                    Component.translatable("screen.skinshuffle.carousel_desc2"),
+                    Component.translatable("screen.skinshuffle.carousel_desc3"),
+                    Component.translatable("screen.skinshuffle.carousel_desc4"),
+                    Component.translatable("screen.skinshuffle.blank"),
+                    Component.translatable("screen.skinshuffle.preset_edit_heading"),
+                    Component.translatable("screen.skinshuffle.preset_edit_desc1"),
+                    Component.translatable("screen.skinshuffle.preset_edit_desc2"),
+                    Component.translatable("screen.skinshuffle.blank"),
+                    Component.translatable("screen.skinshuffle.config_heading"),
+                    Component.translatable("screen.skinshuffle.config_desc"),
+                    Component.translatable("screen.skinshuffle.blank"),
+                    Component.translatable("screen.skinshuffle.hotswapping_heading"),
+                    Component.translatable("screen.skinshuffle.hotswapping_desc1"),
+                    Component.translatable("screen.skinshuffle.hotswapping_desc2")
             };
         }
 
@@ -129,18 +128,18 @@ public class WelcomeGuideScreen extends SpruceScreen {
                     this.getY() + this.height
             );
 
-            int lineHeight = this.client.textRenderer.fontHeight + 5;
+            int lineHeight = this.client.font.lineHeight + 5;
             int currentY = this.getY() + 5 - (int) scrollOffset;
             int wrapWidth = this.width - 20;
             int totalContentHeight = 0;
 
             // First pass: measure the total height of wrapped lines
-            for (Text line : lines) {
+            for (Component line : lines) {
                 // Directly use the Text object
                 if (line.getString().isEmpty()) {
                     totalContentHeight += lineHeight;
                 } else {
-                    var wrappedLines = this.client.textRenderer.wrapLines(line, wrapWidth);
+                    var wrappedLines = this.client.font.split(line, wrapWidth);
                     totalContentHeight += wrappedLines.size() * lineHeight;
                 }
             }
@@ -148,16 +147,16 @@ public class WelcomeGuideScreen extends SpruceScreen {
             maxScrollOffset = Math.max(0, totalContentHeight - this.height + 10);
 
             // Second pass: render wrapped text
-            for (Text line : lines) {
+            for (Component line : lines) {
                 if (line.getString().isEmpty()) {
                     currentY += lineHeight;
                     continue;
                 }
                 // Wrap the Text object, then draw each wrapped line
-                var wrappedLines = this.client.textRenderer.wrapLines(line, wrapWidth);
-                for (OrderedText wrappedLine : wrappedLines) {
-                    context.vanilla().drawTextWithShadow(
-                            this.client.textRenderer,
+                var wrappedLines = this.client.font.split(line, wrapWidth);
+                for (FormattedCharSequence wrappedLine : wrappedLines) {
+                    context.vanilla().drawString(
+                            this.client.font,
                             wrappedLine,
                             this.getX() + 10,
                             currentY,

@@ -1,9 +1,9 @@
 package dev.imb11.skinshuffle.compat;
 
 import dev.imb11.skinshuffle.compat.api.CompatHandler;
-import net.minecraft.entity.player.SkinTextures;
-import net.minecraft.util.AssetInfo;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.ClientAsset;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.PlayerSkin;
 import net.minecraftcapes.config.MinecraftCapesConfig;
 import net.minecraftcapes.player.PlayerHandler;
 
@@ -12,39 +12,39 @@ import java.util.UUID;
 public class MinecraftCapesCompat implements CompatHandler {
     public static boolean IS_INSTALLED = false;
 
-    public static SkinTextures loadTextures(UUID uuid, SkinTextures textures) {
+    public static PlayerSkin loadTextures(UUID uuid, PlayerSkin textures) {
         PlayerHandler playerHandler = PlayerHandler.get(uuid);
 
-        AssetInfo.TextureAsset capeTexture = textures.cape();
-        AssetInfo.TextureAsset elytraTexture = textures.elytra();
+        ClientAsset.Texture capeTexture = textures.cape();
+        ClientAsset.Texture elytraTexture = textures.elytra();
 
         if (MinecraftCapesConfig.isCapeVisible() && playerHandler.getCapeLocation() != null) {
-            SkinTextures finalTextures = textures;
-            capeTexture = new AssetInfo.TextureAsset() {
+            PlayerSkin finalTextures = textures;
+            capeTexture = new ClientAsset.Texture() {
                 @Override
-                public Identifier texturePath() {
+                public ResourceLocation texturePath() {
                     return playerHandler.getCapeLocation();
                 }
 
                 @Override
-                public Identifier id() {
+                public ResourceLocation id() {
                     return finalTextures.cape().id();
                 }
             };
-            elytraTexture = new AssetInfo.TextureAsset() {
+            elytraTexture = new ClientAsset.Texture() {
                 @Override
-                public Identifier texturePath() {
+                public ResourceLocation texturePath() {
                     return finalTextures.elytra().texturePath();
                 }
 
                 @Override
-                public Identifier id() {
+                public ResourceLocation id() {
                     return finalTextures.elytra().id();
                 }
             };
         }
 
-        textures = new SkinTextures(
+        textures = new PlayerSkin(
                 textures.body(),
                 capeTexture,
                 elytraTexture,

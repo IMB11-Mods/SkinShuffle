@@ -63,7 +63,7 @@ public class LargePresetWidget extends PresetWidget<LargeCarouselScreen> {
         int centerX = getX() + getWidth() / 2;
         int x1 = centerX - previewWidth / 2;
         int x2 = centerX + previewWidth / 2;
-        int y1 = getY() + margin + this.client.textRenderer.fontHeight + 5; // Below the title
+        int y1 = getY() + margin + this.client.font.lineHeight + 5; // Below the title
         int y2 = y1 + previewHeight;
 
         return new int[]{x1, y1, x2, y2};

@@ -3,16 +3,15 @@ package dev.imb11.skinshuffle.client.gui.widgets.buttons;
 import dev.lambdaurora.spruceui.Position;
 import dev.lambdaurora.spruceui.render.SpruceGuiGraphics;
 import dev.lambdaurora.spruceui.widget.SpruceIconButtonWidget;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-
 import java.util.function.Function;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 
 public class SkinShuffleIconButton extends SpruceIconButtonWidget {
-    private final Function<SkinShuffleIconButton, Identifier> iconTexture;
+    private final Function<SkinShuffleIconButton, ResourceLocation> iconTexture;
 
-    public SkinShuffleIconButton(Position position, int width, int height, Text message, PressAction action, Function<SkinShuffleIconButton, Identifier> iconTexture) {
+    public SkinShuffleIconButton(Position position, int width, int height, Component message, PressAction action, Function<SkinShuffleIconButton, ResourceLocation> iconTexture) {
         super(position, width, height, message, action);
         this.iconTexture = iconTexture;
         this.setTooltip(message);

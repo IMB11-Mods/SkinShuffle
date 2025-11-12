@@ -1,6 +1,6 @@
 package dev.imb11.skinshuffle.util;
 
-import net.minecraft.client.texture.NativeImage;
+import com.mojang.blaze3d.platform.NativeImage;
 
 public class SkinTextureSafetyUtil {
     /**
@@ -12,7 +12,7 @@ public class SkinTextureSafetyUtil {
     public static NativeImage processTexture(NativeImage image) throws IllegalStateException {
 //        if (FabricLoader.getInstance().isModLoaded("entity_texture_features")) {
         //? if >1.21.3 {
-        return net.minecraft.client.texture.PlayerSkinTextureDownloader.remapTexture(image, null);
+        return net.minecraft.client.renderer.texture.SkinTextureDownloader.processLegacySkin(image, null);
         //?} else {
             /*try (net.minecraft.client.texture.PlayerSkinTexture tex = new net.minecraft.client.texture.PlayerSkinTexture(null, null, null, false, null)) {
                 return tex.remapTexture(image);
@@ -53,7 +53,7 @@ public class SkinTextureSafetyUtil {
 
             for (int i2 = 0; i2 < 32; ++i2) {
                 for (int j2 = 0; j2 < 16; ++j2) {
-                    image.setColor(i2, j2, image.getColor(i2, j2) | -16777216);
+                    image.setPixelABGR(i2, j2, image.getPixelABGR(i2, j2) | -16777216);
                 }
             }
             if (isImageHeight32) {
@@ -62,7 +62,7 @@ public class SkinTextureSafetyUtil {
                 int j;
                 for (i = 32; i < 64; ++i) {
                     for (j = 0; j < 32; ++j) {
-                        int k = image.getColor(i, j);
+                        int k = image.getPixelABGR(i, j);
                         if ((k >> 24 & 255) < 128) {
                             finished = true;
                             break;
@@ -73,7 +73,7 @@ public class SkinTextureSafetyUtil {
                 if (!finished) {
                     for (i = 32; i < 64; ++i) {
                         for (j = 0; j < 32; ++j) {
-                            image.setColor(i, j, image.getColor(i, j) & 16777215);
+                            image.setPixelABGR(i, j, image.getPixelABGR(i, j) & 16777215);
                         }
                     }
                 }
@@ -81,12 +81,12 @@ public class SkinTextureSafetyUtil {
 
             for (int i1 = 0; i1 < 64; ++i1) {
                 for (int j1 = 16; j1 < 32; ++j1) {
-                    image.setColor(i1, j1, image.getColor(i1, j1) | -16777216);
+                    image.setPixelABGR(i1, j1, image.getPixelABGR(i1, j1) | -16777216);
                 }
             }
             for (int i = 16; i < 48; ++i) {
                 for (int j = 48; j < 64; ++j) {
-                    image.setColor(i, j, image.getColor(i, j) | -16777216);
+                    image.setPixelABGR(i, j, image.getPixelABGR(i, j) | -16777216);
                 }
             }
         }

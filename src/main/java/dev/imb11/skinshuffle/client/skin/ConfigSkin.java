@@ -5,13 +5,12 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.imb11.skinshuffle.SkinShuffle;
 import dev.imb11.skinshuffle.client.config.SkinPresetManager;
-import net.minecraft.util.Identifier;
-
 import java.nio.file.Path;
 import java.util.Objects;
+import net.minecraft.resources.ResourceLocation;
 
 public class ConfigSkin extends FileBackedSkin {
-    public static final Identifier SERIALIZATION_ID = SkinShuffle.id("config");
+    public static final ResourceLocation SERIALIZATION_ID = SkinShuffle.id("config");
 
     public static final MapCodec<ConfigSkin> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.STRING.fieldOf("skin_name").forGetter(skin -> skin.skinName),
@@ -37,7 +36,7 @@ public class ConfigSkin extends FileBackedSkin {
     }
 
     @Override
-    public Identifier getSerializationId() {
+    public ResourceLocation getSerializationId() {
         return SERIALIZATION_ID;
     }
 

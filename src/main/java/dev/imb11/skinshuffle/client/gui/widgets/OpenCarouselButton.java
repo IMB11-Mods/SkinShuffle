@@ -5,27 +5,27 @@ import dev.imb11.skinshuffle.client.config.SkinShuffleConfig;
 import dev.imb11.skinshuffle.client.gui.GeneratedScreens;
 import dev.imb11.skinshuffle.client.gui.renderer.SkinPreviewRenderer;
 import dev.imb11.skinshuffle.client.preset.SkinPreset;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.network.chat.Component;
 
-public class OpenCarouselButton extends ButtonWidget {
+public class OpenCarouselButton extends Button {
     private final SkinPreset selectedPreset;
     private final SkinPreviewRenderer renderer;
 
     public OpenCarouselButton(int x, int y, int width, int height) {
-        super(x, y, width, height, Text.translatable("skinshuffle.button"), (btn) -> {
-            var client = MinecraftClient.getInstance();
-            client.setScreen(GeneratedScreens.getCarouselScreen(client.currentScreen));
-        }, textSupplier -> Text.empty());
+        super(x, y, width, height, Component.translatable("skinshuffle.button"), (btn) -> {
+            var client = Minecraft.getInstance();
+            client.setScreen(GeneratedScreens.getCarouselScreen(client.screen));
+        }, textSupplier -> Component.empty());
 
         this.selectedPreset = SkinPresetManager.getChosenPreset();
-        this.renderer = new SkinPreviewRenderer(MinecraftClient.getInstance());
+        this.renderer = new SkinPreviewRenderer(Minecraft.getInstance());
     }
 
     @Override
-    public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void renderWidget(GuiGraphics context, int mouseX, int mouseY, float delta) {
         super.renderWidget(context, mouseX, mouseY, delta);
 
         if (selectedPreset != null) {

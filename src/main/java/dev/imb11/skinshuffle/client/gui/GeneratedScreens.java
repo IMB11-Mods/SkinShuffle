@@ -7,33 +7,32 @@ import dev.imb11.skinshuffle.mixin.accessor.GameMenuScreenAccessor;
 import dev.imb11.skinshuffle.networking.ClientSkinHandling;
 import dev.imb11.skinshuffle.util.NetworkingUtil;
 import dev.imb11.skinshuffle.util.ToastHelper;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ConfirmScreen;
-import net.minecraft.client.gui.screen.GameMenuScreen;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.resource.language.I18n;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-
 import java.util.ArrayList;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.screens.ConfirmScreen;
+import net.minecraft.client.gui.screens.PauseScreen;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.Component;
 
 public class GeneratedScreens {
     public static Screen getConfigScreen(Screen parent) {
         return SkinShuffleConfig.getInstance().generateScreen(parent);
     }
 
-    public static ArrayList<ClickableWidget> createCarouselWidgets(Screen screen) {
-        ArrayList<ClickableWidget> widgets = new ArrayList<>();
+    public static ArrayList<AbstractWidget> createCarouselWidgets(Screen screen) {
+        ArrayList<AbstractWidget> widgets = new ArrayList<>();
         int y = (screen.height / 4 + 48) + 84;
         int x = screen.width / 2 + 104 + 25;
 
-        if (screen instanceof GameMenuScreen gameMenuScreen) {
-            if (!gameMenuScreen.shouldShowMenu())
+        if (screen instanceof PauseScreen gameMenuScreen) {
+            if (!gameMenuScreen.showsPauseMenu())
                 return new ArrayList<>();
 
             if (!SkinShuffleConfig.get().displayInPauseMenu) return widgets;
-            y = ((GameMenuScreenAccessor) gameMenuScreen).getExitButton().getY();
+            y = ((GameMenuScreenAccessor) gameMenuScreen).getDisconnectButton().getY();
             x -= 25 / 2;
 
             widgets.add(new WarningIndicatorButton(x + 72, y, gameMenuScreen));
@@ -45,7 +44,7 @@ public class GeneratedScreens {
     }
 
     public static Screen getReconnectScreen(Screen target) {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         return new ConfirmScreen((boolean result) -> {
             if (result) {
                 NetworkingUtil.handleReconnect(client);
@@ -57,12 +56,12 @@ public class GeneratedScreens {
 
                 client.setScreen(target);
             }
-        }, Text.translatable("skinshuffle.reconnect.title",
-                client.isInSingleplayer() ? I18n.translate("skinshuffle.reconnect.c_rejoin") : I18n.translate("skinshuffle.reconnect.c_reconnect")).formatted(Formatting.RED, Formatting.BOLD),
-                Text.translatable("skinshuffle.reconnect.message",
-                        client.isInSingleplayer() ? I18n.translate("skinshuffle.reconnect.rejoin") : I18n.translate("skinshuffle.reconnect.reconnect_to"),
-                        client.isInSingleplayer() ? I18n.translate("skinshuffle.reconnect.world") : I18n.translate("skinshuffle.reconnect.server"),
-                        client.isInSingleplayer() ? I18n.translate("skinshuffle.reconnect.rejoin") : I18n.translate("skinshuffle.reconnect.reconnect")));
+        }, Component.translatable("skinshuffle.reconnect.title",
+                client.isLocalServer() ? I18n.get("skinshuffle.reconnect.c_rejoin") : I18n.get("skinshuffle.reconnect.c_reconnect")).withStyle(ChatFormatting.RED, ChatFormatting.BOLD),
+                Component.translatable("skinshuffle.reconnect.message",
+                        client.isLocalServer() ? I18n.get("skinshuffle.reconnect.rejoin") : I18n.get("skinshuffle.reconnect.reconnect_to"),
+                        client.isLocalServer() ? I18n.get("skinshuffle.reconnect.world") : I18n.get("skinshuffle.reconnect.server"),
+                        client.isLocalServer() ? I18n.get("skinshuffle.reconnect.rejoin") : I18n.get("skinshuffle.reconnect.reconnect")));
     }
 
     public static Screen getCarouselScreen(Screen parent) {
