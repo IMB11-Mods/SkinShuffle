@@ -22,7 +22,7 @@ public class KeybindManager {
 
     private static final int MAX_KEYBIND_COUNT = 9;
     private static final String TRANSLATION_KEY_PREFIX = "key.skinshuffle.preset_";
-    private static final KeyMapping.Category KEYBIND_CATEGORY = new KeyMapping.Category(ResourceLocation.fromNamespaceAndPath("skinshuffle", "presets"));
+    private static final KeyMapping.Category KEYBIND_CATEGORY = KeyMapping.Category.register(ResourceLocation.fromNamespaceAndPath("skinshuffle", "presets"));
 
     private static KeyMapping[] presetKeybindings;
 
