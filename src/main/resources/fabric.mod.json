@@ -8,8 +8,12 @@
     "IMB11 (mineblock11)",
     "enjarai"
   ],
+  "contributors": [
+    "cassiancc"
+  ],
   "contact": {
-    "repo": "https://github.com/IMB11/skinshuffle"
+    "repo": "https://github.com/IMB11-Mods/SkinShuffle",
+    "issues": "https://github.com/IMB11-Mods/SkinShuffle/issues"
   },
   "license": "MIT",
   "icon": "assets/skinshuffle/icon.png",
@@ -30,9 +34,9 @@
     "SkinShuffle.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=${loader_version}",
+    "fabricloader": ">=${target_fabricloader}",
     "fabric-api": "*",
-    "yet_another_config_lib_v3": ">=${target_yacl}",
+    "yet_another_config_lib_v3": "${target_yacl}",
     "minecraft": "${target_minecraft}"
   },
   "suggests": {
