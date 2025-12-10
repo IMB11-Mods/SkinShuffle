@@ -36,6 +36,7 @@ public class WarningIndicatorButton extends IconButtonWidget {
 
     @Override
     public void renderContents(GuiGraphics context, int mouseX, int mouseY, float delta) {
+        this.renderDefaultSprite(context);
         context.blit(
                 RenderPipelines.GUI_TEXTURED,
                 this.iconTexture,
