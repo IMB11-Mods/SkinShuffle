@@ -13,9 +13,9 @@ tasks.named<ProcessResources>("processResources") {
         this["mod_version"] = prop("mod.version")
         this["minecraft_version"] = prop("deps.minecraft")
         this["target_minecraft"] = prop("mod.target")
-        this["mod_id"] = "sounds"
-        this["mod_name"] = "Sounds"
-        this["mod_description"] = "A highly configurable sound overhaul mod that adds new sound effects while improving vanilla sounds too."
+        this["mod_id"] = "skinshuffle"
+        this["mod_name"] = "Skin Shuffle"
+        this["mod_description"] = "Choose and change your skin in-game!"
         this["mod_license"] = "ARR"
         this["target_yacl"] = "*"
         this["target_fabricloader"] = "0.17.2"
@@ -105,7 +105,7 @@ dependencies {
 
     modImplementation("dev.lambdaurora:spruceui:${property("deps.spruceui")}")
     include("dev.lambdaurora:spruceui:${property("deps.spruceui")}")
-    include("dev.yumi.mc.core:yumi-mc-foundation:1.0.0-alpha.16+1.21.1")
+    include("dev.yumi.mc.core:yumi-mc-foundation:1.0.0-beta.1+1.21.11")
 
     implementation("org.jsoup:jsoup:1.16.1")
     include("org.jsoup:jsoup:1.16.1")
