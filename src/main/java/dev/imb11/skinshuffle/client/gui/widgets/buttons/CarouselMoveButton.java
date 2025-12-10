@@ -7,11 +7,11 @@ import dev.lambdaurora.spruceui.widget.AbstractSpruceWidget;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 public class CarouselMoveButton extends AbstractSpruceWidget {
-    private static final ResourceLocation ARROW_TEXTURES = SkinShuffle.id("textures/gui/carousel_arrows.png");
+    private static final Identifier ARROW_TEXTURES = SkinShuffle.id("textures/gui/carousel_arrows.png");
     private final Type type;
     private @Nullable Runnable action;
 

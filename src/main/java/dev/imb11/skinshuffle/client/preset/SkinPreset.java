@@ -9,7 +9,7 @@ import dev.imb11.skinshuffle.client.skin.UrlSkin;
 import dev.imb11.skinshuffle.util.NetworkingUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.User;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.PlayerSkin;
 
 public class SkinPreset {
@@ -44,7 +44,7 @@ public class SkinPreset {
         String name = session.getName();
 
         if (!NetworkingUtil.isLoggedIn()) {
-            Skin skin = new ResourceSkin(ResourceLocation.parse("minecraft:textures/entity/player/wide/steve.png"), "default");
+            Skin skin = new ResourceSkin(Identifier.parse("minecraft:textures/entity/player/wide/steve.png"), "default");
             return new SkinPreset(skin, name, -1);
         } else {
             var skinQueryResult = MojangSkinAPI.getPlayerSkinTexture(String.valueOf(client.getGameProfile().id()));
@@ -53,7 +53,7 @@ public class SkinPreset {
                 var provider = client.getSkinManager();
 
                 if (provider == null) {
-                    return new SkinPreset(new ResourceSkin(ResourceLocation.parse("minecraft:textures/entity/player/wide/steve.png"), "default"));
+                    return new SkinPreset(new ResourceSkin(Identifier.parse("minecraft:textures/entity/player/wide/steve.png"), "default"));
                 }
 
                 PlayerSkin skinTexture = provider.createLookup(client.getGameProfile(), false).get();

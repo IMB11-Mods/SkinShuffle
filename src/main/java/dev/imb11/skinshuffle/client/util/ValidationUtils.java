@@ -6,7 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.PngInfo;
 
 /**
@@ -89,9 +89,9 @@ public class ValidationUtils {
     /**
      * Validates if a string is a valid resource identifier and exists in the resource manager.
      */
-    public static boolean isValidResourceLocation(String location, net.minecraft.client.Minecraft client) {
-        if (ResourceLocation.read(location).isSuccess()) {
-            return client.getResourceManager().getResource(ResourceLocation.tryParse(location)).isPresent();
+    public static boolean isValidIdentifier(String location, net.minecraft.client.Minecraft client) {
+        if (Identifier.read(location).isSuccess()) {
+            return client.getResourceManager().getResource(Identifier.tryParse(location)).isPresent();
         }
         return false;
     }

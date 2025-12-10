@@ -5,8 +5,8 @@ import dev.imb11.skinshuffle.client.skin.*;
 import java.nio.file.Path;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import net.minecraft.Util;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Util;
+import net.minecraft.resources.Identifier;
 
 /**
  * Utility class for loading skins from various sources.
@@ -59,7 +59,7 @@ public class SkinLoader {
             case FILE -> new FileSkin(Path.of(source), model);
             case UUID -> new UUIDSkin(UUID.fromString(source), model);
             case USERNAME -> new UsernameSkin(source, model);
-            case RESOURCE_LOCATION -> new ResourceSkin(ResourceLocation.tryParse(source), model);
+            case RESOURCE_LOCATION -> new ResourceSkin(Identifier.tryParse(source), model);
             default -> Skin.randomDefaultSkin();
         };
     }

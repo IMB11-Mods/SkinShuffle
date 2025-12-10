@@ -22,7 +22,7 @@ public abstract class EntityGuiRendererMixin {
         }
     }
 
-    @Inject(method = "submit", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/SubmitNodeCollector;submitHitbox(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/entity/state/EntityRenderState;Lnet/minecraft/client/renderer/entity/state/HitboxesRenderState;)V"))
+    @Inject(method = "submit", at = @At(value = "RETURN"))
     public void afterRenderDispatcher(EntityRenderState renderState, CameraRenderState cameraRenderState, double d, double e, double f, PoseStack matrixStack, SubmitNodeCollector orderedRenderCommandQueue, CallbackInfo ci) {
         MixinStatics.RENDERING_STATE = null;
     }

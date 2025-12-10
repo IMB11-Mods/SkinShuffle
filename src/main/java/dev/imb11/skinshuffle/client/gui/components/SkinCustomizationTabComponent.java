@@ -4,6 +4,7 @@ import dev.imb11.skinshuffle.client.config.SkinPresetManager;
 import dev.imb11.skinshuffle.client.preset.SkinPreset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.IntStream;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.CycleButton;
@@ -70,22 +71,9 @@ public class SkinCustomizationTabComponent extends TabComponent {
         if (currentIndex < 0) currentIndex = 0; // Fallback to "None" if not found
 
         // Create the cycling button
-        var keybindIdButton = new CycleButton<>(
-                0, 0, 256, 20,
-                Component.translatable("skinshuffle.edit.customize.keybind_id_prefix").append(": ")
-                        .append(formatKeybindIdText(preset.getKeybindId())),
-                Component.translatable("skinshuffle.edit.customize.keybind_id_prefix"),
-                currentIndex,
-                preset.getKeybindId(),
-                CycleButton.ValueListSupplier.create(availableKeybindIds),
-                this::formatKeybindIdText,
-                keybindIdCyclingButtonWidget -> Component.literal("").copy(),
-                (button, value) -> {
-                    preset.setKeybindId(value);
-                },
-                value -> null,
-                false
-        );
+        var keybindIdButton = CycleButton.builder(this::formatKeybindIdText, (Supplier<Integer>) ()->-1).create(0, 0, 256, 256, Component.translatable("skinshuffle.edit.customize.keybind_id_prefix"), (button, value) -> {  // on value change
+            preset.setKeybindId(value);
+        });
         gridAdder.addChild(keybindIdButton);
     }
 

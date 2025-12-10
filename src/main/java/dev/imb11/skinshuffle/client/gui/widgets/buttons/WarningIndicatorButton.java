@@ -35,9 +35,7 @@ public class WarningIndicatorButton extends IconButtonWidget {
     }
 
     @Override
-    public void renderWidget(GuiGraphics context, int mouseX, int mouseY, float delta) {
-        super.renderWidget(context, mouseX, mouseY, delta);
-
+    public void renderContents(GuiGraphics context, int mouseX, int mouseY, float delta) {
         context.blit(
                 RenderPipelines.GUI_TEXTURED,
                 this.iconTexture,

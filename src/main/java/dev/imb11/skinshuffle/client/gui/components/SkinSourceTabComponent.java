@@ -81,31 +81,20 @@ public class SkinSourceTabComponent extends TabComponent {
         );
 
         // Create skin model selection button
-        this.skinModelButton = new CycleButton.Builder<String>(Component::nullToEmpty)
+        this.skinModelButton = new CycleButton.Builder<>(Component::nullToEmpty, () ->preset.getSkin().getModel())
                 .withValues("classic", "slim")
                 .create(0, 0, 192, 20, Component.translatable("skinshuffle.edit.source.skin_model"), (widget, val) -> {
                     preset.getSkin().setModel(val);
                 });
 
         // Create source type selection button
-        gridAdder.addChild(new CycleButton<>(
-                0, 0, 192, 20,
-                Component.translatable("skinshuffle.edit.source.cycle_prefix").append(": ")
-                        .append(Component.translatable(currentSourceType.getTranslationKey())),
-                Component.translatable("skinshuffle.edit.source.cycle_prefix"),
-                Arrays.stream(SkinLoader.SourceType.values()).toList().indexOf(this.currentSourceType),
-                currentSourceType,
-                CycleButton.ValueListSupplier.create(List.of(SkinLoader.SourceType.values())),
-                sourceType -> Component.translatable(sourceType.getTranslationKey()),
-                sourceTypeCyclingButtonWidget -> Component.literal("").copy(),
-                (button, value) -> {
+        gridAdder.addChild(
+                CycleButton.builder((object)-> Component.translatable(object.getTranslationKey()), currentSourceType).withValues(Arrays.stream(SkinLoader.SourceType.values()).toList()).create(0, 0, 192, 20, Component.translatable("skinshuffle.edit.customize.keybind_id_prefix"), (button, value) -> {  // on value change
                     this.currentSourceType = value;
                     this.errorLabel.setMessage(Component.empty());
                     validateInput();
-                },
-                value -> null,
-                false
-        ), layout.newCellSettings().paddingTop(Math.min(height / 2 - 60, 20)));
+                })
+                , layout.newCellSettings().paddingTop(Math.min(height / 2 - 60, 20)));
 
         gridAdder.addChild(skinModelButton);
 
@@ -134,7 +123,7 @@ public class SkinSourceTabComponent extends TabComponent {
             isValid = switch (currentSourceType) {
                 case URL -> ValidationUtils.isValidUrl(input);
                 case FILE -> ValidationUtils.isValidPngFilePath(input);
-                case RESOURCE_LOCATION -> ValidationUtils.isValidResourceLocation(input, client);
+                case RESOURCE_LOCATION -> ValidationUtils.isValidIdentifier(input, client);
                 case USERNAME -> ValidationUtils.isValidUsername(input);
                 case UUID -> ValidationUtils.isValidUUID(input);
                 default -> false;

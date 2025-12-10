@@ -118,13 +118,10 @@ public abstract class PresetWidget<S extends CarouselScreen> extends AbstractCar
         var nameWidth = this.client.font.width(name);
         var halfWidth = this.width / 2;
         var halfNameWidth = nameWidth / 2;
-        AbstractWidget.renderScrollingString(
-                graphics.vanilla(), this.client.font,
+        graphics.vanilla().drawString(this.client.font,
                 Component.nullToEmpty(name),
                 getX() + halfWidth - Math.min(halfWidth - margin, halfNameWidth), getY() + margin,
-                getX() + halfWidth + Math.min(halfWidth - margin, halfNameWidth), getY() + margin + this.client.font.lineHeight,
-                this.active ? 0xFFFFFFFF : 0xFF808080
-        );        // Get render style
+                this.active ? 0xFFFFFFFF : 0xFF808080); // Get render style
         SkinShuffleConfig.SkinRenderStyle renderStyle =
                 SkinShuffleConfig.get().carouselSkinRenderStyle;
 

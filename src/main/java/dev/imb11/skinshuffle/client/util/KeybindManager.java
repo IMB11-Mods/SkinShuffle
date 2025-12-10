@@ -10,7 +10,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import org.lwjgl.glfw.GLFW;
@@ -22,7 +22,7 @@ public class KeybindManager {
 
     private static final int MAX_KEYBIND_COUNT = 9;
     private static final String TRANSLATION_KEY_PREFIX = "key.skinshuffle.preset_";
-    private static final KeyMapping.Category KEYBIND_CATEGORY = KeyMapping.Category.register(ResourceLocation.fromNamespaceAndPath("skinshuffle", "presets"));
+    private static final KeyMapping.Category KEYBIND_CATEGORY = KeyMapping.Category.register(Identifier.fromNamespaceAndPath("skinshuffle", "presets"));
 
     private static KeyMapping[] presetKeybindings;
 
@@ -87,7 +87,7 @@ public class KeybindManager {
             } else {
                 if (SkinShuffleConfig.get().playKeybindSoundEffect) {
                     if (client.player != null)
-                        client.player.playNotifySound(SoundEvents.UI_TOAST_IN, SoundSource.MASTER, 0.46f, 2f);
+                        client.player.playSound(SoundEvents.UI_TOAST_IN, 0.46f, 2f);
                 }
             }
         }

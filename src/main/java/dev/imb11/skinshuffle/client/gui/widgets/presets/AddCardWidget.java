@@ -36,7 +36,7 @@ public class AddCardWidget extends AbstractCardWidget<CarouselScreen> {
 
     @Override
     protected void renderBackground(SpruceGuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        graphics.vanilla().submitOutline(getX(), getY(), getWidth(), getHeight(), this.active ? 0xDF000000 : 0x5F000000);
+        graphics.vanilla().renderOutline(getX(), getY(), getWidth(), getHeight(), this.active ? 0xDF000000 : 0x5F000000);
         graphics.fill(getX() + 1, getY() + 1, getX() + getWidth() - 1, getY() + getHeight() - 1, this.active ? 0x7F000000 : 0x0D000000);
 
         graphics.drawTexture(

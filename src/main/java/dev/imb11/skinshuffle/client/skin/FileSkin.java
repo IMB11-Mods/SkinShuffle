@@ -7,10 +7,10 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.imb11.skinshuffle.SkinShuffle;
 import java.nio.file.Path;
 import java.util.Objects;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class FileSkin extends FileBackedSkin {
-    public static final ResourceLocation SERIALIZATION_ID = SkinShuffle.id("file");
+    public static final Identifier SERIALIZATION_ID = SkinShuffle.id("file");
 
     public static final MapCodec<FileSkin> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.STRING.comapFlatMap(string -> {
@@ -42,7 +42,7 @@ public class FileSkin extends FileBackedSkin {
     }
 
     @Override
-    public ResourceLocation getSerializationId() {
+    public Identifier getSerializationId() {
         return SERIALIZATION_ID;
     }
 

@@ -7,7 +7,7 @@ import dev.imb11.skinshuffle.client.gui.carousels.LargeCarouselScreen;
 import java.util.function.Function;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public enum CarouselView {
     LARGE(LargeCarouselScreen::new, SkinShuffle.id("textures/gui/large-view-button.png"),
@@ -16,10 +16,10 @@ public enum CarouselView {
             Component.translatable("skinshuffle.carousel.view_type_button.compact.tooltip"));
 
     public final Function<Screen, ? extends CarouselScreen> factory;
-    public final ResourceLocation iconTexture;
+    public final Identifier iconTexture;
     public final Component tooltip;
 
-    CarouselView(Function<Screen, ? extends CarouselScreen> factory, ResourceLocation iconTexture, Component tooltip) {
+    CarouselView(Function<Screen, ? extends CarouselScreen> factory, Identifier iconTexture, Component tooltip) {
         this.factory = factory;
         this.iconTexture = iconTexture;
         this.tooltip = tooltip;

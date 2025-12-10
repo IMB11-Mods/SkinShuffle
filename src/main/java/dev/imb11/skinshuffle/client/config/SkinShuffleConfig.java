@@ -15,7 +15,7 @@ import java.nio.file.Path;
 import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import static net.minecraft.network.chat.Component.translatable;
 
@@ -23,7 +23,7 @@ public class SkinShuffleConfig {
     private static final Path CONFIG_FILE_PATH = SkinShuffle.DATA_DIR.resolve("config.json");
     private static final ConfigClassHandler<SkinShuffleConfig> HANDLER = ConfigClassHandler.
             createBuilder(SkinShuffleConfig.class)
-            .id(ResourceLocation.fromNamespaceAndPath("skinshuffle", "skinshuffle"))
+            .id(Identifier.fromNamespaceAndPath("skinshuffle", "skinshuffle"))
             .serializer(config -> GsonConfigSerializerBuilder.create(config)
                     .setPath(CONFIG_FILE_PATH)
                     .appendGsonBuilder(GsonBuilder::setPrettyPrinting)

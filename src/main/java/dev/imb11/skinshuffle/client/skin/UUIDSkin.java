@@ -11,10 +11,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import net.minecraft.client.renderer.texture.AbstractTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class UUIDSkin extends UrlSkin {
-    public static final ResourceLocation SERIALIZATION_ID = SkinShuffle.id("uuid");
+    public static final Identifier SERIALIZATION_ID = SkinShuffle.id("uuid");
 
     public static final MapCodec<UUIDSkin> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.STRING.fieldOf("uuid").forGetter(skin -> skin.uuid.toString()),
@@ -55,7 +55,7 @@ public class UUIDSkin extends UrlSkin {
     }
 
     @Override
-    public ResourceLocation getSerializationId() {
+    public Identifier getSerializationId() {
         return SERIALIZATION_ID;
     }
 

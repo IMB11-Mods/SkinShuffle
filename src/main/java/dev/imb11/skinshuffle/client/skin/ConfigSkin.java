@@ -7,10 +7,10 @@ import dev.imb11.skinshuffle.SkinShuffle;
 import dev.imb11.skinshuffle.client.config.SkinPresetManager;
 import java.nio.file.Path;
 import java.util.Objects;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class ConfigSkin extends FileBackedSkin {
-    public static final ResourceLocation SERIALIZATION_ID = SkinShuffle.id("config");
+    public static final Identifier SERIALIZATION_ID = SkinShuffle.id("config");
 
     public static final MapCodec<ConfigSkin> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.STRING.fieldOf("skin_name").forGetter(skin -> skin.skinName),
@@ -36,7 +36,7 @@ public class ConfigSkin extends FileBackedSkin {
     }
 
     @Override
-    public ResourceLocation getSerializationId() {
+    public Identifier getSerializationId() {
         return SERIALIZATION_ID;
     }
 

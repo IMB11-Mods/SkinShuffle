@@ -11,27 +11,27 @@ import java.util.Objects;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.SimpleTexture;
 import net.minecraft.core.ClientAsset;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public final class ResourceSkin implements Skin {
-    public static final ResourceLocation SERIALIZATION_ID = SkinShuffle.id("resource");
+    public static final Identifier SERIALIZATION_ID = SkinShuffle.id("resource");
 
     public static final MapCodec<ResourceSkin> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            ResourceLocation.CODEC.fieldOf("texture").forGetter(ResourceSkin::getTexture),
+            Identifier.CODEC.fieldOf("texture").forGetter(ResourceSkin::getTexture),
             Codec.STRING.fieldOf("model").forGetter(ResourceSkin::getModel)
     ).apply(instance, ResourceSkin::new));
     private final ClientAsset.Texture texture;
     private String model;
 
-    public ResourceSkin(ResourceLocation texture, String model) {
+    public ResourceSkin(Identifier texture, String model) {
         this.texture = new ClientAsset.Texture() {
             @Override
-            public ResourceLocation texturePath() {
+            public Identifier texturePath() {
                 return texture;
             }
 
             @Override
-            public ResourceLocation id() {
+            public Identifier id() {
                 return texture;
             }
         };
@@ -44,7 +44,7 @@ public final class ResourceSkin implements Skin {
     }
 
     @Override
-    public ResourceLocation getTexture() {
+    public Identifier getTexture() {
         return texture.texturePath();
     }
 
@@ -64,7 +64,7 @@ public final class ResourceSkin implements Skin {
     }
 
     @Override
-    public ResourceLocation getSerializationId() {
+    public Identifier getSerializationId() {
         return SERIALIZATION_ID;
     }
 

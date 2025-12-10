@@ -1,16 +1,17 @@
 package dev.imb11.skinshuffle.client.gui.widgets.buttons;
 
+import net.minecraft.client.gui.ActiveTextCollector;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class IconButtonWidget extends Button {
     public final int iconWidth;
     public final int iconHeight;
-    protected final ResourceLocation iconTexture;
+    protected final Identifier iconTexture;
     protected final int iconU;
     protected final int iconV;
     protected final int iconDisabledVOffset;
@@ -19,7 +20,7 @@ public class IconButtonWidget extends Button {
     private final int iconXOffset;
     private final int iconYOffset;
 
-    public IconButtonWidget(int x, int y, int width, int height, int iconU, int iconV, int iconXOffset, int iconYOffset, int iconDisabledVOffset, int iconWidth, int iconHeight, int iconTextureWidth, int iconTextureHeight, ResourceLocation iconTexture, Button.OnPress onPress) {
+    public IconButtonWidget(int x, int y, int width, int height, int iconU, int iconV, int iconXOffset, int iconYOffset, int iconDisabledVOffset, int iconWidth, int iconHeight, int iconTextureWidth, int iconTextureHeight, Identifier iconTexture, Button.OnPress onPress) {
         super(x, y, width, height, Component.nullToEmpty(""), onPress, DEFAULT_NARRATION);
         this.iconTextureWidth = iconTextureWidth;
         this.iconTextureHeight = iconTextureHeight;
@@ -34,9 +35,7 @@ public class IconButtonWidget extends Button {
     }
 
     @Override
-    protected void renderWidget(GuiGraphics context, int mouseX, int mouseY, float delta) {
-        super.renderWidget(context, mouseX, mouseY, delta);
-
+    protected void renderContents(GuiGraphics context, int mouseX, int mouseY, float delta) {
         context.blit(
                 RenderPipelines.GUI_TEXTURED,
                 this.iconTexture,
@@ -52,10 +51,10 @@ public class IconButtonWidget extends Button {
     }
 
     @Override
-    public void renderString(GuiGraphics context, Font textRenderer, int color) {
+    protected void renderScrollingStringOverContents(ActiveTextCollector activeTextCollector, Component component, int color) {
         int i = this.getX() + 2;
         int j = this.getX() + this.getWidth() - this.iconWidth - 6;
-        renderScrollingString(context, textRenderer, this.getMessage(), i, this.getY(), j, this.getY() + this.getHeight(), color);
+        super.renderScrollingStringOverContents(activeTextCollector, component, color);
     }
 
     int getIconX() {

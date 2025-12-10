@@ -6,12 +6,12 @@ import dev.lambdaurora.spruceui.widget.SpruceIconButtonWidget;
 import java.util.function.Function;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class SkinShuffleIconButton extends SpruceIconButtonWidget {
-    private final Function<SkinShuffleIconButton, ResourceLocation> iconTexture;
+    private final Function<SkinShuffleIconButton, Identifier> iconTexture;
 
-    public SkinShuffleIconButton(Position position, int width, int height, Component message, PressAction action, Function<SkinShuffleIconButton, ResourceLocation> iconTexture) {
+    public SkinShuffleIconButton(Position position, int width, int height, Component message, PressAction action, Function<SkinShuffleIconButton, Identifier> iconTexture) {
         super(position, width, height, message, action);
         this.iconTexture = iconTexture;
         this.setTooltip(message);

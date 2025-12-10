@@ -2,7 +2,7 @@ package dev.imb11.skinshuffle.compat;
 
 import dev.imb11.skinshuffle.compat.api.CompatHandler;
 import net.minecraft.core.ClientAsset;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.PlayerSkin;
 import net.minecraftcapes.config.MinecraftCapesConfig;
 import net.minecraftcapes.player.PlayerHandler;
@@ -22,23 +22,23 @@ public class MinecraftCapesCompat implements CompatHandler {
             PlayerSkin finalTextures = textures;
             capeTexture = new ClientAsset.Texture() {
                 @Override
-                public ResourceLocation texturePath() {
+                public Identifier texturePath() {
                     return playerHandler.getCapeLocation();
                 }
 
                 @Override
-                public ResourceLocation id() {
+                public Identifier id() {
                     return finalTextures.cape().id();
                 }
             };
             elytraTexture = new ClientAsset.Texture() {
                 @Override
-                public ResourceLocation texturePath() {
+                public Identifier texturePath() {
                     return finalTextures.elytra().texturePath();
                 }
 
                 @Override
-                public ResourceLocation id() {
+                public Identifier id() {
                     return finalTextures.elytra().id();
                 }
             };

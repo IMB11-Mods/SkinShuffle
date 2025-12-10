@@ -39,21 +39,6 @@ loom {
     accessWidenerPath = getRootProject().file("src/main/resources/aw/" + stonecutter.current.version + ".accesswidener")
 }
 
-stonecutter {
-    replacements.string {
-        direction = eval(current.version, ">1.21.10")
-        replace("ResourceLocation", "Identifier")
-    }
-    replacements.string {
-        direction = eval(current.version, ">1.21.10")
-        replace("net.minecraft.Util", "net.minecraft.util.Util")
-    }
-    replacements.string {
-        direction = eval(current.version, ">1.21.10")
-        replace("ResourceKey::location", "ResourceKey::identifier")
-    }
-}
-
 repositories {
     mavenLocal()
     maven {

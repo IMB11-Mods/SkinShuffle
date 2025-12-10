@@ -14,12 +14,12 @@ import java.util.function.Supplier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.core.ClientAsset;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.PlayerModelType;
 import net.minecraft.world.entity.player.PlayerSkin;
 
 public interface Skin {
-    Map<ResourceLocation, MapCodec<? extends Skin>> TYPES = Map.of(
+    Map<Identifier, MapCodec<? extends Skin>> TYPES = Map.of(
             UrlSkin.SERIALIZATION_ID, UrlSkin.CODEC,
             ResourceSkin.SERIALIZATION_ID, ResourceSkin.CODEC,
             ConfigSkin.SERIALIZATION_ID, ConfigSkin.CODEC,
@@ -27,7 +27,7 @@ public interface Skin {
             UsernameSkin.SERIALIZATION_ID, UsernameSkin.CODEC,
             UUIDSkin.SERIALIZATION_ID, UUIDSkin.CODEC
     );
-    Codec<Skin> CODEC = ResourceLocation.CODEC.dispatch("type", Skin::getSerializationId, TYPES::get);
+    Codec<Skin> CODEC = Identifier.CODEC.dispatch("type", Skin::getSerializationId, TYPES::get);
 
     static ResourceSkin randomDefaultSkin() {
         var uuid = UUID.randomUUID();
@@ -37,7 +37,7 @@ public interface Skin {
 
     @Nullable ClientAsset.Texture getTextureAsset();
 
-    ResourceLocation getTexture();
+    Identifier getTexture();
 
 
     default PlayerSkin getSkinTextures() {
@@ -81,7 +81,7 @@ public interface Skin {
 
     void setModel(String value);
 
-    ResourceLocation getSerializationId();
+    Identifier getSerializationId();
 
     /**
      * Saves this skin to the config and returns a new reference to it.

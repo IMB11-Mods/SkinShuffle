@@ -6,24 +6,24 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.core.ClientAsset;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class BackedSkin implements Skin, AutoCloseable {
     // Keep track of how many instances exist for each texture id, so we can clean them up when they're no longer used
     // It should be fine to use the same map for all subclasses, since the texture ids will be unique anyway
-    public static final Object2IntMap<ResourceLocation> INSTANCE_COUNTS = new Object2IntOpenHashMap<>();
+    public static final Object2IntMap<Identifier> INSTANCE_COUNTS = new Object2IntOpenHashMap<>();
 
     private boolean fetching = false;
     private boolean fetched = false;
     @Nullable
-    private ResourceLocation textureId;
+    private Identifier textureId;
 
-    private static void incrementInstanceCount(ResourceLocation id) {
+    private static void incrementInstanceCount(Identifier id) {
         INSTANCE_COUNTS.compute(id, (k, v) -> v == null ? 1 : v + 1);
     }
 
-    public static void decrementInstanceCountAndCleanup(ResourceLocation id) {
+    public static void decrementInstanceCountAndCleanup(Identifier id) {
         INSTANCE_COUNTS.compute(id, (k, v) -> v == null ? 0 : v - 1);
         if (INSTANCE_COUNTS.getInt(id) == 0) {
             Minecraft.getInstance().getTextureManager().release(id);
@@ -82,19 +82,19 @@ public abstract class BackedSkin implements Skin, AutoCloseable {
 
         return new ClientAsset.Texture() {
             @Override
-            public ResourceLocation texturePath() {
+            public Identifier texturePath() {
                 return textureId;
             }
 
             @Override
-            public ResourceLocation id() {
+            public Identifier id() {
                 return textureId;
             }
         };
     }
 
     @Override
-    public ResourceLocation getTexture() {
+    public Identifier getTexture() {
         // Fetch the skin if it hasn't been fetched yet and isn't being fetched
         if (textureId == null && !fetching && !fetched) {
             fetchSkin();
@@ -103,7 +103,7 @@ public abstract class BackedSkin implements Skin, AutoCloseable {
         return textureId;
     }
 
-    protected void setTexture(ResourceLocation textureId) {
+    protected void setTexture(Identifier textureId) {
         // Manages instance counts when the texture id changes
         if (this.textureId != null) {
             decrementInstanceCountAndCleanup(this.textureId);
