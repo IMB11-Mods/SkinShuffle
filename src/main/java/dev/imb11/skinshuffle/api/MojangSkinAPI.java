@@ -142,7 +142,7 @@ public class MojangSkinAPI {
             } catch (Exception ignored) {
             }
 
-            return new SkinQueryResult(false, skinURL, modelType, textureSignature, textureValue);
+            return new SkinQueryResult(false, skinURL, modelType, textureSignature, textureValue, capeURL);
         } catch (Exception e) {
             SkinShuffle.LOGGER.error(e.getMessage());
             return SkinQueryResult.EMPTY_RESULT;

@@ -67,15 +67,7 @@ public class SkinShuffle implements ModInitializer {
 
         Minecraft client = Minecraft.getInstance();
 
-        try {
-            assert client != null;
-            var tex = MojangSkinAPI.getPlayerSkinTexture(String.valueOf(client.getGameProfile().id()));
-            var dummyProfile = new GameProfile(UUID.randomUUID(), "dummyname");
-            return client.getSkinManager().get(dummyProfile);
-        } catch (Exception error) {
-            LOGGER.error("Failed to fetch initial skin textures from Mojang's API.", error);
-            return client.getSkinManager().get(client.getGameProfile());
-        }
+        return client.getSkinManager().get(client.getGameProfile());
     }
 
     private void ensureDataDir() {
