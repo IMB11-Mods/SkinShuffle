@@ -17,7 +17,7 @@ import org.lwjgl.glfw.GLFW;
 
 public class CompactPresetWidget extends PresetWidget<CompactCarouselScreen> {
     private static final RandomSource WIGGLE_RANDOM = RandomSource.create();
-    private final float wiggleAmount = WIGGLE_RANDOM.nextFloat() + 1f;
+    private final float wiggleAmount = (WIGGLE_RANDOM.nextFloat() + 1f) * .2f;
     private final float wiggleSpeed = WIGGLE_RANDOM.nextFloat() * 4f + 16f;
     protected VariableButton selectButton;
 
