@@ -89,7 +89,7 @@ public class SkinSourceTabComponent extends TabComponent {
 
         // Create source type selection button
         gridAdder.addChild(
-                CycleButton.builder((object)-> Component.translatable(object.getTranslationKey()), currentSourceType).withValues(Arrays.stream(SkinLoader.SourceType.values()).toList()).create(0, 0, 192, 20, Component.translatable("skinshuffle.edit.customize.keybind_id_prefix"), (button, value) -> {  // on value change
+                CycleButton.builder((object)-> Component.translatable(object.getTranslationKey()), currentSourceType).withValues(Arrays.stream(SkinLoader.SourceType.values()).toList()).create(0, 0, 192, 20, Component.translatable("skinshuffle.edit.source.cycle_prefix"), (button, value) -> {  // on value change
                     this.currentSourceType = value;
                     this.errorLabel.setMessage(Component.empty());
                     validateInput();
