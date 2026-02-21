@@ -71,7 +71,7 @@ public class SkinCustomizationTabComponent extends TabComponent {
         if (currentIndex < 0) currentIndex = 0; // Fallback to "None" if not found
 
         // Create the cycling button
-        var keybindIdButton = CycleButton.builder(this::formatKeybindIdText, (Supplier<Integer>) ()->-1).create(0, 0, 256, 256, Component.translatable("skinshuffle.edit.customize.keybind_id_prefix"), (button, value) -> {  // on value change
+        var keybindIdButton = CycleButton.builder(this::formatKeybindIdText, (Supplier<Integer>) ()->-1).withValues(availableKeybindIds).create(0, 0, 100, 30, Component.translatable("skinshuffle.edit.customize.keybind_id_prefix"), (button, value) -> {  // on value change
             preset.setKeybindId(value);
         });
         gridAdder.addChild(keybindIdButton);
