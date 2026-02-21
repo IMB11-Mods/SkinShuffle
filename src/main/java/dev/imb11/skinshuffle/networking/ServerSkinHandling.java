@@ -1,12 +1,18 @@
 package dev.imb11.skinshuffle.networking;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.mojang.authlib.properties.Property;
+import com.mojang.authlib.properties.PropertyMap;
 import dev.imb11.skinshuffle.SkinShuffle;
+import dev.imb11.skinshuffle.mixin.GameProfileAccessor;
 import dev.imb11.skinshuffle.util.SkinShufflePlayer;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+
+import java.util.Collections;
 
 public class ServerSkinHandling {
 
@@ -14,7 +20,7 @@ public class ServerSkinHandling {
         SkinShuffle.LOGGER.info("Recieved skin refresh packet from: " + player.getName().getString());
 
         server.execute(() -> {
-            var properties = player.getGameProfile().properties();
+            var properties = HashMultimap.create(player.getGameProfile().properties());
             try {
                 properties.removeAll("textures");
             } catch (Exception ignored) {
@@ -25,6 +31,9 @@ public class ServerSkinHandling {
             } catch (Error e) {
                 SkinShuffle.LOGGER.error("Failed to refresh GameProfile for " + player.getName() + "\n" + e.getMessage());
             }
+
+            var access = (GameProfileAccessor) player.getGameProfile().properties();
+            access.setProperties(new PropertyMap(properties));
 
             SkinShufflePlayer skinShufflePlayer = (SkinShufflePlayer) player;
             skinShufflePlayer.skinShuffle$refreshSkin();

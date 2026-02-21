@@ -4,6 +4,7 @@
   "package": "dev.imb11.skinshuffle.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "GameProfileAccessor",
     "ServerPlayerEntityMixin",
     "accessor.MinecraftClientAuthAccessor",
     "accessor.YggdrasilUserApiServiceAccessor"
