@@ -10,7 +10,7 @@ Skins are stored in Skin Presets, these presets can be created from the followin
 - Usernames
 - UUIDs
 - Files
-- In-game textures (Resource Locations)
+- In-game textures (Identifiers)
 
 <hr />
 
