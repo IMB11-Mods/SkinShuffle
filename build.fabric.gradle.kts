@@ -78,6 +78,13 @@ repositories {
             includeGroupAndSubgroups("me.djtheredstoner")
         }
     }
+    maven {
+        name = "Parchment Mappings"
+        url = uri("https://maven.parchmentmc.org")
+        content {
+            includeGroupAndSubgroups("org.parchmentmc")
+        }
+    }
 }
 
 dependencies {
