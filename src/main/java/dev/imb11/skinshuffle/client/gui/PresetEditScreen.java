@@ -117,7 +117,7 @@ public class PresetEditScreen extends SpruceScreen {
 
         if (this.tabNavigation != null && this.actionButtonsGrid != null) {
             // Update tab navigation
-            this.tabNavigation.setWidth(this.width);
+            this.tabNavigation.updateWidth(this.width);
             this.tabNavigation.arrangeElements();
 
             // Position action buttons at the bottom

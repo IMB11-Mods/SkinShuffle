@@ -7,7 +7,7 @@ import dev.imb11.skinshuffle.client.config.SkinShuffleConfig;
 import dev.imb11.skinshuffle.client.gui.GeneratedScreens;
 import dev.imb11.skinshuffle.networking.ClientSkinHandling;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
@@ -38,7 +38,7 @@ public class KeybindManager {
             final int presetId = i + 1;
 
             // Create unbound keybinds for each preset slot
-            presetKeybindings[i] = KeyBindingHelper.registerKeyBinding(new KeyMapping(
+            presetKeybindings[i] = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                     TRANSLATION_KEY_PREFIX + presetId,
                     InputConstants.Type.KEYSYM,
                     GLFW.GLFW_KEY_UNKNOWN, // Initially unbound

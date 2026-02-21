@@ -16,7 +16,8 @@ public class CapesCompat implements CompatHandler {
         ClientAsset.Texture elytraTexture = textures.elytra();
 
         if (handler.getHasCape()) {
-            capeTexture = handler.getCape();
+            //FIXME
+//            capeTexture = handler.getCape();
 
             if (handler.getHasElytraTexture())
                 elytraTexture = capeTexture;

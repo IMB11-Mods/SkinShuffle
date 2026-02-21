@@ -36,15 +36,15 @@ public class SkinShuffle implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        PayloadTypeRegistry.playC2S().register(
+        PayloadTypeRegistry.serverboundPlay().register(
                 SkinRefreshPayload.PACKET_ID,
                 SkinRefreshPayload.PACKET_CODEC
         );
-        PayloadTypeRegistry.playS2C().register(
+        PayloadTypeRegistry.clientboundPlay().register(
                 HandshakePayload.PACKET_ID,
                 StreamCodec.unit(HandshakePayload.INSTANCE)
         );
-        PayloadTypeRegistry.playS2C().register(
+        PayloadTypeRegistry.clientboundPlay().register(
                 RefreshPlayerListEntryPayload.PACKET_ID,
                 RefreshPlayerListEntryPayload.PACKET_CODEC
         );

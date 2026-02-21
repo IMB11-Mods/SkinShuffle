@@ -1,7 +1,7 @@
 @file:Suppress("UnstableApiUsage")
 
 plugins {
-    id("fabric-loom")
+    id("net.fabricmc.fabric-loom")
     id("dev.kikugie.postprocess.jsonlang")
     id("me.modmuss50.mod-publish-plugin")
 }
@@ -36,7 +36,7 @@ jsonlang {
 
 
 loom {
-    accessWidenerPath = getRootProject().file("src/main/resources/aw/" + stonecutter.current.version + ".accesswidener")
+    accessWidenerPath = getRootProject().file("src/main/resources/skinshuffle.classtweaker")
 }
 
 repositories {
@@ -78,41 +78,30 @@ repositories {
             includeGroupAndSubgroups("me.djtheredstoner")
         }
     }
-    maven {
-        name = "Parchment Mappings"
-        url = uri("https://maven.parchmentmc.org")
-        content {
-            includeGroupAndSubgroups("org.parchmentmc")
-        }
-    }
 }
 
 dependencies {
     minecraft("com.mojang:minecraft:${property("deps.minecraft")}")
-    mappings(loom.layered {
-        officialMojangMappings()
-        if (hasProperty("deps.parchment"))
-            parchment("org.parchmentmc.data:parchment-${property("deps.parchment")}@zip")
-    })
-    modImplementation("net.fabricmc:fabric-loader:${property("deps.fabric_loader")}")
-    modImplementation("net.fabricmc.fabric-api:fabric-api:${property("deps.fabric_api")}")
 
-    modImplementation("dev.isxander:yet-another-config-lib:${property("deps.yacl")}")
+    implementation("net.fabricmc:fabric-loader:${property("deps.fabric_loader")}")
+    implementation("net.fabricmc.fabric-api:fabric-api:${property("deps.fabric_api")}")
+
+    implementation("dev.isxander:yet-another-config-lib:${property("deps.yacl")}")
     include("dev.isxander:yet-another-config-lib:${property("deps.yacl")}")
 
-    modCompileOnly("maven.modrinth:modmenu:${property("runtime.modmenu")}")
-    modRuntimeOnly("com.terraformersmc:modmenu:${property("runtime.modmenu")}")
+    compileOnly("maven.modrinth:modmenu:${property("runtime.modmenu")}")
+    runtimeOnly("com.terraformersmc:modmenu:${property("runtime.modmenu")}")
 
-    modCompileOnly("maven.modrinth:minecraftcapes:${property("runtime.minecraftcapes")}")
-    modCompileOnly("maven.modrinth:capes:${property("runtime.capes")}")
-    modCompileOnly("maven.modrinth:entitytexturefeatures:${property("runtime.etf")}")
+    compileOnly("maven.modrinth:minecraftcapes:${property("runtime.minecraftcapes")}")
+    compileOnly("maven.modrinth:capes:${property("runtime.capes")}")
+    compileOnly("maven.modrinth:entitytexturefeatures:${property("runtime.etf")}")
 
     implementation("com.konghq:unirest-java:3.11.09:standalone")
     include("com.konghq:unirest-java:3.11.09:standalone")
 
-    modImplementation("dev.lambdaurora:spruceui:${property("deps.spruceui")}")
+    implementation("dev.lambdaurora:spruceui:${property("deps.spruceui")}")
     include("dev.lambdaurora:spruceui:${property("deps.spruceui")}")
-    include("dev.yumi.mc.core:yumi-mc-foundation:1.0.0-beta.1+1.21.11")
+    include("dev.yumi.mc.core:yumi-mc-foundation:1.0.0-beta.2+26.1-snapshot-6")
 
     implementation("org.jsoup:jsoup:1.16.1")
     include("org.jsoup:jsoup:1.16.1")
@@ -123,11 +112,8 @@ dependencies {
     implementation("com.drewnoakes:metadata-extractor:2.19.0")
     include("com.drewnoakes:metadata-extractor:2.19.0")
 
-    modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:1.2.1")
-    modRuntimeOnly("net.fabricmc:fabric-language-kotlin:1.13.2+kotlin.2.1.20")
-    
-    val modules = listOf("transitive-access-wideners-v1", "registry-sync-v0", "resource-loader-v0")
-    for (it in modules) modImplementation(fabricApi.module("fabric-$it", property("deps.fabric_api") as String))
+    runtimeOnly("me.djtheredstoner:DevAuth-fabric:1.2.1")
+    runtimeOnly("net.fabricmc:fabric-language-kotlin:1.13.2+kotlin.2.1.20")
 }
 
 fabricApi {
@@ -144,7 +130,7 @@ tasks {
 
     register<Copy>("buildAndCollect") {
         group = "build"
-        from(remapJar.map { it.archiveFile })
+        from(jar.map { it.archiveFile })
         into(rootProject.layout.buildDirectory.file("libs/${project.property("mod.version")}"))
         dependsOn("build")
     }
@@ -152,10 +138,10 @@ tasks {
 
 java {
     withSourcesJar()
-    val javaCompat = if (stonecutter.eval(stonecutter.current.version, ">=1.21")) {
-        JavaVersion.VERSION_21
+    val javaCompat = if (stonecutter.eval(stonecutter.current.version, ">26")) {
+        JavaVersion.VERSION_25
     } else {
-        JavaVersion.VERSION_17
+        JavaVersion.VERSION_21
     }
     sourceCompatibility = javaCompat
     targetCompatibility = javaCompat
