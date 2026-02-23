@@ -2,6 +2,8 @@ package dev.imb11.skinshuffle;
 
 import dev.imb11.skinshuffle.networking.RefreshPlayerListEntryPayload;
 //? fabric {
+import dev.yumi.mc.core.api.YumiMods;
+import dev.yumi.mc.core.impl.YumiModsImpl;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
 //?}
@@ -18,19 +20,6 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import java.nio.file.Path;
 
 public class Platform {
-	public static Path getConfigDir() {
-		//? fabric
-		return FabricLoader.getInstance().getConfigDir();
-		//? neoforge
-		/*return FMLPaths.CONFIGDIR.get();*/
-	}
-
-	public static boolean isModLoaded(String id) {
-		//? fabric
-		return FabricLoader.getInstance().isModLoaded(id);
-		//? neoforge
-		/*return FMLLoader.getCurrent().getLoadingModList().getModFileById(id) != null;*/
-	}
 
 	public static boolean canSend(ServerPlayer player, CustomPacketPayload.Type<?> packetId) {
 		//? fabric

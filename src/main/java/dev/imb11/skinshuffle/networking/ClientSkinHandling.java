@@ -9,7 +9,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 //?}
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.multiplayer.ClientPacketListener;import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.world.entity.Entity;
 //? neoforge
 /*import net.neoforged.neoforge.client.network.ClientPacketDistributor;*/
@@ -44,15 +44,10 @@ public class ClientSkinHandling {
             SkinPresetManager.setApiPreset(null);
         });
 
-        ClientPlayConnectionEvents.INIT.register((handler, client) -> {
-            if (client.level == null) return;
-            handshakeTakenPlace = false;
-        });
+        ClientPlayConnectionEvents.INIT.register(ClientSkinHandling::onPlayInit);
 
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
-            handshakeTakenPlace = false;
-            setReconnectRequired(false);
-            SkinPresetManager.setApiPreset(null);
+            onPlayDisconnect();
         });
 
         ClientPlayNetworking.registerGlobalReceiver(HandshakePayload.PACKET_ID, (payload, context) -> {
@@ -82,4 +77,22 @@ public class ClientSkinHandling {
             }
         });
     }
+
+    public static void onPlayInit(
+            //? fabric
+            ClientPacketListener handler, Minecraft client
+    ) {
+        //? neoforge
+        /*var client = Minecraft.getInstance();*/
+        if (client.level == null) return;
+        handshakeTakenPlace = false;
+    }
+
+
+    public static void onPlayDisconnect() {
+        handshakeTakenPlace = false;
+        setReconnectRequired(false);
+        SkinPresetManager.setApiPreset(null);
+    }
+
 }

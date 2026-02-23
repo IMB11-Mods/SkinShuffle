@@ -32,7 +32,7 @@ public class ServerSkinHandling {
                 SkinShuffle.LOGGER.error("Failed to refresh GameProfile for " + player.getName() + "\n" + e.getMessage());
             }
 
-            var access = (GameProfileAccessor) player.getGameProfile().properties();
+            var access = (GameProfileAccessor) (Object) player.getGameProfile();
             access.setProperties(new PropertyMap(properties));
 
             SkinShufflePlayer skinShufflePlayer = (SkinShufflePlayer) player;
