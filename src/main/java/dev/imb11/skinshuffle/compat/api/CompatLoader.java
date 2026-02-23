@@ -1,8 +1,7 @@
 package dev.imb11.skinshuffle.compat.api;
 
+import dev.imb11.skinshuffle.Platform;
 import dev.imb11.skinshuffle.compat.CapesCompat;
-import dev.imb11.skinshuffle.compat.MinecraftCapesCompat;
-import net.fabricmc.loader.api.FabricLoader;
 
 import java.util.ArrayList;
 
@@ -17,7 +16,7 @@ public class CompatLoader {
 
     public static void init() {
         for (CompatHandler helper : HELPERS) {
-            if (FabricLoader.getInstance().isModLoaded(helper.getID()))
+            if (Platform.isModLoaded(helper.getID()))
                 helper.execute();
         }
     }

@@ -8,9 +8,11 @@ import dev.imb11.skinshuffle.networking.RefreshPlayerListEntryPayload;
 import dev.imb11.skinshuffle.networking.ServerSkinHandling;
 import dev.imb11.skinshuffle.networking.SkinRefreshPayload;
 import dev.imb11.skinshuffle.util.SkinCacheRegistry;
-import net.fabricmc.api.ModInitializer;
+import dev.yumi.mc.core.api.ModContainer;
+import dev.yumi.mc.core.api.entrypoint.ModInitializer;
+//? fabric {
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
-import net.fabricmc.loader.api.FabricLoader;
+//?}
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
@@ -28,26 +30,28 @@ import java.util.concurrent.CompletableFuture;
 public class SkinShuffle implements ModInitializer {
     public static final String MOD_ID = "skinshuffle";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
-    public static final Path DATA_DIR = FabricLoader.getInstance().getConfigDir().resolve("skinshuffle");
+    public static final Path DATA_DIR = Platform.getConfigDir().resolve("skinshuffle");
 
     public static Identifier id(String path) {
         return Identifier.fromNamespaceAndPath(MOD_ID, path);
     }
 
     @Override
-    public void onInitialize() {
+    public void onInitialize(ModContainer container) {
+        //? fabric {
         PayloadTypeRegistry.serverboundPlay().register(
                 SkinRefreshPayload.PACKET_ID,
                 SkinRefreshPayload.PACKET_CODEC
         );
         PayloadTypeRegistry.clientboundPlay().register(
                 HandshakePayload.PACKET_ID,
-                StreamCodec.unit(HandshakePayload.INSTANCE)
+                HandshakePayload.PACKET_CODEC
         );
         PayloadTypeRegistry.clientboundPlay().register(
                 RefreshPlayerListEntryPayload.PACKET_ID,
                 RefreshPlayerListEntryPayload.PACKET_CODEC
         );
+        //?}
 
         ensureDataDir();
         SkinCacheRegistry.initialize();

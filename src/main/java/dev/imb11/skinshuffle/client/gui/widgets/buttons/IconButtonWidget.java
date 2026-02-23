@@ -52,7 +52,7 @@ public class IconButtonWidget extends Button {
     }
 
     @Override
-    protected void renderScrollingStringOverContents(ActiveTextCollector activeTextCollector, Component component, int color) {
+    public void renderScrollingStringOverContents(ActiveTextCollector activeTextCollector, Component component, int color) {
         int i = this.getX() + 2;
         int j = this.getX() + this.getWidth() - this.iconWidth - 6;
         super.renderScrollingStringOverContents(activeTextCollector, component, color);

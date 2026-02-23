@@ -6,8 +6,10 @@ import dev.imb11.skinshuffle.client.config.SkinPresetManager;
 import dev.imb11.skinshuffle.client.config.SkinShuffleConfig;
 import dev.imb11.skinshuffle.client.gui.GeneratedScreens;
 import dev.imb11.skinshuffle.networking.ClientSkinHandling;
+//? fabric {
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+//?}
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
@@ -24,7 +26,7 @@ public class KeybindManager {
     private static final String TRANSLATION_KEY_PREFIX = "key.skinshuffle.preset_";
     private static final KeyMapping.Category KEYBIND_CATEGORY = KeyMapping.Category.register(Identifier.fromNamespaceAndPath("skinshuffle", "presets"));
 
-    private static KeyMapping[] presetKeybindings;
+    public static KeyMapping[] presetKeybindings;
 
     /**
      * Initialize all keybindings for skin presets.
@@ -38,20 +40,23 @@ public class KeybindManager {
             final int presetId = i + 1;
 
             // Create unbound keybinds for each preset slot
-            presetKeybindings[i] = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+            KeyMapping keyMapping = new KeyMapping(
                     TRANSLATION_KEY_PREFIX + presetId,
                     InputConstants.Type.KEYSYM,
                     GLFW.GLFW_KEY_UNKNOWN, // Initially unbound
                     KEYBIND_CATEGORY
-            ));
+            );
+
+            //? neoforge
+            /*presetKeybindings[i] = keyMapping;*/
+
+            //? fabric
+            presetKeybindings[i] = KeyMappingHelper.registerKeyMapping(keyMapping);
         }
 
         // Register the tick event for checking keybinds
-        ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (client.player != null) {
-                checkKeybindings(client);
-            }
-        });
+        //? fabric
+        ClientTickEvents.END_CLIENT_TICK.register(KeybindManager::onEndTick);
     }
 
     /**
@@ -90,6 +95,12 @@ public class KeybindManager {
                         client.player.playSound(SoundEvents.UI_TOAST_IN, 0.46f, 2f);
                 }
             }
+        }
+    }
+
+    public static void onEndTick(Minecraft client) {
+        if (client.player != null) {
+            checkKeybindings(client);
         }
     }
 }

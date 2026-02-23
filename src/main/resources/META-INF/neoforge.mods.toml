@@ -1,0 +1,42 @@
+modLoader="javafml"
+loaderVersion="${target_loader}"
+issueTrackerURL="https://github.com/IMB11/SkinShuffle/issues"
+displayURL="http://IMB11.dev/"
+logoFile= "/assets/skinshuffle/icon.png"
+authors="IMB11, cassiancc"
+license="${mod_license}"
+
+[[mods]]
+modId="${mod_id}"
+version="${mod_version}"
+displayName="${mod_name}"
+description="${mod_description}"
+
+[[dependencies.skinshuffle]]
+modId="${loader}"
+type="required"
+versionRange="${target_loader}"
+ordering="NONE"
+side="CLIENT"
+
+[[dependencies.skinshuffle]]
+modId = "yet_another_config_lib_v3"
+type = "required"
+versionRange="[${target_yacl},)"
+side="CLIENT"
+
+[[dependencies.skinshuffle]]
+modId="minecraft"
+type="required"
+versionRange="${target_minecraft}"
+ordering="NONE"
+side="CLIENT"
+
+[[mixins]]
+config = "SkinShuffle.mixins.json"
+
+[modproperties.skinshuffle."yumi:entrypoints"."yumi:init"]
+    value = "dev.imb11.skinshuffle.SkinShuffle"
+
+[[modproperties.skinshuffle."yumi:entrypoints"."yumi:client_init"]]
+    value = "dev.imb11.skinshuffle.client.SkinShuffleClient"

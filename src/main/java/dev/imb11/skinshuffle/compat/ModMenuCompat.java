@@ -1,3 +1,4 @@
+//? fabric {
 package dev.imb11.skinshuffle.compat;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
@@ -11,3 +12,4 @@ public class ModMenuCompat implements ModMenuApi {
         return (ConfigScreenFactory<Screen>) GeneratedScreens::getCarouselScreen;
     }
 }
+//?}

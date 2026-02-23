@@ -20,10 +20,10 @@
   "accessWidener": "skinshuffle.classtweaker",
   "environment": "*",
   "entrypoints": {
-    "client": [
+    "yumi:client_init": [
       "dev.imb11.skinshuffle.client.SkinShuffleClient"
     ],
-    "main": [
+    "yumi:init": [
       "dev.imb11.skinshuffle.SkinShuffle"
     ],
     "modmenu": [

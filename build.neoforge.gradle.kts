@@ -1,8 +1,6 @@
-@file:Suppress("UnstableApiUsage")
-
 plugins {
-    id("net.fabricmc.fabric-loom")
-    id("dev.kikugie.postprocess.jsonlang")
+    id("net.neoforged.moddev")
+    id ("dev.kikugie.postprocess.jsonlang")
     id("me.modmuss50.mod-publish-plugin")
 }
 
@@ -11,14 +9,15 @@ tasks.named<ProcessResources>("processResources") {
 
     val props = HashMap<String, String>().apply {
         this["mod_version"] = prop("mod.version")
-        this["minecraft_version"] = prop("deps.minecraft")
         this["target_minecraft"] = prop("mod.target")
         this["mod_id"] = "skinshuffle"
         this["mod_name"] = "Skin Shuffle"
         this["mod_description"] = "Choose and change your skin in-game!"
         this["mod_license"] = "ARR"
         this["target_yacl"] = "*"
-        this["target_fabricloader"] = "0.17.2"
+        this["target_mru"] = "1.0.26"
+        this["target_loader"] = "[4, )"
+        this["loader"] = "neoforge"
     }
 
     filesMatching(listOf("fabric.mod.json", "META-INF/neoforge.mods.toml", "META-INF/mods.toml")) {
@@ -26,17 +25,12 @@ tasks.named<ProcessResources>("processResources") {
     }
 }
 
-version = "${property("mod.version")}+${property("deps.minecraft")}-fabric"
+version = "${property("mod.version")}+${property("deps.minecraft")}-neoforge"
 base.archivesName = property("mod.id") as String
 
 jsonlang {
     languageDirectories = listOf("assets/${property("mod.id")}/lang")
     prettyPrint = true
-}
-
-
-loom {
-    accessWidenerPath = getRootProject().file("src/main/resources/skinshuffle.classtweaker")
 }
 
 repositories {
@@ -80,52 +74,77 @@ repositories {
     }
 }
 
-dependencies {
-    minecraft("com.mojang:minecraft:${property("deps.minecraft")}")
+neoForge {
+    enable {
+        version = property("deps.neoforge") as String
+        // Disable recompilation if the "CI" environment variable is set to true. It is automatically set by GitHub Actions.
+        isDisableRecompilation = System.getenv("CI") == "true"
+    }
+    validateAccessTransformers = true
 
-    implementation("net.fabricmc:fabric-loader:${property("deps.fabric_loader")}")
-    implementation("net.fabricmc.fabric-api:fabric-api:${property("deps.fabric_api")}")
+    runs {
+        register("client") {
+            gameDirectory = file("run/")
+            client()
+        }
+        register("server") {
+            gameDirectory = file("run/")
+            server()
+        }
+    }
+
+    mods {
+        register(property("mod.id") as String) {
+            sourceSet(sourceSets["main"])
+        }
+    }
+    sourceSets["main"].resources.srcDir("src/main/generated")
+}
+
+dependencies {
 
     implementation("dev.isxander:yet-another-config-lib:${property("deps.yacl")}")
-    include("dev.isxander:yet-another-config-lib:${property("deps.yacl")}")
-
-    compileOnly("maven.modrinth:modmenu:${property("runtime.modmenu")}")
-    runtimeOnly("com.terraformersmc:modmenu:${property("runtime.modmenu")}")
+    jarJar("dev.isxander:yet-another-config-lib:${property("deps.yacl")}")
 
     compileOnly("maven.modrinth:minecraftcapes:${property("runtime.minecraftcapes")}")
     compileOnly("maven.modrinth:capes:${property("runtime.capes")}")
     compileOnly("maven.modrinth:entitytexturefeatures:${property("runtime.etf")}")
 
     implementation("com.konghq:unirest-java:3.11.09:standalone")
-    include("com.konghq:unirest-java:3.11.09:standalone")
+    jarJar("com.konghq:unirest-java:3.11.09:standalone")
 
-    implementation("dev.lambdaurora:spruceui:${property("deps.spruceui")}")
-    include("dev.lambdaurora:spruceui:${property("deps.spruceui")}")
-    include("dev.yumi.mc.core:yumi-mc-foundation:${property("deps.yumi_mc_foundation")}")
+    implementation("dev.lambdaurora:spruceui:${property("deps.spruceui")}") {
+        isTransitive = false
+    }
+    jarJar("dev.lambdaurora:spruceui:${property("deps.spruceui")}") {
+        isTransitive = false
+    }
+    implementation("dev.yumi.mc.core:yumi-mc-foundation:${property("deps.yumi_mc_foundation")}")
+    jarJar("dev.yumi.mc.core:yumi-mc-foundation:${property("deps.yumi_mc_foundation")}")
 
     implementation("org.jsoup:jsoup:1.16.1")
-    include("org.jsoup:jsoup:1.16.1")
+    jarJar("org.jsoup:jsoup:1.16.1")
 
     implementation("commons-validator:commons-validator:1.7")
-    include("commons-validator:commons-validator:1.7")
+    jarJar("commons-validator:commons-validator:1.7")
 
     implementation("com.drewnoakes:metadata-extractor:2.19.0")
-    include("com.drewnoakes:metadata-extractor:2.19.0")
+    jarJar("com.drewnoakes:metadata-extractor:2.19.0")
 
-    runtimeOnly("me.djtheredstoner:DevAuth-fabric:1.2.1")
-    runtimeOnly("net.fabricmc:fabric-language-kotlin:1.13.2+kotlin.2.1.20")
+    runtimeOnly("me.djtheredstoner:DevAuth-neoforge:1.2.1")
 }
 
-fabricApi {
-    configureDataGeneration() {
-        outputDirectory = file("$rootDir/src/main/generated")
-        client = true
-    }
+tasks.named("processResources") {
+    dependsOn(":${stonecutter.current.project}:stonecutterGenerate")
 }
 
 tasks {
     processResources {
-        exclude("**/neoforge.mods.toml", "**/mods.toml")
+        exclude("**/fabric.mod.json", "**/*.accesswidener", "**/mods.toml")
+    }
+
+    named("createMinecraftArtifacts") {
+        dependsOn("stonecutterGenerate")
     }
 
     register<Copy>("buildAndCollect") {
@@ -148,8 +167,8 @@ java {
 }
 
 val additionalVersionsStr = findProperty("publish.additionalVersions") as String?
-        val additionalVersions: List<String> = additionalVersionsStr
-        ?.split(",")
-        ?.map { it.trim() }
-        ?.filter { it.isNotEmpty() }
-        ?: emptyList()
+val additionalVersions: List<String> = additionalVersionsStr
+    ?.split(",")
+    ?.map { it.trim() }
+    ?.filter { it.isNotEmpty() }
+    ?: emptyList()

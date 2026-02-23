@@ -12,7 +12,6 @@
   "client": [
     "EntityGuiRendererMixin",
     "EntityGuiRenderStateMixin",
-    "GuiRendererMixin",
     "LivingEntityRendererMixin",
     "MinecraftClientMixin",
     "PlayerEntityMixin",
