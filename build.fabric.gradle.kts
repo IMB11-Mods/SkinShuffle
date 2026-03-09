@@ -116,13 +116,6 @@ dependencies {
     runtimeOnly("net.fabricmc:fabric-language-kotlin:1.13.2+kotlin.2.1.20")
 }
 
-fabricApi {
-    configureDataGeneration() {
-        outputDirectory = file("$rootDir/src/main/generated")
-        client = true
-    }
-}
-
 tasks {
     processResources {
         exclude("**/neoforge.mods.toml", "**/mods.toml")

@@ -35,6 +35,9 @@ side="CLIENT"
 [[mixins]]
 config = "SkinShuffle.mixins.json"
 
+[[accessTransformers]]
+file="META-INF/accesstransformer.cfg"
+
 [modproperties.skinshuffle."yumi:entrypoints"."yumi:init"]
     value = "dev.imb11.skinshuffle.SkinShuffle"
 
