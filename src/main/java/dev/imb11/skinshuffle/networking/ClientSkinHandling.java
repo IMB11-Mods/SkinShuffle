@@ -15,7 +15,7 @@ import net.minecraft.world.entity.Entity;
 /*import net.neoforged.neoforge.client.network.ClientPacketDistributor;*/
 
 public class ClientSkinHandling {
-    public static boolean handshakeTakenPlace = false;
+    private static boolean handshakeTakenPlace = false;
 
     private static boolean reconnectRequired = false;
 
@@ -40,19 +40,13 @@ public class ClientSkinHandling {
 
     public static void init() {
         //? fabric {
-        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
-            SkinPresetManager.setApiPreset(null);
-        });
+        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> SkinPresetManager.setApiPreset(null));
 
         ClientPlayConnectionEvents.INIT.register(ClientSkinHandling::onPlayInit);
 
-        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
-            onPlayDisconnect();
-        });
+        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> onPlayDisconnect());
 
-        ClientPlayNetworking.registerGlobalReceiver(HandshakePayload.PACKET_ID, (payload, context) -> {
-            handshakeTakenPlace = true;
-        });
+        ClientPlayNetworking.registerGlobalReceiver(HandshakePayload.PACKET_ID, (payload, context) -> ClientSkinHandling.handshake());
 
         ClientPlayNetworking.registerGlobalReceiver(RefreshPlayerListEntryPayload.PACKET_ID, ClientSkinHandling::receive);
         //?}
@@ -95,4 +89,8 @@ public class ClientSkinHandling {
         SkinPresetManager.setApiPreset(null);
     }
 
+	public static void handshake() {
+		handshakeTakenPlace = true;
+        SkinPresetManager.apply();
+	}
 }
