@@ -23,6 +23,8 @@ import dev.lambdaurora.spruceui.widget.SpruceWidget;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Optional;
+
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -36,7 +38,7 @@ public abstract class CarouselScreen extends SpruceScreen {
     public final CarouselView viewType;
     public final CarouselView nextViewType;
     public boolean hasEditedPreset = false;
-    public ArrayList<AbstractCardWidget<?>> carouselWidgets = new ArrayList<>();
+    public ArrayList<AbstractCardWidget<CarouselScreen>> carouselWidgets = new ArrayList<>();
     protected SpruceIconButtonWidget configButton;
     protected SpruceIconButtonWidget viewTypeButton;
     protected SpruceButtonWidget cancelButton;
@@ -58,7 +60,7 @@ public abstract class CarouselScreen extends SpruceScreen {
         carouselWidgets.clear();
 
         var loadedPresets = SkinPresetManager.getLoadedPresets();
-        for (var preset : loadedPresets) {
+        for (SkinPreset preset : loadedPresets) {
             var presetWidget = this.widgetFromPreset(preset);
             this.carouselWidgets.add(presetWidget);
         }
@@ -115,7 +117,7 @@ public abstract class CarouselScreen extends SpruceScreen {
                     return;
                 }
 
-                if (chosenPresetWidget instanceof PresetWidget presetWidget) {
+                if (chosenPresetWidget instanceof PresetWidget<?> presetWidget) {
                     SkinPresetManager.setChosenPreset(presetWidget.getPreset(), this.hasEditedPreset);
                     SkinPresetManager.savePresets();
                 }
@@ -283,7 +285,7 @@ public abstract class CarouselScreen extends SpruceScreen {
         return false;
     }
 
-    protected abstract AbstractCardWidget widgetFromPreset(SkinPreset preset);
+    protected abstract AbstractCardWidget<CarouselScreen> widgetFromPreset(SkinPreset preset);
 
     private double getDeltaScrollIndex() {
         var deltaTime = (Blaze3D.getTime() - lastCardSwitchTime) * 5;
@@ -292,9 +294,9 @@ public abstract class CarouselScreen extends SpruceScreen {
         return Mth.lerp(deltaTime, lastCardIndex, cardIndex);
     }
 
-    public AbstractCardWidget loadPreset(SkinPreset preset) {
+    public AbstractCardWidget<CarouselScreen> loadPreset(SkinPreset preset) {
         var widget = widgetFromPreset(preset);
-        this.carouselWidgets.get(this.carouselWidgets.size() - 1).refreshLastPosition();
+        this.carouselWidgets.getLast().refreshLastPosition();
         this.carouselWidgets.add(this.carouselWidgets.set(this.carouselWidgets.size() - 1, widget));
         refreshPresetState();
         return widget;
@@ -335,5 +337,6 @@ public abstract class CarouselScreen extends SpruceScreen {
     public void refresh() {
         this.children().clear();
         this.init();
+        Minecraft.getInstance().setScreen(this);
     }
 }
