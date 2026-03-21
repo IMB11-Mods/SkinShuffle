@@ -18,7 +18,7 @@ tasks.named<ProcessResources>("processResources") {
         this["mod_description"] = "Choose and change your skin in-game!"
         this["mod_license"] = "ARR"
         this["target_yacl"] = "*"
-        this["target_fabricloader"] = "0.17.2"
+        this["target_fabricloader"] = "0.18.0"
     }
 
     filesMatching(listOf("fabric.mod.json", "META-INF/neoforge.mods.toml", "META-INF/mods.toml")) {
