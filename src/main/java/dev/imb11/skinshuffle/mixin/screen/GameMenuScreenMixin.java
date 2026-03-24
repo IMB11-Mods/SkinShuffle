@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.client.gui.screens.Screen;
@@ -23,8 +23,8 @@ public abstract class GameMenuScreenMixin extends ScreenMixin {
     @Unique
     private WarningIndicatorButton warningIndicator;
 
-    @Inject(method = "render", at = @At("HEAD"))
-    public void render(GuiGraphics context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+    @Inject(method = "extractRenderState", at = @At("HEAD"))
+    public void render(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         if (warningIndicator != null) {
             warningIndicator.visible = ClientSkinHandling.isReconnectRequired();
         }

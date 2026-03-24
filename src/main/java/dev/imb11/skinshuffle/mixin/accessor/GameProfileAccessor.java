@@ -1,4 +1,4 @@
-package dev.imb11.skinshuffle.mixin;
+package dev.imb11.skinshuffle.mixin.accessor;
 
 import com.mojang.authlib.properties.PropertyMap;
 import org.spongepowered.asm.mixin.Mixin;

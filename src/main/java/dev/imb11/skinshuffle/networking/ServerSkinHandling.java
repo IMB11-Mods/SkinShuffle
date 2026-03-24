@@ -5,7 +5,7 @@ import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import dev.imb11.skinshuffle.Platform;
 import dev.imb11.skinshuffle.SkinShuffle;
-import dev.imb11.skinshuffle.mixin.GameProfileAccessor;
+import dev.imb11.skinshuffle.mixin.accessor.GameProfileAccessor;
 import dev.imb11.skinshuffle.util.SkinShufflePlayer;
 //? fabric {
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;

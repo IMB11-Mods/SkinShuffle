@@ -4,7 +4,7 @@ import dev.imb11.skinshuffle.SkinShuffle;
 import dev.imb11.skinshuffle.client.gui.GeneratedScreens;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -35,8 +35,8 @@ public class WarningIndicatorButton extends IconButtonWidget {
     }
 
     @Override
-    public void renderContents(GuiGraphics context, int mouseX, int mouseY, float delta) {
-        this.renderDefaultSprite(context);
+    public void extractContents(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+        this.extractDefaultSprite(context);
         context.blit(
                 RenderPipelines.GUI_TEXTURED,
                 this.iconTexture,

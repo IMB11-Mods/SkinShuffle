@@ -35,11 +35,11 @@ public class AddCardWidget extends AbstractCardWidget<CarouselScreen> {
     }
 
     @Override
-    protected void renderBackground(SpruceGuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        graphics.vanilla().renderOutline(getX(), getY(), getWidth(), getHeight(), this.active ? 0xDF000000 : 0x5F000000);
+    protected void extractBackground(SpruceGuiGraphics graphics, int mouseX, int mouseY, float delta) {
+        graphics.vanilla().outline(getX(), getY(), getWidth(), getHeight(), this.active ? 0xDF000000 : 0x5F000000);
         graphics.fill(getX() + 1, getY() + 1, getX() + getWidth() - 1, getY() + getHeight() - 1, this.active ? 0x7F000000 : 0x0D000000);
 
-        graphics.drawTexture(
+        graphics.blit(
                 RenderPipelines.GUI_TEXTURED,
                 SkinShuffle.id("textures/gui/carousel_add.png"),
                 getX() + (this.getWidth() / 2) - 16,
@@ -53,7 +53,7 @@ public class AddCardWidget extends AbstractCardWidget<CarouselScreen> {
 
 
         var text = Component.translatable("skinshuffle.carousel.new");
-        graphics.vanilla().drawString(this.client.font, text, getX() + (this.width / 2) - this.client.font.width(text) / 2, getY() + this.client.font.lineHeight / 2, this.active ? 0xFFFFFFFF : 0xFF808080);
+        graphics.vanilla().text(this.client.font, text, getX() + (this.width / 2) - this.client.font.width(text) / 2, getY() + this.client.font.lineHeight / 2, this.active ? 0xFFFFFFFF : 0xFF808080);
     }
 
     @Override

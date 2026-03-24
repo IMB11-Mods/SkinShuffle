@@ -6,7 +6,7 @@ import dev.imb11.skinshuffle.client.gui.GeneratedScreens;
 import dev.imb11.skinshuffle.client.gui.renderer.SkinPreviewRenderer;
 import dev.imb11.skinshuffle.client.preset.SkinPreset;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 
@@ -25,9 +25,9 @@ public class OpenCarouselButton extends Button {
     }
 
     @Override
-    protected void renderContents(GuiGraphics context, int mouseX, int mouseY, float f) {
-        this.renderDefaultSprite(context);
-        this.renderDefaultLabel(context.textRenderer());
+    protected void extractContents(GuiGraphicsExtractor context, int mouseX, int mouseY, float f) {
+        this.extractDefaultSprite(context);
+        this.extractDefaultLabel(context.textRenderer());
         if (selectedPreset != null) {
             // Create a rectangular area above the button with 1:3 ratio (width:height)
             int skinWidth = 60;  // Width of the skin preview area

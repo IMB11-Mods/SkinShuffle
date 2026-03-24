@@ -6,7 +6,7 @@ import dev.imb11.skinshuffle.client.config.SkinShuffleConfig;
 import dev.imb11.skinshuffle.client.preset.SkinPreset;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 
 /**
@@ -27,15 +27,15 @@ public class SkinPreviewRenderer {
     /**
      * Draws a bordered preview region.
      */
-    public void renderPreviewArea(GuiGraphics graphics, int previewCenterX, int previewCenterY,
+    public void renderPreviewArea(GuiGraphicsExtractor graphics, int previewCenterX, int previewCenterY,
                                   int previewSpanX, int previewSpanY) {
-        graphics.renderOutline(previewCenterX - previewSpanX, previewCenterY - previewSpanY,
+        graphics.outline(previewCenterX - previewSpanX, previewCenterY - previewSpanY,
                 previewSpanX * 2, previewSpanY * 2, 0xDF000000);
         graphics.fill(previewCenterX - previewSpanX + 1, previewCenterY - previewSpanY + 1,
                 previewCenterX + previewSpanX - 1, previewCenterY + previewSpanY - 1, 0x7F000000);
     }
 
-    public void renderSkinPreview(GuiGraphics graphics, SkinPreset preset,
+    public void renderSkinPreview(GuiGraphicsExtractor graphics, SkinPreset preset,
                                   int mouseX, int mouseY,
                                   int x1, int y1, int x2, int y2, float sizeScaling,
                                   SkinShuffleConfig.SkinRenderStyle renderStyle,
@@ -58,7 +58,7 @@ public class SkinPreviewRenderer {
      * @param renderStyle Style (STATIC / FOLLOW / ROTATION)
      * @param isLoading   Whether the calling screen is still fetching a texture
      */
-    public void renderSkinPreview(GuiGraphics graphics, SkinPreset preset,
+    public void renderSkinPreview(GuiGraphicsExtractor graphics, SkinPreset preset,
                                   int mouseX, int mouseY,
                                   int x1, int y1, int x2, int y2, float sizeScaling,
                                   SkinShuffleConfig.SkinRenderStyle renderStyle,
@@ -93,7 +93,7 @@ public class SkinPreviewRenderer {
         );
     }
 
-    public void renderLoadingIndicator(GuiGraphics graphics, int centerX, int centerY) {
+    public void renderLoadingIndicator(GuiGraphicsExtractor graphics, int centerX, int centerY) {
         Font textRenderer = client.font;
         Component txt = Component.translatable("skinshuffle.edit.loading");
 
@@ -102,7 +102,7 @@ public class SkinPreviewRenderer {
         float hue = (totalDeltaTick % 360) / 360f;
 
         int color = java.awt.Color.HSBtoRGB(hue, 0.75f, 1f) | 0xFF000000;
-        graphics.drawString(textRenderer, txt,
+        graphics.text(textRenderer, txt,
                 centerX - textWidth / 2, centerY - textRenderer.lineHeight - 80, color);
     }
 }

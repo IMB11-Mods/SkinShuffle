@@ -2,7 +2,7 @@ package dev.imb11.skinshuffle.client.gui.widgets.buttons;
 
 import net.minecraft.client.gui.ActiveTextCollector;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
@@ -35,8 +35,8 @@ public class IconButtonWidget extends Button {
     }
 
     @Override
-    protected void renderContents(GuiGraphics context, int mouseX, int mouseY, float delta) {
-        this.renderDefaultSprite(context);
+    protected void extractContents(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+        this.extractDefaultSprite(context);
         context.blit(
                 RenderPipelines.GUI_TEXTURED,
                 this.iconTexture,
@@ -52,10 +52,10 @@ public class IconButtonWidget extends Button {
     }
 
     @Override
-    public void renderScrollingStringOverContents(ActiveTextCollector activeTextCollector, Component component, int color) {
+    public void extractScrollingStringOverContents(ActiveTextCollector activeTextCollector, Component component, int color) {
         int i = this.getX() + 2;
         int j = this.getX() + this.getWidth() - this.iconWidth - 6;
-        super.renderScrollingStringOverContents(activeTextCollector, component, color);
+        super.extractScrollingStringOverContents(activeTextCollector, component, color);
     }
 
     int getIconX() {

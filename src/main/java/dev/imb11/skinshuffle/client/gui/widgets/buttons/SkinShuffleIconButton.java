@@ -19,7 +19,7 @@ public class SkinShuffleIconButton extends SpruceIconButtonWidget {
 
     @Override
     protected int renderIcon(SpruceGuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        graphics.drawTexture(
+        graphics.blit(
                 RenderPipelines.GUI_TEXTURED,
                 iconTexture.apply(this),
                 this.getX() + this.getWidth() / 2 - (16 / 2),
@@ -35,7 +35,7 @@ public class SkinShuffleIconButton extends SpruceIconButtonWidget {
     }
 
     @Override
-    protected void renderWidget(SpruceGuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        this.renderButton(graphics, mouseX, mouseY, delta);
+    protected void extractWidgetRenderState(SpruceGuiGraphics graphics, int mouseX, int mouseY, float delta) {
+        this.extractButton(graphics, mouseX, mouseY, delta);
     }
 }

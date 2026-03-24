@@ -58,7 +58,7 @@ public class CompactPresetWidget extends PresetWidget<CompactCarouselScreen> {
     }
 
     @Override
-    public void render(SpruceGuiGraphics graphics, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(SpruceGuiGraphics graphics, int mouseX, int mouseY, float delta) {
         Matrix3x2fStack matrices = graphics.vanilla().pose();
         matrices.pushMatrix();
 
@@ -74,7 +74,7 @@ public class CompactPresetWidget extends PresetWidget<CompactCarouselScreen> {
             matrices.translate(-cx, -cy);
         }
 
-        super.render(graphics, mouseX, mouseY, delta);
+        super.extractRenderState(graphics, mouseX, mouseY, delta);
         matrices.popMatrix();
     }
 

@@ -18,7 +18,7 @@ public abstract class AccessibilityOnboardingScreenMixin extends Screen {
         super(title);
     }
 
-    @Inject(method = "render", at = @At("HEAD"))
+    @Inject(method = "extractRenderState", at = @At("HEAD"))
     public void refreshConfig(CallbackInfo ci) {
         if (!MixinStatics.APPLIED_SKIN_MANAGER_CONFIGURATION) {
             MixinStatics.APPLIED_SKIN_MANAGER_CONFIGURATION = true;

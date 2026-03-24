@@ -25,7 +25,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.CommonComponents;
@@ -154,7 +154,7 @@ public abstract class CarouselScreen extends SpruceScreen {
     }
 
     @Override
-    public void render(SpruceGuiGraphics graphics, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(SpruceGuiGraphics graphics, int mouseX, int mouseY, float delta) {
         var cardAreaWidth = getCardWidth() + getCardGap();
 
         graphics.fill(0, this.font.lineHeight * 3, this.width, this.height - (this.font.lineHeight * 3), 0x7F000000);
@@ -219,14 +219,14 @@ public abstract class CarouselScreen extends SpruceScreen {
             refreshPresetState();
         }
 
-        this.renderWidgets(graphics, mouseX, mouseY, delta);
+        this.extractWidgets(graphics, mouseX, mouseY, delta);
 
         this.renderTitle(graphics.vanilla(), mouseX, mouseY, delta);
-        Tooltip.renderAll(graphics.vanilla());
+        Tooltip.extractAllRenderStates(graphics.vanilla());
     }
 
-    public void renderTitle(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        graphics.drawCenteredString(this.font, this.getTitle().getVisualOrderText(), this.width / 2, this.font.lineHeight, 0xFFFFFFFF);
+    public void renderTitle(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+        graphics.centeredText(this.font, this.getTitle().getVisualOrderText(), this.width / 2, this.font.lineHeight, 0xFFFFFFFF);
     }
 
     public void scrollCarousel(double amount, boolean wrapAround) {

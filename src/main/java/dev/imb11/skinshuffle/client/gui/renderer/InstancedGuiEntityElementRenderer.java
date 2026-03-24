@@ -169,10 +169,10 @@
 package dev.imb11.skinshuffle.client.gui.renderer;
 
 import net.minecraft.client.gui.render.pip.GuiEntityRenderer;
-import net.minecraft.client.gui.render.state.GuiRenderState;
-import net.minecraft.client.gui.render.state.pip.GuiEntityRenderState;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.state.gui.GuiRenderState;
+import net.minecraft.client.renderer.state.gui.pip.GuiEntityRenderState;
 
 /**
  * Specialization of a {@code SpecialGuiElementRenderer} that allows for rendering multiple instances of the same element with

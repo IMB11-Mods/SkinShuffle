@@ -3,9 +3,9 @@ package dev.imb11.skinshuffle.client.gui.renderer;
 import dev.imb11.skinshuffle.client.SkinShuffleClient;
 import dev.imb11.skinshuffle.client.config.SkinShuffleConfig;
 import dev.imb11.skinshuffle.client.skin.Skin;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.render.state.pip.GuiEntityRenderState;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.client.renderer.state.gui.pip.GuiEntityRenderState;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Pose;
@@ -14,7 +14,7 @@ import org.joml.Vector3f;
 
 public class GuiEntityRenderer {
 
-    public static void drawEntity(GuiGraphics context, int x1, int y1, int x2, int y2, int size,
+    public static void drawEntity(GuiGraphicsExtractor context, int x1, int y1, int x2, int y2, int size,
                                   float rotation, double mouseX, double mouseY, Skin skin,
                                   SkinShuffleConfig.SkinRenderStyle style, float alpha) {
 
@@ -56,7 +56,7 @@ public class GuiEntityRenderer {
 
         ((InstancedGuiEntityRenderState) (Object) state).setAlpha(alpha);
 
-        context.guiRenderState.submitPicturesInPictureState(state);
+        context.guiRenderState.addPicturesInPictureState(state);
         context.disableScissor();
     }
 

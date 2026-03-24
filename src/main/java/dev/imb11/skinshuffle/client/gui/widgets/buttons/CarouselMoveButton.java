@@ -57,7 +57,7 @@ public class CarouselMoveButton extends AbstractSpruceWidget {
     }
 
     @Override
-    protected void renderWidget(SpruceGuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
+    protected void extractWidgetRenderState(SpruceGuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
         var matrices = guiGraphics.vanilla().pose();
         matrices.pushMatrix();
         guiGraphics.vanilla().blit(

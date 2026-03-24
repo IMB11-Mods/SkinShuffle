@@ -3,8 +3,8 @@ package dev.imb11.skinshuffle.mixin;
 import dev.imb11.skinshuffle.client.gui.renderer.InstancedGuiEntityElementRenderer;
 import dev.imb11.skinshuffle.client.gui.renderer.InstancedGuiEntityRenderState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.render.state.pip.GuiEntityRenderState;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.state.gui.pip.GuiEntityRenderState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 

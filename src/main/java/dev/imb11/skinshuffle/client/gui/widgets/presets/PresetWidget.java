@@ -10,7 +10,7 @@ import dev.imb11.skinshuffle.client.preset.SkinPreset;
 import dev.lambdaurora.spruceui.Position;
 import dev.lambdaurora.spruceui.render.SpruceGuiGraphics;
 import dev.lambdaurora.spruceui.widget.SpruceWidget;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.ConfirmScreen;
@@ -86,7 +86,7 @@ public abstract class PresetWidget<S extends CarouselScreen> extends AbstractCar
     }
 
     @Override
-    protected void renderBackground(SpruceGuiGraphics graphics, int mouseX, int mouseY, float delta) {
+    protected void extractBackground(SpruceGuiGraphics graphics, int mouseX, int mouseY, float delta) {
         int borderColour = this.active ? 0xDF000000 : 0x5F000000;
 
         if (SkinPresetManager.getChosenPreset().equals(this.skinPreset)) {
@@ -101,7 +101,7 @@ public abstract class PresetWidget<S extends CarouselScreen> extends AbstractCar
         graphics.fill(getX() + 1, getY() + 1, getX() + getWidth() - 1, getY() + getHeight() - 1, this.active ? 0x7F000000 : 0x0D000000);
     }
 
-    public void drawBorder(GuiGraphics context, int x, int y, int width, int height, int color) {
+    public void drawBorder(GuiGraphicsExtractor context, int x, int y, int width, int height, int color) {
         context.fill(x, y, x + width, y + 1, color);
         context.fill(x, y + height - 1, x + width, y + height, color);
         context.fill(x, y + 1, x + 1, y + height - 1, color);
@@ -109,8 +109,8 @@ public abstract class PresetWidget<S extends CarouselScreen> extends AbstractCar
     }
 
     @Override
-    protected void renderWidget(SpruceGuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        super.renderWidget(graphics, mouseX, mouseY, delta);
+    protected void extractWidgetRenderState(SpruceGuiGraphics graphics, int mouseX, int mouseY, float delta) {
+        super.extractWidgetRenderState(graphics, mouseX, mouseY, delta);
 
         // Render name
         var margin = this.client.font.lineHeight / 2;
@@ -118,7 +118,7 @@ public abstract class PresetWidget<S extends CarouselScreen> extends AbstractCar
         var nameWidth = this.client.font.width(name);
         var halfWidth = this.width / 2;
         var halfNameWidth = nameWidth / 2;
-        graphics.vanilla().drawString(this.client.font,
+        graphics.vanilla().text(this.client.font,
                 Component.nullToEmpty(name),
                 getX() + halfWidth - Math.min(halfWidth - margin, halfNameWidth), getY() + margin,
                 this.active ? 0xFFFFFFFF : 0xFF808080); // Get render style

@@ -11,10 +11,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MinecraftClientMixin {
     @Inject(method = "runTick", at = @At("HEAD"))
     public void render(boolean tick, CallbackInfo ci) {
-        //? if <1.21.5 {
-        /*SkinShuffleClient.TOTAL_TICK_DELTA += MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(true);
-         *///?} else {
         SkinShuffleClient.TOTAL_TICK_DELTA += Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(true);
-        //?}
     }
 }

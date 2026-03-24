@@ -175,8 +175,8 @@ public class PresetEditScreen extends SpruceScreen {
     }
 
     @Override
-    public void render(SpruceGuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        super.render(graphics, mouseX, mouseY, delta);
+    public void extractRenderState(SpruceGuiGraphics graphics, int mouseX, int mouseY, float delta) {
+        super.extractRenderState(graphics, mouseX, mouseY, delta);
 
         // Calculate preview dimensions
         int ratioMulTen = 16;
@@ -216,7 +216,7 @@ public class PresetEditScreen extends SpruceScreen {
         Component text = Component.translatable("skinshuffle.edit.drag_and_drop");
         int x = this.exitButton.getX() - (this.font.width(text) / 2);
         int y = this.exitButton.getY() - this.font.lineHeight - 5;
-        graphics.vanilla().drawString(this.font, text, x, y, 0xCFFFFFFF);
+        graphics.vanilla().text(this.font, text, x, y, 0xCFFFFFFF);
     }
 
     @Override

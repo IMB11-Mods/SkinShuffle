@@ -32,7 +32,7 @@ public class TitleScreenMixin extends Screen {
         super(title);
     }
 
-    @Inject(method = "render", at = @At("HEAD"))
+    @Inject(method = "extractRenderState", at = @At("HEAD"))
     public void refreshConfig(CallbackInfo ci) {
         if (!MixinStatics.APPLIED_SKIN_MANAGER_CONFIGURATION && this.fading) {
             MixinStatics.APPLIED_SKIN_MANAGER_CONFIGURATION = true;

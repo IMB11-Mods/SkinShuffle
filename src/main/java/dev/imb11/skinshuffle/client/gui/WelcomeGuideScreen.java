@@ -58,10 +58,10 @@ public class WelcomeGuideScreen extends SpruceScreen {
     }
 
     @Override
-    public void render(@NotNull SpruceGuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        super.render(graphics, mouseX, mouseY, delta);
+    public void extractRenderState(@NotNull SpruceGuiGraphics graphics, int mouseX, int mouseY, float delta) {
+        super.extractRenderState(graphics, mouseX, mouseY, delta);
 
-        graphics.vanilla().drawString(
+        graphics.vanilla().text(
                 this.minecraft.font,
                 this.title,
                 this.width / 2 - this.minecraft.font.width(this.title) / 2,
@@ -118,8 +118,8 @@ public class WelcomeGuideScreen extends SpruceScreen {
         }
 
         @Override
-        public void render(SpruceGuiGraphics context, int mouseX, int mouseY, float delta) {
-            super.render(context, mouseX, mouseY, delta);
+        public void extractRenderState(SpruceGuiGraphics context, int mouseX, int mouseY, float delta) {
+            super.extractRenderState(context, mouseX, mouseY, delta);
 
             context.enableScissor(
                     this.getX(),
@@ -155,7 +155,7 @@ public class WelcomeGuideScreen extends SpruceScreen {
                 // Wrap the Text object, then draw each wrapped line
                 var wrappedLines = this.client.font.split(line, wrapWidth);
                 for (FormattedCharSequence wrappedLine : wrappedLines) {
-                    context.vanilla().drawString(
+                    context.vanilla().text(
                             this.client.font,
                             wrappedLine,
                             this.getX() + 10,
