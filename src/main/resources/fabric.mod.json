@@ -8,18 +8,22 @@
     "IMB11 (mineblock11)",
     "enjarai"
   ],
+  "contributors": [
+    "cassiancc"
+  ],
   "contact": {
-    "repo": "https://github.com/IMB11/skinshuffle"
+    "repo": "https://github.com/IMB11-Mods/SkinShuffle",
+    "issues": "https://github.com/IMB11-Mods/SkinShuffle/issues"
   },
   "license": "MIT",
   "icon": "assets/skinshuffle/icon.png",
-  "accessWidener": "aw/${minecraft_version}.accesswidener",
+  "accessWidener": "skinshuffle.classtweaker",
   "environment": "*",
   "entrypoints": {
-    "client": [
+    "yumi:client_init": [
       "dev.imb11.skinshuffle.client.SkinShuffleClient"
     ],
-    "main": [
+    "yumi:init": [
       "dev.imb11.skinshuffle.SkinShuffle"
     ],
     "modmenu": [
@@ -30,9 +34,9 @@
     "SkinShuffle.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=${loader_version}",
-    "fabric": "*",
-    "yet_another_config_lib_v3": ">=${target_yacl}",
+    "fabricloader": ">=${target_fabricloader}",
+    "fabric-api": "*",
+    "yet_another_config_lib_v3": "${target_yacl}",
     "minecraft": "${target_minecraft}"
   },
   "suggests": {

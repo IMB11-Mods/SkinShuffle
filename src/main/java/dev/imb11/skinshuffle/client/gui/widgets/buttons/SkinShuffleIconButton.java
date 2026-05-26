@@ -3,16 +3,15 @@ package dev.imb11.skinshuffle.client.gui.widgets.buttons;
 import dev.lambdaurora.spruceui.Position;
 import dev.lambdaurora.spruceui.render.SpruceGuiGraphics;
 import dev.lambdaurora.spruceui.widget.SpruceIconButtonWidget;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-
 import java.util.function.Function;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 
 public class SkinShuffleIconButton extends SpruceIconButtonWidget {
     private final Function<SkinShuffleIconButton, Identifier> iconTexture;
 
-    public SkinShuffleIconButton(Position position, int width, int height, Text message, PressAction action, Function<SkinShuffleIconButton, Identifier> iconTexture) {
+    public SkinShuffleIconButton(Position position, int width, int height, Component message, PressAction action, Function<SkinShuffleIconButton, Identifier> iconTexture) {
         super(position, width, height, message, action);
         this.iconTexture = iconTexture;
         this.setTooltip(message);
@@ -20,7 +19,7 @@ public class SkinShuffleIconButton extends SpruceIconButtonWidget {
 
     @Override
     protected int renderIcon(SpruceGuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        graphics.drawTexture(
+        graphics.blit(
                 RenderPipelines.GUI_TEXTURED,
                 iconTexture.apply(this),
                 this.getX() + this.getWidth() / 2 - (16 / 2),
@@ -36,7 +35,7 @@ public class SkinShuffleIconButton extends SpruceIconButtonWidget {
     }
 
     @Override
-    protected void renderWidget(SpruceGuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        this.renderButton(graphics, mouseX, mouseY, delta);
+    protected void extractWidgetRenderState(SpruceGuiGraphics graphics, int mouseX, int mouseY, float delta) {
+        this.extractButton(graphics, mouseX, mouseY, delta);
     }
 }

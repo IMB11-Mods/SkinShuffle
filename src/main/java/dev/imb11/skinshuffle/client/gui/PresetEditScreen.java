@@ -10,18 +10,17 @@ import dev.imb11.skinshuffle.client.gui.widgets.presets.PresetWidget;
 import dev.imb11.skinshuffle.client.preset.SkinPreset;
 import dev.lambdaurora.spruceui.render.SpruceGuiGraphics;
 import dev.lambdaurora.spruceui.screen.SpruceScreen;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.ScreenRect;
-import net.minecraft.client.gui.tab.TabManager;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.GridWidget;
-import net.minecraft.client.gui.widget.SimplePositioningWidget;
-import net.minecraft.client.gui.widget.TabNavigationWidget;
-import net.minecraft.screen.ScreenTexts;
-import net.minecraft.text.Text;
-
 import java.nio.file.Path;
 import java.util.List;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.tabs.TabManager;
+import net.minecraft.client.gui.components.tabs.TabNavigationBar;
+import net.minecraft.client.gui.layouts.FrameLayout;
+import net.minecraft.client.gui.layouts.GridLayout;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
+import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
 
 /**
  * Screen for editing skin presets.
@@ -36,27 +35,27 @@ public class PresetEditScreen extends SpruceScreen {
     private final PresetWidget<?> presetWidget;
     private final SkinPreviewRenderer previewRenderer;
     // Tabs and navigation
-    private final TabManager tabManager = new TabManager(this::addDrawableChild, this::remove);
+    private final TabManager tabManager = new TabManager(this::addRenderableWidget, this::removeWidget);
     private int sideMargins;
-    private TabNavigationWidget tabNavigation;
+    private TabNavigationBar tabNavigation;
     private SkinSourceTabComponent skinSourceTab;
     private SkinCustomizationTabComponent skinCustomizationTab;
 
     // UI components
-    private GridWidget actionButtonsGrid;
-    private ButtonWidget exitButton;
+    private GridLayout actionButtonsGrid;
+    private Button exitButton;
     private boolean isValid = true;
 
     /**
      * Constructor for PresetEditScreen.
      */
     public PresetEditScreen(PresetWidget<?> presetWidget, CarouselScreen parent, SkinPreset preset) {
-        super(Text.translatable("skinshuffle.edit.title"));
+        super(Component.translatable("skinshuffle.edit.title"));
         this.presetWidget = presetWidget;
         this.preset = preset.copy();
         this.originalPreset = preset;
         this.parent = parent;
-        this.previewRenderer = new SkinPreviewRenderer(MinecraftClient.getInstance());
+        this.previewRenderer = new SkinPreviewRenderer(Minecraft.getInstance());
     }
 
     @Override
@@ -65,42 +64,42 @@ public class PresetEditScreen extends SpruceScreen {
 
         // Initialize tabs
         this.skinSourceTab = new SkinSourceTabComponent(
-                textRenderer,
+                font,
                 preset,
-                client,
+                minecraft,
                 isValid -> {
                     this.isValid = isValid;
                     updateButtonStates();
                 });
 
         this.skinCustomizationTab = new SkinCustomizationTabComponent(
-                textRenderer,
+                font,
                 preset);
 
         // Set up tab navigation
-        this.tabNavigation = TabNavigationWidget.builder(this.tabManager, this.width)
-                .tabs(skinSourceTab, skinCustomizationTab).build();
-        this.addDrawableChild(this.tabNavigation);
+        this.tabNavigation = TabNavigationBar.builder(this.tabManager, this.width)
+                .addTabs(skinSourceTab, skinCustomizationTab).build();
+        this.addRenderableWidget(this.tabNavigation);
 
         // Create action buttons
-        this.actionButtonsGrid = new GridWidget().setColumnSpacing(10);
-        GridWidget.Adder adder = this.actionButtonsGrid.createAdder(2);
+        this.actionButtonsGrid = new GridLayout().columnSpacing(10);
+        GridLayout.RowHelper adder = this.actionButtonsGrid.createRowHelper(2);
 
-        adder.add(ButtonWidget.builder(ScreenTexts.CANCEL, (button) -> {
-            this.close();
+        adder.addChild(Button.builder(CommonComponents.GUI_CANCEL, (button) -> {
+            this.onClose();
         }).build());
 
-        this.exitButton = ButtonWidget.builder(ScreenTexts.OK, (button) -> {
+        this.exitButton = Button.builder(CommonComponents.GUI_OK, (button) -> {
             saveChanges();
             parent.hasEditedPreset = true;
-            this.close();
+            this.onClose();
         }).build();
 
-        adder.add(exitButton);
+        adder.addChild(exitButton);
 
-        this.actionButtonsGrid.forEachChild((child) -> {
-            child.setNavigationOrder(1);
-            this.addDrawableChild(child);
+        this.actionButtonsGrid.visitWidgets((child) -> {
+            child.setTabOrderGroup(1);
+            this.addRenderableWidget(child);
         });
 
         // Initialize the UI components
@@ -118,16 +117,16 @@ public class PresetEditScreen extends SpruceScreen {
 
         if (this.tabNavigation != null && this.actionButtonsGrid != null) {
             // Update tab navigation
-            this.tabNavigation.setWidth(this.width);
-            this.tabNavigation.init();
+            this.tabNavigation.updateWidth(this.width);
+            this.tabNavigation.arrangeElements();
 
             // Position action buttons at the bottom
-            this.actionButtonsGrid.refreshPositions();
-            SimplePositioningWidget.setPos(this.actionButtonsGrid, 0, this.height - 36, this.width, 36);
+            this.actionButtonsGrid.arrangeElements();
+            FrameLayout.centerInRectangle(this.actionButtonsGrid, 0, this.height - 36, this.width, 36);
 
             // Set tab area between navigation and buttons
-            int navBottom = this.tabNavigation.getNavigationFocus().getBottom();
-            ScreenRect screenRect = new ScreenRect(0, navBottom, this.width, this.actionButtonsGrid.getY() - navBottom);
+            int navBottom = this.tabNavigation.getRectangle().bottom();
+            ScreenRectangle screenRect = new ScreenRectangle(0, navBottom, this.width, this.actionButtonsGrid.getY() - navBottom);
             this.tabManager.setTabArea(screenRect);
 
             // Initialize tabs with screen dimensions
@@ -166,7 +165,7 @@ public class PresetEditScreen extends SpruceScreen {
     public void filesDragged(List<Path> paths) {
     *///?} else {
     @Override
-    public void onFilesDropped(List<Path> paths) {
+    public void onFilesDrop(List<Path> paths) {
         //?}
         if (!paths.isEmpty()) {
             Path firstPath = paths.getFirst();
@@ -176,8 +175,8 @@ public class PresetEditScreen extends SpruceScreen {
     }
 
     @Override
-    public void render(SpruceGuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        super.render(graphics, mouseX, mouseY, delta);
+    public void extractRenderState(SpruceGuiGraphics graphics, int mouseX, int mouseY, float delta) {
+        super.extractRenderState(graphics, mouseX, mouseY, delta);
 
         // Calculate preview dimensions
         int ratioMulTen = 16;
@@ -214,15 +213,15 @@ public class PresetEditScreen extends SpruceScreen {
         this.exitButton.active = !this.preset.equals(this.originalPreset);
 
         // Render drag and drop hint
-        Text text = Text.translatable("skinshuffle.edit.drag_and_drop");
-        int x = this.exitButton.getX() - (this.textRenderer.getWidth(text) / 2);
-        int y = this.exitButton.getY() - this.textRenderer.fontHeight - 5;
-        graphics.vanilla().drawTextWithShadow(this.textRenderer, text, x, y, 0xCFFFFFFF);
+        Component text = Component.translatable("skinshuffle.edit.drag_and_drop");
+        int x = this.exitButton.getX() - (this.font.width(text) / 2);
+        int y = this.exitButton.getY() - this.font.lineHeight - 5;
+        graphics.vanilla().text(this.font, text, x, y, 0xCFFFFFFF);
     }
 
     @Override
-    public void close() {
-        this.client.setScreen(parent);
+    public void onClose() {
+        this.minecraft.setScreen(parent);
     }
 }
 

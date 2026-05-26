@@ -168,7 +168,7 @@
 
 package dev.imb11.skinshuffle.client.gui.renderer;
 
-import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.renderer.MultiBufferSource;
 
 /**
  * @source <a href="https://github.com/SkyblockerMod/Skyblocker/blob/ac452aea80dbe3c789a2a717fd22837f821cce67/src/main/java/de/hysky/skyblocker/utils/render/gui/state/InstancedGuiElementRenderState.java">SkyblockerMod</a>
@@ -179,5 +179,5 @@ public interface InstancedGuiEntityRenderState {
 
     void setAlpha(float alpha);
 
-    InstancedGuiEntityElementRenderer newRenderer(VertexConsumerProvider.Immediate vertexConsumers);
+    InstancedGuiEntityElementRenderer newRenderer(MultiBufferSource.BufferSource vertexConsumers);
 }

@@ -102,8 +102,8 @@
   "skinshuffle.edit.source.invalid_url": "§4§nInvalid URL§r\n\nURL is invalid. Must be either a \nvalid §lhttp§r or §lhttps§r URL.",
   "skinshuffle.edit.source.uuid": "UUID",
   "skinshuffle.edit.source.invalid_uuid": "§4§nInvalid UUID§r\n\nUUID must be in the following format:\n§lxxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-  "skinshuffle.edit.source.resource_location": "Resource Location",
-  "skinshuffle.edit.source.invalid_resource_location": "§4§nInvalid Resource Location§r\n\nResource location must be a valid\ntexture file that is loaded by the game.",
+  "skinshuffle.edit.source.resource_location": "Identifier",
+  "skinshuffle.edit.source.invalid_resource_location": "§4§nInvalid Identifier§r\n\nIdentifier must be a valid\ntexture file that is loaded by the game.",
   "skinshuffle.edit.source.unchanged": "Keep Current",
   "skinshuffle.edit.source.cycle_prefix": "Source",
   "skinshuffle.edit.source.title": "Skin Source",
@@ -144,5 +144,5 @@
   "key.skinshuffle.preset_7": "Preset Keybind 7",
   "key.skinshuffle.preset_8": "Preset Keybind 8",
   "key.skinshuffle.preset_9": "Preset Keybind 9",
-  "category.skinshuffle.presets": "SkinShuffle Quick Changers"
+  "key.category.skinshuffle.presets": "SkinShuffle Quick Changers"
 }

@@ -1,10 +1,10 @@
 package dev.imb11.skinshuffle.client.gui.widgets.presets;
 
+import com.mojang.blaze3d.Blaze3D;
 import dev.imb11.skinshuffle.client.gui.carousels.CarouselScreen;
 import dev.lambdaurora.spruceui.Position;
 import dev.lambdaurora.spruceui.widget.container.SpruceContainerWidget;
-import net.minecraft.client.util.GlfwUtil;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
 
 public abstract class AbstractCardWidget<S extends CarouselScreen> extends SpruceContainerWidget {
     protected final S parent;
@@ -24,23 +24,23 @@ public abstract class AbstractCardWidget<S extends CarouselScreen> extends Spruc
     }
 
     public int getDeltaX(int x) {
-        var deltaTime = (GlfwUtil.getTime() - lastPositionTime) * 5;
-        deltaTime = MathHelper.clamp(deltaTime, 0, 1);
+        var deltaTime = (Blaze3D.getTime() - lastPositionTime) * 5;
+        deltaTime = Mth.clamp(deltaTime, 0, 1);
         deltaTime = Math.sin(deltaTime * Math.PI / 2);
-        return (int) MathHelper.lerp(deltaTime, lastX, x);
+        return (int) Mth.lerp(deltaTime, lastX, x);
     }
 
     public int getDeltaY(int y) {
-        var deltaTime = (GlfwUtil.getTime() - lastPositionTime) * 5;
-        deltaTime = MathHelper.clamp(deltaTime, 0, 1);
+        var deltaTime = (Blaze3D.getTime() - lastPositionTime) * 5;
+        deltaTime = Mth.clamp(deltaTime, 0, 1);
         deltaTime = Math.sin(deltaTime * Math.PI / 2);
-        return (int) MathHelper.lerp(deltaTime, lastY, y);
+        return (int) Mth.lerp(deltaTime, lastY, y);
     }
 
     public void refreshLastPosition() {
         this.lastX = getDeltaX(position.getRelativeX());
         this.lastY = getDeltaY(position.getRelativeY());
-        this.lastPositionTime = GlfwUtil.getTime();
+        this.lastPositionTime = Blaze3D.getTime();
     }
 
     public abstract boolean isMovable();

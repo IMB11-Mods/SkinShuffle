@@ -4,13 +4,14 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.imb11.skinshuffle.SkinShuffle;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.texture.ResourceTexture;
-import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.Objects;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.SimpleTexture;
+import net.minecraft.core.ClientAsset;
+import net.minecraft.resources.Identifier;
 
 public final class ResourceSkin implements Skin {
     public static final Identifier SERIALIZATION_ID = SkinShuffle.id("resource");
@@ -19,17 +20,32 @@ public final class ResourceSkin implements Skin {
             Identifier.CODEC.fieldOf("texture").forGetter(ResourceSkin::getTexture),
             Codec.STRING.fieldOf("model").forGetter(ResourceSkin::getModel)
     ).apply(instance, ResourceSkin::new));
-    private final Identifier texture;
+    private final ClientAsset.Texture texture;
     private String model;
 
     public ResourceSkin(Identifier texture, String model) {
-        this.texture = texture;
+        this.texture = new ClientAsset.Texture() {
+            @Override
+            public Identifier texturePath() {
+                return texture;
+            }
+
+            @Override
+            public Identifier id() {
+                return texture;
+            }
+        };
         this.model = model;
     }
 
     @Override
-    public @Nullable Identifier getTexture() {
+    public ClientAsset.@Nullable Texture getTextureAsset() {
         return texture;
+    }
+
+    @Override
+    public Identifier getTexture() {
+        return texture.texturePath();
     }
 
     @Override
@@ -58,7 +74,7 @@ public final class ResourceSkin implements Skin {
         var configSkin = new ConfigSkin(textureName, getModel());
 
 
-        var resourceManager = MinecraftClient.getInstance().getResourceManager();
+        var resourceManager = Minecraft.getInstance().getResourceManager();
         //? if <1.21.4 {
         /*try (ResourceTexture.TextureData data = ResourceTexture.TextureData.load(resourceManager, getTexture())) {
             var nativeImage = data.getImage();
@@ -67,20 +83,16 @@ public final class ResourceSkin implements Skin {
             throw new RuntimeException("Failed to save ResourceSkin to config.", e);
         }
         *///?} else {
-        try (var resource = new ResourceTexture(getTexture())) {
+        try (var resource = new SimpleTexture(getTexture())) {
             var resourceTex = resource.loadContents(resourceManager);
             var image = resourceTex.image();
-            image.writeTo(configSkin.getFile());
+            image.writeToFile(configSkin.getFile());
         } catch (IOException e) {
             throw new RuntimeException("Failed to save ResourceSkin to config.", e);
         }
         //?}
 
         return configSkin;
-    }
-
-    public Identifier texture() {
-        return texture;
     }
 
     public String model() {

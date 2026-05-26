@@ -1,5 +1,6 @@
 package dev.imb11.skinshuffle.client.gui.widgets.presets;
 
+import com.mojang.blaze3d.Blaze3D;
 import dev.imb11.skinshuffle.client.config.SkinPresetManager;
 import dev.imb11.skinshuffle.client.gui.carousels.CompactCarouselScreen;
 import dev.imb11.skinshuffle.client.gui.widgets.buttons.VariableButton;
@@ -7,16 +8,16 @@ import dev.imb11.skinshuffle.client.preset.SkinPreset;
 import dev.lambdaurora.spruceui.Position;
 import dev.lambdaurora.spruceui.render.SpruceGuiGraphics;
 import dev.lambdaurora.spruceui.widget.SpruceWidget;
-import net.minecraft.client.util.GlfwUtil;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.math.random.Random;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.RandomSource;
 import org.joml.Matrix3x2fStack;
 import org.lwjgl.glfw.GLFW;
 
 public class CompactPresetWidget extends PresetWidget<CompactCarouselScreen> {
-    private static final Random WIGGLE_RANDOM = Random.create();
-    private final float wiggleAmount = WIGGLE_RANDOM.nextFloat() + 1f;
+    private static final RandomSource WIGGLE_RANDOM = RandomSource.create();
+    private final float wiggleAmount = (WIGGLE_RANDOM.nextFloat() + 1f) * .2f;
     private final float wiggleSpeed = WIGGLE_RANDOM.nextFloat() * 4f + 16f;
     protected VariableButton selectButton;
 
@@ -28,7 +29,7 @@ public class CompactPresetWidget extends PresetWidget<CompactCarouselScreen> {
 
         selectButton = new VariableButton(
                 Position.of((getWidth() / 2) + 4, getHeight() - 24), getWidth() / 2 - (4 * 2), 20,
-                Text.translatable("skinshuffle.carousel.preset_widget.select"),
+                Component.translatable("skinshuffle.carousel.preset_widget.select"),
                 button -> {
                     SkinPresetManager.setChosenPreset(getPreset(), parent.hasEditedPreset);
                     SkinPresetManager.savePresets();
@@ -42,7 +43,7 @@ public class CompactPresetWidget extends PresetWidget<CompactCarouselScreen> {
 
         deleteButton.overridePosition((getWidth() / 2) + 4, getHeight() - 24);
         deleteButton.overrideDimensions(getWidth() / 2 - (4 * 2), 20);
-        deleteButton.setMessage(Text.translatable("skinshuffle.carousel.preset_widget.delete").formatted(Formatting.RED));
+        deleteButton.setMessage(Component.translatable("skinshuffle.carousel.preset_widget.delete").withStyle(ChatFormatting.RED));
         deleteButton.setVisible(false);
     }
 
@@ -57,8 +58,8 @@ public class CompactPresetWidget extends PresetWidget<CompactCarouselScreen> {
     }
 
     @Override
-    public void render(SpruceGuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        Matrix3x2fStack matrices = graphics.vanilla().getMatrices();
+    public void extractRenderState(SpruceGuiGraphics graphics, int mouseX, int mouseY, float delta) {
+        Matrix3x2fStack matrices = graphics.vanilla().pose();
         matrices.pushMatrix();
 
         // Wiggle effect when in edit mode and draggable
@@ -67,27 +68,27 @@ public class CompactPresetWidget extends PresetWidget<CompactCarouselScreen> {
             float cy = getY() + getHeight() * 0.5f;
             matrices.translate(cx, cy);
 
-            float angle = (float) Math.sin(GlfwUtil.getTime() * wiggleSpeed) * wiggleAmount;
+            float angle = (float) Math.sin(Blaze3D.getTime() * wiggleSpeed) * wiggleAmount;
             matrices.rotate(angle);
 
             matrices.translate(-cx, -cy);
         }
 
-        super.render(graphics, mouseX, mouseY, delta);
+        super.extractRenderState(graphics, mouseX, mouseY, delta);
         matrices.popMatrix();
     }
 
     @Override
-    protected boolean onMouseClick(double mouseX, double mouseY, int button) {
+    protected boolean onMouseClick(MouseButtonEvent event, boolean doubleClick) {
         for (SpruceWidget widget : this) {
-            if (widget.mouseClicked(mouseX, mouseY, button)) {
+            if (widget.mouseClicked(event, doubleClick)) {
                 return true;
             }
         }
 
-        if (button == GLFW.GLFW_MOUSE_BUTTON_1) {
+        if (event.button() == GLFW.GLFW_MOUSE_BUTTON_1) {
             this.setDragging(true);
-            this.setDragStart(mouseX - getX(), mouseY - getY());
+            this.setDragStart(event.x() - getX(), event.y() - getY());
             return true;
         }
 
@@ -104,7 +105,7 @@ public class CompactPresetWidget extends PresetWidget<CompactCarouselScreen> {
         int margin = 5;
 
         int x1 = getX() + margin;
-        int y1 = getY() + margin + this.client.textRenderer.fontHeight + 1; // Below the title
+        int y1 = getY() + margin + this.client.font.lineHeight + 1; // Below the title
         int x2 = x1 + getWidth() / 2;
         int y2 = y1 + (int) (getHeight() / 1.5f);
 

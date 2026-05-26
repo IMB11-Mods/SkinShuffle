@@ -8,13 +8,16 @@ import dev.imb11.skinshuffle.networking.RefreshPlayerListEntryPayload;
 import dev.imb11.skinshuffle.networking.ServerSkinHandling;
 import dev.imb11.skinshuffle.networking.SkinRefreshPayload;
 import dev.imb11.skinshuffle.util.SkinCacheRegistry;
-import net.fabricmc.api.ModInitializer;
+import dev.yumi.mc.core.api.ModContainer;
+import dev.yumi.mc.core.api.YumiMods;
+import dev.yumi.mc.core.api.entrypoint.ModInitializer;
+//? fabric {
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
-import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.util.SkinTextures;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.util.Identifier;
+//?}
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.player.PlayerSkin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,26 +31,28 @@ import java.util.concurrent.CompletableFuture;
 public class SkinShuffle implements ModInitializer {
     public static final String MOD_ID = "skinshuffle";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
-    public static final Path DATA_DIR = FabricLoader.getInstance().getConfigDir().resolve("skinshuffle");
+    public static final Path DATA_DIR = YumiMods.get().getConfigDirectory().resolve("skinshuffle");
 
     public static Identifier id(String path) {
-        return Identifier.of(MOD_ID, path);
+        return Identifier.fromNamespaceAndPath(MOD_ID, path);
     }
 
     @Override
-    public void onInitialize() {
-        PayloadTypeRegistry.playC2S().register(
+    public void onInitialize(ModContainer container) {
+        //? fabric {
+        PayloadTypeRegistry.serverboundPlay().register(
                 SkinRefreshPayload.PACKET_ID,
                 SkinRefreshPayload.PACKET_CODEC
         );
-        PayloadTypeRegistry.playS2C().register(
+        PayloadTypeRegistry.clientboundPlay().register(
                 HandshakePayload.PACKET_ID,
-                PacketCodec.unit(HandshakePayload.INSTANCE)
+                HandshakePayload.PACKET_CODEC
         );
-        PayloadTypeRegistry.playS2C().register(
+        PayloadTypeRegistry.clientboundPlay().register(
                 RefreshPlayerListEntryPayload.PACKET_ID,
                 RefreshPlayerListEntryPayload.PACKET_CODEC
         );
+        //?}
 
         ensureDataDir();
         SkinCacheRegistry.initialize();
@@ -57,31 +62,17 @@ public class SkinShuffle implements ModInitializer {
         MixinStatics.INITIAL_SKIN_TEXTURES = CompletableFuture.supplyAsync(this::getInitialSkinTextures);
     }
 
-    private Optional<SkinTextures> getInitialSkinTextures() {
-        while (MinecraftClient.getInstance() == null) {
+    private CompletableFuture<Optional<PlayerSkin>> getInitialSkinTextures() {
+        while (Minecraft.getInstance() == null) {
             Thread.onSpinWait();
         }
-        while (MinecraftClient.getInstance().getSkinProvider() == null) {
+        while (Minecraft.getInstance().getSkinManager() == null) {
             Thread.onSpinWait();
         }
 
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
 
-        try {
-            assert client != null;
-            var tex = MojangSkinAPI.getPlayerSkinTexture(String.valueOf(client.getGameProfile().getId()));
-            var texProperty = tex.toProperty();
-            var dummyProfile = new GameProfile(UUID.randomUUID(), "dummyname");
-            dummyProfile.getProperties().put("textures", texProperty);
-            //? if <1.21.4 {
-            /*return client.getSkinProvider().fetchSkinTextures(dummyProfile).thenApply(Optional::of).get();
-             *///?} else {
-            return client.getSkinProvider().fetchSkinTextures(dummyProfile).get();
-            //?}
-        } catch (Exception error) {
-            LOGGER.error("Failed to fetch initial skin textures from Mojang's API.", error);
-            return Optional.of(client.getSkinProvider().getSkinTextures(client.getGameProfile()));
-        }
+        return client.getSkinManager().get(client.getGameProfile());
     }
 
     private void ensureDataDir() {

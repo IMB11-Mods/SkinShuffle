@@ -9,13 +9,13 @@ import dev.imb11.skinshuffle.client.preset.SkinPreset;
 import dev.lambdaurora.spruceui.Position;
 import dev.lambdaurora.spruceui.widget.SpruceButtonWidget;
 import dev.lambdaurora.spruceui.widget.SpruceIconButtonWidget;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.screen.ScreenTexts;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
 
 public class CompactCarouselScreen extends CarouselScreen {
-    private static final Text SHUFFLE_BUTTON_TOOLTIP_ENABLE = Text.translatable("skinshuffle.carousel.shuffle_button.tooltip.enable");
-    private static final Text SHUFFLE_BUTTON_TOOLTIP_DISABLE = Text.translatable("skinshuffle.carousel.shuffle_button.tooltip.disable");
+    private static final Component SHUFFLE_BUTTON_TOOLTIP_ENABLE = Component.translatable("skinshuffle.carousel.shuffle_button.tooltip.enable");
+    private static final Component SHUFFLE_BUTTON_TOOLTIP_DISABLE = Component.translatable("skinshuffle.carousel.shuffle_button.tooltip.disable");
 
     private boolean editMode;
     private SpruceIconButtonWidget shuffleButton;
@@ -28,10 +28,10 @@ public class CompactCarouselScreen extends CarouselScreen {
     protected void init() {
         super.init();
 
-        this.shuffleButton = this.addDrawableChild(new SkinShuffleIconButton(Position.of(46, 2), 20, 20, Text.empty(),
+        this.shuffleButton = this.addRenderableWidget(new SkinShuffleIconButton(Position.of(46, 2), 20, 20, Component.empty(),
                 (btn) -> setEditMode(!isEditMode()), (btn) -> SkinShuffle.id("textures/gui/shuffle-mode-" + (isEditMode() ? "on" : "off") + ".png")));
 
-        this.addDrawableChild(new SpruceButtonWidget(Position.of(this.width / 2 - 64, this.height - 23), 128, 20, ScreenTexts.DONE, button -> {
+        this.addRenderableWidget(new SpruceButtonWidget(Position.of(this.width / 2 - 64, this.height - 23), 128, 20, CommonComponents.GUI_DONE, button -> {
             this.handleCloseBehaviour();
         }));
 

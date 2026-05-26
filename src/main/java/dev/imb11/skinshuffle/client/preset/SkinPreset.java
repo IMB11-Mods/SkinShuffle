@@ -7,10 +7,10 @@ import dev.imb11.skinshuffle.client.skin.ResourceSkin;
 import dev.imb11.skinshuffle.client.skin.Skin;
 import dev.imb11.skinshuffle.client.skin.UrlSkin;
 import dev.imb11.skinshuffle.util.NetworkingUtil;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.session.Session;
-import net.minecraft.client.util.SkinTextures;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.User;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.player.PlayerSkin;
 
 public class SkinPreset {
     public static final Codec<SkinPreset> CODEC = RecordCodecBuilder.create(instance ->
@@ -39,19 +39,25 @@ public class SkinPreset {
     }
 
     public static SkinPreset generateDefaultPreset() {
-        MinecraftClient client = MinecraftClient.getInstance();
-        Session session = client.getSession();
-        String name = session.getUsername();
+        Minecraft client = Minecraft.getInstance();
+        User session = client.getUser();
+        String name = session.getName();
 
         if (!NetworkingUtil.isLoggedIn()) {
-            Skin skin = new ResourceSkin(Identifier.of("minecraft:textures/entity/player/wide/steve.png"), "default");
+            Skin skin = new ResourceSkin(Identifier.parse("minecraft:textures/entity/player/wide/steve.png"), "default");
             return new SkinPreset(skin, name, -1);
         } else {
-            var skinQueryResult = MojangSkinAPI.getPlayerSkinTexture(String.valueOf(client.getGameProfile().getId()));
+            var skinQueryResult = MojangSkinAPI.getPlayerSkinTexture(String.valueOf(client.getGameProfile().id()));
 
             if (skinQueryResult.usesDefaultSkin()) {
-                SkinTextures skinTexture = client.getSkinProvider().getSkinTextures(client.getGameProfile());
-                Skin skin = new ResourceSkin(skinTexture.texture(), skinTexture.texture().getPath().contains("/slim/") ? "slim" : "default");
+                var provider = client.getSkinManager();
+
+                if (provider == null) {
+                    return new SkinPreset(new ResourceSkin(Identifier.parse("minecraft:textures/entity/player/wide/steve.png"), "default"));
+                }
+
+                PlayerSkin skinTexture = provider.createLookup(client.getGameProfile(), false).get();
+                Skin skin = new ResourceSkin(skinTexture.body().texturePath(), skinTexture.model().name());
 
                 return new SkinPreset(skin, name, -1);
             }

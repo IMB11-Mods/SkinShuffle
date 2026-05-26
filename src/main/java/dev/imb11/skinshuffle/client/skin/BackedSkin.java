@@ -3,9 +3,10 @@ package dev.imb11.skinshuffle.client.skin;
 import dev.imb11.skinshuffle.SkinShuffle;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.texture.AbstractTexture;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.AbstractTexture;
+import net.minecraft.core.ClientAsset;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class BackedSkin implements Skin, AutoCloseable {
@@ -25,7 +26,7 @@ public abstract class BackedSkin implements Skin, AutoCloseable {
     public static void decrementInstanceCountAndCleanup(Identifier id) {
         INSTANCE_COUNTS.compute(id, (k, v) -> v == null ? 0 : v - 1);
         if (INSTANCE_COUNTS.getInt(id) == 0) {
-            MinecraftClient.getInstance().getTextureManager().destroyTexture(id);
+            Minecraft.getInstance().getTextureManager().release(id);
             INSTANCE_COUNTS.removeInt(id);
         }
     }
@@ -33,17 +34,17 @@ public abstract class BackedSkin implements Skin, AutoCloseable {
     public void fetchSkin() {
         var uniqueness = getTextureUniqueness();
         var id = SkinShuffle.id("skin/" + getSerializationId().getPath() + "/" + Math.abs(uniqueness.hashCode()));
-        var textureManager = MinecraftClient.getInstance().getTextureManager();
+        var textureManager = Minecraft.getInstance().getTextureManager();
 
         //? if <1.21.4 {
         /*if (textureManager.getOrDefault(id, null) == null) {
          *///?} else {
-        if (textureManager.textures.get(id) == null) {
+        if (textureManager.byPath.get(id) == null) {
             //?}
             // Texture doesn't exist, we need to fetch it.
             fetching = true;
 
-            MinecraftClient.getInstance().execute(() -> {
+            Minecraft.getInstance().execute(() -> {
                 try {
                     var texture = loadTexture(() -> {
                         fetching = false;
@@ -52,7 +53,7 @@ public abstract class BackedSkin implements Skin, AutoCloseable {
                     });
 
                     if (texture != null) {
-                        textureManager.registerTexture(id, texture);
+                        textureManager.register(id, texture);
                     } else {
                         fetching = false;
                         fetched = true;
@@ -73,7 +74,27 @@ public abstract class BackedSkin implements Skin, AutoCloseable {
     }
 
     @Override
-    public @Nullable Identifier getTexture() {
+    public ClientAsset.@Nullable Texture getTextureAsset() {
+        // Fetch the skin if it hasn't been fetched yet and isn't being fetched
+        if (textureId == null && !fetching && !fetched) {
+            fetchSkin();
+        }
+
+        return new ClientAsset.Texture() {
+            @Override
+            public Identifier texturePath() {
+                return textureId;
+            }
+
+            @Override
+            public Identifier id() {
+                return textureId;
+            }
+        };
+    }
+
+    @Override
+    public Identifier getTexture() {
         // Fetch the skin if it hasn't been fetched yet and isn't being fetched
         if (textureId == null && !fetching && !fetched) {
             fetchSkin();

@@ -5,13 +5,13 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.imb11.skinshuffle.SkinShuffle;
 import dev.imb11.skinshuffle.api.MojangSkinAPI;
-import net.minecraft.client.texture.AbstractTexture;
-import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import net.minecraft.client.renderer.texture.AbstractTexture;
+import net.minecraft.resources.Identifier;
 
 public class UUIDSkin extends UrlSkin {
     public static final Identifier SERIALIZATION_ID = SkinShuffle.id("uuid");

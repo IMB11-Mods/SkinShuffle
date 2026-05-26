@@ -2,14 +2,14 @@ package dev.imb11.skinshuffle.client.gui.widgets.buttons;
 
 import dev.imb11.skinshuffle.SkinShuffle;
 import dev.imb11.skinshuffle.client.gui.GeneratedScreens;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.resource.language.I18n;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.Component;
 
 public class WarningIndicatorButton extends IconButtonWidget {
     public WarningIndicatorButton(int x, int y, Screen parent) {
@@ -18,33 +18,32 @@ public class WarningIndicatorButton extends IconButtonWidget {
                 16, 16, 16, 16, 32,
                 SkinShuffle.id("textures/gui/warning-icon.png"),
                 button -> {
-                    var client = MinecraftClient.getInstance();
+                    var client = Minecraft.getInstance();
                     client.setScreen(GeneratedScreens.getReconnectScreen(parent));
                 }
         );
 
-        var client = MinecraftClient.getInstance();
+        var client = Minecraft.getInstance();
 
-        this.setTooltip(Tooltip.of(Text.literal(I18n.translate("skinshuffle.reconnect.warning",
-                client.isInSingleplayer() ? I18n.translate("skinshuffle.reconnect.rejoin") : I18n.translate("skinshuffle.reconnect.reconnect"))).formatted(Formatting.RED, Formatting.BOLD)));
+        this.setTooltip(Tooltip.create(Component.literal(I18n.get("skinshuffle.reconnect.warning",
+                client.isLocalServer() ? I18n.get("skinshuffle.reconnect.rejoin") : I18n.get("skinshuffle.reconnect.reconnect"))).withStyle(ChatFormatting.RED, ChatFormatting.BOLD)));
     }
 
     @Override
-    public Text getMessage() {
-        return Text.translatable("skinshuffle.indicator");
+    public Component getMessage() {
+        return Component.translatable("skinshuffle.indicator");
     }
 
     @Override
-    public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
-        super.renderWidget(context, mouseX, mouseY, delta);
-
-        context.drawTexture(
+    public void extractContents(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+        this.extractDefaultSprite(context);
+        context.blit(
                 RenderPipelines.GUI_TEXTURED,
                 this.iconTexture,
                 this.getIconX(),
                 this.getIconY(),
                 this.iconU,
-                this.iconV + (active ? (hovered ? 16 : 0) : this.iconDisabledVOffset),
+                this.iconV + (active ? (isHovered ? 16 : 0) : this.iconDisabledVOffset),
                 this.iconWidth,
                 this.iconHeight,
                 this.iconTextureWidth,

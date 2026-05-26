@@ -1,13 +1,13 @@
 package dev.imb11.skinshuffle.mixin.accessor;
 
-import net.minecraft.client.toast.ToastManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 import java.util.List;
+import net.minecraft.client.gui.components.toasts.ToastManager;
 
 @Mixin(ToastManager.class)
 public interface ToastManagerAccessor {
-    @Accessor("visibleEntries")
-    List<ToastManager.Entry<?>> getVisibleEntries();
+    @Accessor("visibleToasts")
+    List<ToastManager.ToastInstance<?>> getVisibleEntries();
 }

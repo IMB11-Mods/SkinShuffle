@@ -7,8 +7,8 @@ import dev.imb11.skinshuffle.SkinShuffle;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import kong.unirest.Unirest;
-import net.minecraft.client.texture.AbstractTexture;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.renderer.texture.AbstractTexture;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStream;

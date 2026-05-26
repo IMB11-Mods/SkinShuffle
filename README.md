@@ -1,8 +1,10 @@
-[![](https://github.com/mineblock11/mineblock11/blob/master/fabric-api_64h.png?raw=true)](https://modrinth.com/mod/fabric-api) [![](https://cdn.mineblock11.dev/enjarai%20badge_64h.png)](https://discord.gg/WcYsDDQtyR) [![](https://cdn.mineblock11.dev/mineblock%20badge_64h.png)](https://discord.gg/UzHtJKqHny)
+[![](https://github.com/mineblock11/mineblock11/blob/master/fabric-api_64h.png?raw=true)](https://modrinth.com/mod/fabric-api) [![](https://cdn.imb11.dev/mineblock%20badge_64h.png)](https://discord.gg/UzHtJKqHny) [![](https://cdn.imb11.dev/modding-elite-badge.png)](https://ko-fi.com/mineblock11)
 
 # SkinShuffle
 
 SkinShuffle is a mod that allows you to **change, store and customise** your skin in-game. It also allows you to change your skin **without leaving the server** as long as the mod is installed on the server.
+
+*SkinShuffle integrates with Mojang's online API to change skins, if you do not have a Minecraft account, SkinShuffle WILL NOT work, you will receive NO SUPPORT from me for using a pirated version of Minecraft.*
 
 Skins are stored in Skin Presets, these presets can be created from the following sources:
 
@@ -10,17 +12,25 @@ Skins are stored in Skin Presets, these presets can be created from the followin
 - Usernames
 - UUIDs
 - Files
-- In-game textures (Resource Locations)
+- In-game textures (Identifiers)
 
 <hr />
 
-**Table Of Contents**
+<a href='https://www.youtube.com/watch?v=CNMASU7GQBs'><img width="1280" height="720" alt="image" src="https://github.com/user-attachments/assets/5c243296-1809-4b77-b56f-d85ba487d7fc" /></a>
 
-- [Client-Side Support](#client-side-support)
-  - [Carousel Screen](#carousel-screen)
-  - [Edit Screen](#edit-screen)
-  - [Configuration](#configuration)
-- [Server-Side Support](#server-side-support)
+
+<h2 id="server-side-support">Server-Side Support</h2>
+
+When SkinShuffle is installed on the server, you can change your skin in-game without having to relog. SkinShuffle will refresh your skin for you, and for other players instantly - even for players that do not have the mod on their client.
+
+**Got a Paper/Spigot/Bukkit server?** Consider using the [Skin Shuffle Bridge plugin](https://modrinth.com/plugin/skinshuffle-bridge) to allow players on your server to hot-swap skins!
+
+Alternatively, SkinShuffle is supported by [SkinRestorer (fabric+neoforge+forge)](https://modrinth.com/mod/skinrestorer) if your server has that installed, players using SkinShuffle will be able to quickly change their skins without needing to rejoin!
+
+We have massive plans to expand server-side support in the future:
+
+- Skin Changing Commands that allow vanilla clients to change their skins.
+- Skin Preset Sharing
 
 <h2 id="client-side-support">Client-Side Support</h2>
 
@@ -34,9 +44,12 @@ When you start the game for the first time with SkinShuffle, it will automatical
 
 The carousel is where all your skins will be stored for future use! You can create, edit and delete your presets.
   
+The carousel screen has two modes: Compact and Carousel
+
 You can customize every preset to your own desire in the edit screen.
 <br><br>
-<center><img width="50%" src="https://cdn.modrinth.com/data/3s19I5jr/images/ced596ec493eff53b3be5139fc991cf1e4d18d16.png"><img width="50%" src="https://cdn.modrinth.com/data/3s19I5jr/images/fea4801fa0923716a06982652c23c9a5c3fc72cf.png"></center>
+<center><img width="50%" src="https://cdn.modrinth.com/data/3s19I5jr/images/ced596ec493eff53b3be5139fc991cf1e4d18d16.png">
+<img width="50%" src="https://cdn.modrinth.com/data/3s19I5jr/images/fea4801fa0923716a06982652c23c9a5c3fc72cf.png"></center>
 
 <h3 id="edit-screen">Edit Screen</h2>
 
@@ -57,15 +70,11 @@ You can customize the speed that skins rotate in the carousel, to where they sho
 
 <br>
 <center>
-<img width="50%" src="https://cdn.modrinth.com/data/3s19I5jr/images/eed48c8290e725b61e4c9864295e798681390779.png" />
+<img width="50%" src="https://cdn.modrinth.com/data/3s19I5jr/images/d1f435ad282114885fd9b589c538c8e7250b39ac.png" />
 </center>
 
-<h2 id="server-side-support">Server-Side Support</h2>
+<small>
 
-When SkinShuffle is installed on the server, you can change your skin in-game without having to leave the game. SkinShuffle will refresh your skin for you, and for other players instantly - even for players that do not have the mod on their client.
+By using my mods, you agree to the [Modpack Distribution Guidelines](https://imb11.dev/legal/modpacks) and the [End User License Agreement](https://imb11.dev/legal/eula)
 
-We have massive plans to expand server-side support in the future:
-
-- Skin Changing Commands that allow vanilla clients to change their skins.
-- Skin Preset Sharing
-- Skin rendering for offline mode servers. 
+</small>

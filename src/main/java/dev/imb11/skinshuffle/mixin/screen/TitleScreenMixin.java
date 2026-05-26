@@ -6,10 +6,6 @@ import dev.imb11.skinshuffle.client.config.SkinShuffleConfig;
 import dev.imb11.skinshuffle.client.gui.GeneratedScreens;
 import dev.imb11.skinshuffle.util.NetworkingUtil;
 import dev.imb11.skinshuffle.util.ToastHelper;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.TitleScreen;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -19,22 +15,26 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.TitleScreen;
+import net.minecraft.network.chat.Component;
 
 @Mixin(TitleScreen.class)
 public class TitleScreenMixin extends Screen {
     @Shadow
     @Final
-    private boolean doBackgroundFade;
+    private boolean fading;
     @Unique
-    private ArrayList<ClickableWidget> openCarouselWidgets;
+    private ArrayList<AbstractWidget> openCarouselWidgets;
 
-    protected TitleScreenMixin(Text title) {
+    protected TitleScreenMixin(Component title) {
         super(title);
     }
 
-    @Inject(method = "render", at = @At("HEAD"))
+    @Inject(method = "extractRenderState", at = @At("HEAD"))
     public void refreshConfig(CallbackInfo ci) {
-        if (!MixinStatics.APPLIED_SKIN_MANAGER_CONFIGURATION && this.doBackgroundFade) {
+        if (!MixinStatics.APPLIED_SKIN_MANAGER_CONFIGURATION && this.fading) {
             MixinStatics.APPLIED_SKIN_MANAGER_CONFIGURATION = true;
             SkinPresetManager.apply();
 
@@ -45,15 +45,15 @@ public class TitleScreenMixin extends Screen {
     }
 
     @Override
-    public void close() {
+    public void onClose() {
         this.openCarouselWidgets = null;
     }
 
-    @Inject(method = "onDisplayed", at = @At("TAIL"), cancellable = false)
+    @Inject(method = "added", at = @At("TAIL"), cancellable = false)
     public void updateVisibility(CallbackInfo ci) {
         if (!SkinShuffleConfig.get().displayInTitleScreen && this.openCarouselWidgets != null) {
-            for (ClickableWidget openCarouselWidget : this.openCarouselWidgets) {
-                this.remove(openCarouselWidget);
+            for (AbstractWidget openCarouselWidget : this.openCarouselWidgets) {
+                this.removeWidget(openCarouselWidget);
             }
             this.openCarouselWidgets = null;
         }
@@ -69,8 +69,8 @@ public class TitleScreenMixin extends Screen {
         if (SkinShuffleConfig.get().displayInTitleScreen) {
             this.openCarouselWidgets = GeneratedScreens.createCarouselWidgets(this);
 
-            for (ClickableWidget carouselWidget : this.openCarouselWidgets) {
-                this.addDrawableChild(carouselWidget);
+            for (AbstractWidget carouselWidget : this.openCarouselWidgets) {
+                this.addRenderableWidget(carouselWidget);
             }
         }
     }

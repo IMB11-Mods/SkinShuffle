@@ -3,17 +3,18 @@ package dev.imb11.skinshuffle.client.gui.renderer;
 import dev.imb11.skinshuffle.client.SkinShuffleClient;
 import dev.imb11.skinshuffle.client.config.SkinShuffleConfig;
 import dev.imb11.skinshuffle.client.skin.Skin;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.render.state.special.EntityGuiElementRenderState;
-import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
-import net.minecraft.entity.EntityPose;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.client.renderer.state.gui.pip.GuiEntityRenderState;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Pose;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 public class GuiEntityRenderer {
 
-    public static void drawEntity(DrawContext context, int x1, int y1, int x2, int y2, int size,
+    public static void drawEntity(GuiGraphicsExtractor context, int x1, int y1, int x2, int y2, int size,
                                   float rotation, double mouseX, double mouseY, Skin skin,
                                   SkinShuffleConfig.SkinRenderStyle style, float alpha) {
 
@@ -38,7 +39,7 @@ public class GuiEntityRenderer {
         }
 
         // Create player render state
-        PlayerEntityRenderState renderState = createPlayerRenderState(skin, headYaw, headPitch, rotation);
+        AvatarRenderState renderState = createPlayerRenderState(skin, headYaw, headPitch, rotation);
 
         // Create base rotation quaternion (try Z-axis rotation if Y-axis doesn't work)
 //        System.out.println(rotation);
@@ -51,92 +52,92 @@ public class GuiEntityRenderer {
         // Render the entity within the scissor area
         context.enableScissor(x1, y1, x2, y2);
 
-        var state = new EntityGuiElementRenderState(renderState, entityPosition, baseRotation, null, x1, y1, x2, y2, (float) size, context.scissorStack.peekLast());
+        GuiEntityRenderState state = new GuiEntityRenderState(renderState, entityPosition, baseRotation, null, x1, y1, x2, y2, (float) size, context.scissorStack.peek());
 
         ((InstancedGuiEntityRenderState) (Object) state).setAlpha(alpha);
 
-        context.state.addSpecialElement(state);
+        context.guiRenderState.addPicturesInPictureState(state);
         context.disableScissor();
     }
 
-    private static PlayerEntityRenderState createPlayerRenderState(Skin skin, float headYaw, float headPitch, float rotation) {
-        PlayerEntityRenderState state = new PlayerEntityRenderState();
+    private static AvatarRenderState createPlayerRenderState(Skin skin, float headYaw, float headPitch, float rotation) {
+        AvatarRenderState state = new AvatarRenderState();
 
         // Basic entity properties
-        state.age = SkinShuffleClient.TOTAL_TICK_DELTA;
-        state.width = 0.6F;
-        state.height = 1.8F;
-        state.standingEyeHeight = 1.62F;
-        state.invisible = false;
-        state.sneaking = false;
-        state.onFire = false;
+        state.ageInTicks = SkinShuffleClient.TOTAL_TICK_DELTA;
+        state.boundingBoxWidth = 0.6F;
+        state.boundingBoxHeight = 1.8F;
+        state.eyeHeight = 1.62F;
+        state.isInvisible = false;
+        state.isDiscrete = false;
+        state.displayFireAnimation = false;
 
         // Body orientation - keep body facing forward
-        state.bodyYaw = headYaw * 0.1f + rotation;
-        state.relativeHeadYaw = headYaw; // Only the head turns with mouse
-        state.pitch = headPitch; // Head pitch
+        state.bodyRot = headYaw * 0.1f + rotation;
+        state.yRot = headYaw; // Only the head turns with mouse
+        state.xRot = headPitch; // Head pitch
         state.deathTime = 0.0F;
 
         // Gentle arm swaying animation
         float animationTime = SkinShuffleClient.TOTAL_TICK_DELTA * 0.067F;
-        state.limbSwingAnimationProgress = MathHelper.sin(animationTime) * 0.05F;
-        state.limbSwingAmplitude = 0.1F;
+        state.walkAnimationPos = Mth.sin(animationTime) * 0.05F;
+        state.walkAnimationSpeed = 0.1F;
 
         // Standard entity state
-        state.baseScale = 1.0F;
+        state.scale = 1.0F;
         state.ageScale = 1.0F;
-        state.flipUpsideDown = false; // Ensure this is explicitly false
-        state.shaking = false;
-        state.baby = false;
-        state.touchingWater = false;
-        state.usingRiptide = false;
-        state.hurt = false;
-        state.invisibleToPlayer = false;
-        state.hasOutline = false;
-        state.sleepingDirection = null;
-        state.customName = null;
-        state.pose = EntityPose.STANDING;
+        state.isUpsideDown = false; // Ensure this is explicitly false
+        state.isFullyFrozen = false;
+        state.isBaby = false;
+        state.isInWater = false;
+        state.isAutoSpinAttack = false;
+        state.hasRedOverlay = false;
+        state.isInvisibleToPlayer = false;
+        state.outlineColor = 0;
+        state.shadowPieces.clear();
+        state.lightCoords = 15728880;
+        state.bedOrientation = null;
+        state.nameTag = null;
+        state.pose = Pose.STANDING;
 
         // Biped state - keep everything neutral
-        state.leaningPitch = 0.0F;
-        state.handSwingProgress = 0.0F;
-        state.limbAmplitudeInverse = 1.0F;
-        state.crossbowPullTime = 0.0F;
-        state.itemUseTime = 0;
-        state.isInSneakingPose = false;
-        state.isGliding = false;
-        state.isSwimming = false;
-        state.hasVehicle = false;
+        state.swimAmount = 0.0F;
+        state.attackTime = 0.0F;
+        state.speedValue = 1.0F;
+        state.maxCrossbowChargeDuration = 0.0F;
+        state.ticksUsingItem = 0;
+        state.isCrouching = false;
+        state.isFallFlying = false;
+        state.isVisuallySwimming = false;
+        state.isPassenger = false;
         state.isUsingItem = false;
-        state.leftWingPitch = 0.0F;
-        state.leftWingYaw = 0.0F;
-        state.leftWingRoll = 0.0F;
+        state.elytraRotX = 0.0F;
+        state.elytraRotY = 0.0F;
+        state.elytraRotZ = 0.0F;
 
         // Player-specific properties
-        state.skinTextures = skin.getSkinTextures();
-        state.name = String.valueOf(skin.hashCode());
-        state.spectator = false;
-        state.stuckArrowCount = 0;
+        state.skin = skin.getSkinTextures();
+        state.scoreText = Component.nullToEmpty(String.valueOf(skin.hashCode()));
+        state.isSpectator = false;
+        state.arrowCount = 0;
         state.stingerCount = 0;
-        state.itemUseTimeLeft = 0;
-        state.handSwinging = false;
-        state.glidingTicks = 0.0F;
-        state.applyFlyingRotation = false;
-        state.flyingRotation = 0.0F;
+        state.fallFlyingTimeInTicks = 0.0F;
+        state.shouldApplyFlyingYRot = false;
+        state.flyingYRot = 0.0F;
 
         // Skin layer visibility
-        state.hatVisible = true;
-        state.jacketVisible = true;
-        state.leftPantsLegVisible = true;
-        state.rightPantsLegVisible = true;
-        state.leftSleeveVisible = true;
-        state.rightSleeveVisible = true;
-        state.capeVisible = SkinShuffleConfig.get().showCapeInPreview;
+        state.showHat = true;
+        state.showJacket = true;
+        state.showLeftPants = true;
+        state.showRightPants = true;
+        state.showLeftSleeve = true;
+        state.showRightSleeve = true;
+        state.showCape = SkinShuffleConfig.get().showCapeInPreview;
 
         // Misc properties
-        state.playerName = null;
-        state.leftShoulderParrotVariant = null;
-        state.rightShoulderParrotVariant = null;
+        state.scoreText = null;
+        state.parrotOnLeftShoulder = null;
+        state.parrotOnRightShoulder = null;
         state.id = 0;
 
         return state;

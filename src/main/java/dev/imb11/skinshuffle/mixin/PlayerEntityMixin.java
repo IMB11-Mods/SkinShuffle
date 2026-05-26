@@ -6,12 +6,12 @@ import dev.imb11.skinshuffle.client.preset.SkinPreset;
 import dev.imb11.skinshuffle.compat.CapesCompat;
 import dev.imb11.skinshuffle.compat.MinecraftCapesCompat;
 import dev.imb11.skinshuffle.util.SkinShuffleClientPlayer;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.AbstractClientPlayerEntity;
-import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.client.util.SkinTextures;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.world.World;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.PlayerInfo;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.PlayerSkin;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -20,23 +20,23 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(AbstractClientPlayerEntity.class)
-public abstract class PlayerEntityMixin extends PlayerEntity implements SkinShuffleClientPlayer {
+@Mixin(AbstractClientPlayer.class)
+public abstract class PlayerEntityMixin extends Player implements SkinShuffleClientPlayer {
     @Shadow
     @Nullable
-    private PlayerListEntry playerListEntry;
+    private PlayerInfo playerInfo;
 
-    private @Unique SkinTextures prevTextures;
+    private @Unique PlayerSkin prevTextures;
 
-    public PlayerEntityMixin(World world, GameProfile profile) {
+    public PlayerEntityMixin(Level world, GameProfile profile) {
         super(world, profile);
     }
 
-    @Inject(method = "getSkinTextures", at = @At("TAIL"), cancellable = true)
-    private void modifySkinTextures(CallbackInfoReturnable<net.minecraft.client.util.SkinTextures> cir) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        if (client.world != null && client.player != null) {
-            if (this.getUuid().equals(client.player.getUuid())) {
+    @Inject(method = "getSkin", at = @At("TAIL"), cancellable = true)
+    private void modifySkinTextures(CallbackInfoReturnable<PlayerSkin> cir) {
+        Minecraft client = Minecraft.getInstance();
+        if (client.level != null && client.player != null) {
+            if (this.getUUID().equals(client.player.getUUID())) {
                 SkinPreset currentPreset = SkinPresetManager.getChosenPreset();
                 var textures = currentPreset.getSkin().getSkinTextures();
 
@@ -59,6 +59,6 @@ public abstract class PlayerEntityMixin extends PlayerEntity implements SkinShuf
 
     @Override
     public void skinShuffle$refreshPlayerListEntry() {
-        this.playerListEntry = null;
+        this.playerInfo = null;
     }
 }

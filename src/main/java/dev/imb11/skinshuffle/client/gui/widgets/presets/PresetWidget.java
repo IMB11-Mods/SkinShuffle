@@ -10,11 +10,11 @@ import dev.imb11.skinshuffle.client.preset.SkinPreset;
 import dev.lambdaurora.spruceui.Position;
 import dev.lambdaurora.spruceui.render.SpruceGuiGraphics;
 import dev.lambdaurora.spruceui.widget.SpruceWidget;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.ScreenRect;
-import net.minecraft.client.gui.screen.ConfirmScreen;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
+import net.minecraft.client.gui.screens.ConfirmScreen;
+import net.minecraft.network.chat.Component;
 
 public abstract class PresetWidget<S extends CarouselScreen> extends AbstractCardWidget<S> {
     protected final SkinPreset skinPreset;
@@ -37,13 +37,13 @@ public abstract class PresetWidget<S extends CarouselScreen> extends AbstractCar
         if (showButtons) {
             this.editButton = new VariableButton(
                     Position.of(0, 0), 0, 0,
-                    Text.translatable("skinshuffle.carousel.preset_widget.edit"),
+                    Component.translatable("skinshuffle.carousel.preset_widget.edit"),
                     button -> client.setScreen(new PresetEditScreen(this, this.parent, this.skinPreset))
             );
 
             this.copyButton = new VariableButton(
                     Position.of(0, 0), 0, 0,
-                    Text.translatable("skinshuffle.carousel.preset_widget.copy"),
+                    Component.translatable("skinshuffle.carousel.preset_widget.copy"),
                     button -> {
                         SkinPreset presetCopy = this.skinPreset.copy();
                         presetCopy.setName(this.skinPreset.getName() + " (Copy)");
@@ -54,7 +54,7 @@ public abstract class PresetWidget<S extends CarouselScreen> extends AbstractCar
 
             this.deleteButton = new VariableButton(
                     Position.of(0, 0), 0, 0,
-                    Text.translatable("skinshuffle.carousel.preset_widget.delete"),
+                    Component.translatable("skinshuffle.carousel.preset_widget.delete"),
                     button -> {
                         ConfirmScreen confirmScreen = new ConfirmScreen(result -> {
                             if (result) {
@@ -62,7 +62,7 @@ public abstract class PresetWidget<S extends CarouselScreen> extends AbstractCar
                             }
                             this.parent.refresh();
                             this.client.setScreen(this.parent);
-                        }, Text.translatable("skinshuffle.carousel.confirmations.delete_preset.title"), Text.translatable("skinshuffle.carousel.confirmations.delete_preset.message"));
+                        }, Component.translatable("skinshuffle.carousel.confirmations.delete_preset.title"), Component.translatable("skinshuffle.carousel.confirmations.delete_preset.message"));
                         this.client.setScreen(confirmScreen);
                     }
             );
@@ -86,7 +86,7 @@ public abstract class PresetWidget<S extends CarouselScreen> extends AbstractCar
     }
 
     @Override
-    protected void renderBackground(SpruceGuiGraphics graphics, int mouseX, int mouseY, float delta) {
+    protected void extractBackground(SpruceGuiGraphics graphics, int mouseX, int mouseY, float delta) {
         int borderColour = this.active ? 0xDF000000 : 0x5F000000;
 
         if (SkinPresetManager.getChosenPreset().equals(this.skinPreset)) {
@@ -101,7 +101,7 @@ public abstract class PresetWidget<S extends CarouselScreen> extends AbstractCar
         graphics.fill(getX() + 1, getY() + 1, getX() + getWidth() - 1, getY() + getHeight() - 1, this.active ? 0x7F000000 : 0x0D000000);
     }
 
-    public void drawBorder(DrawContext context, int x, int y, int width, int height, int color) {
+    public void drawBorder(GuiGraphicsExtractor context, int x, int y, int width, int height, int color) {
         context.fill(x, y, x + width, y + 1, color);
         context.fill(x, y + height - 1, x + width, y + height, color);
         context.fill(x, y + 1, x + 1, y + height - 1, color);
@@ -109,22 +109,19 @@ public abstract class PresetWidget<S extends CarouselScreen> extends AbstractCar
     }
 
     @Override
-    protected void renderWidget(SpruceGuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        super.renderWidget(graphics, mouseX, mouseY, delta);
+    protected void extractWidgetRenderState(SpruceGuiGraphics graphics, int mouseX, int mouseY, float delta) {
+        super.extractWidgetRenderState(graphics, mouseX, mouseY, delta);
 
         // Render name
-        var margin = this.client.textRenderer.fontHeight / 2;
+        var margin = this.client.font.lineHeight / 2;
         var name = this.skinPreset.getName() != null ? this.skinPreset.getName() : "Unnamed Preset";
-        var nameWidth = this.client.textRenderer.getWidth(name);
+        var nameWidth = this.client.font.width(name);
         var halfWidth = this.width / 2;
         var halfNameWidth = nameWidth / 2;
-        ClickableWidget.drawScrollableText(
-                graphics.vanilla(), this.client.textRenderer,
-                Text.of(name),
+        graphics.vanilla().text(this.client.font,
+                Component.nullToEmpty(name),
                 getX() + halfWidth - Math.min(halfWidth - margin, halfNameWidth), getY() + margin,
-                getX() + halfWidth + Math.min(halfWidth - margin, halfNameWidth), getY() + margin + this.client.textRenderer.fontHeight,
-                this.active ? 0xFFFFFFFF : 0xFF808080
-        );        // Get render style
+                this.active ? 0xFFFFFFFF : 0xFF808080); // Get render style
         SkinShuffleConfig.SkinRenderStyle renderStyle =
                 SkinShuffleConfig.get().carouselSkinRenderStyle;
 
@@ -165,8 +162,8 @@ public abstract class PresetWidget<S extends CarouselScreen> extends AbstractCar
     }
 
     @Override
-    public ScreenRect getNavigationFocus() {
-        return super.getNavigationFocus();
+    public ScreenRectangle getRectangle() {
+        return super.getRectangle();
     }
 
     @Override

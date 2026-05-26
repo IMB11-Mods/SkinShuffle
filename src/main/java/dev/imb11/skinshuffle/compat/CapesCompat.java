@@ -3,28 +3,28 @@ package dev.imb11.skinshuffle.compat;
 import com.mojang.authlib.GameProfile;
 import dev.imb11.skinshuffle.compat.api.CompatHandler;
 import me.cael.capes.handler.PlayerHandler;
-import net.minecraft.client.util.SkinTextures;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.ClientAsset;
+import net.minecraft.world.entity.player.PlayerSkin;
 
 public class CapesCompat implements CompatHandler {
     public static boolean IS_INSTALLED = false;
 
-    public static SkinTextures loadTextures(GameProfile profile, SkinTextures textures) {
+    public static PlayerSkin loadTextures(GameProfile profile, PlayerSkin textures) {
         PlayerHandler handler = PlayerHandler.Companion.fromProfile(profile);
 
-        Identifier capeTexture = textures.capeTexture();
-        Identifier elytraTexture = textures.elytraTexture();
+        ClientAsset.Texture capeTexture = textures.cape();
+        ClientAsset.Texture elytraTexture = textures.elytra();
 
         if (handler.getHasCape()) {
-            capeTexture = handler.getCape();
+            //FIXME
+//            capeTexture = handler.getCape();
 
             if (handler.getHasElytraTexture())
                 elytraTexture = capeTexture;
         }
 
-        textures = new SkinTextures(
-                textures.texture(),
-                textures.textureUrl(),
+        textures = new PlayerSkin(
+                textures.body(),
                 capeTexture,
                 elytraTexture,
                 textures.model(),

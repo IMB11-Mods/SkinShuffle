@@ -6,7 +6,7 @@ import dev.imb11.skinshuffle.client.gui.widgets.presets.AbstractCardWidget;
 import dev.imb11.skinshuffle.client.gui.widgets.presets.LargePresetWidget;
 import dev.imb11.skinshuffle.client.preset.SkinPreset;
 import dev.lambdaurora.spruceui.Position;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screens.Screen;
 
 public class LargeCarouselScreen extends CarouselScreen {
     public CarouselMoveButton leftMoveButton;
@@ -32,8 +32,8 @@ public class LargeCarouselScreen extends CarouselScreen {
             snapCarousel();
         });
 
-        this.addDrawableChild(leftMoveButton);
-        this.addDrawableChild(rightMoveButton);
+        this.addRenderableWidget(leftMoveButton);
+        this.addRenderableWidget(rightMoveButton);
 
         this.leftMoveButton.setActive(this.carouselWidgets.size() != 1);
         this.rightMoveButton.setActive(this.carouselWidgets.size() != 1);

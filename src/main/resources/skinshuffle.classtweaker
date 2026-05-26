@@ -1,0 +1,21 @@
+classTweaker   v1  official
+
+accessible method net/minecraft/client/quickplay/QuickPlay joinSingleplayerWorld (Lnet/minecraft/client/Minecraft;Ljava/lang/String;)V
+accessible method net/minecraft/client/quickplay/QuickPlay joinMultiplayerWorld (Lnet/minecraft/client/Minecraft;Ljava/lang/String;)V
+accessible method net/minecraft/client/quickplay/QuickPlay joinRealmsWorld (Lnet/minecraft/client/Minecraft;Lcom/mojang/realmsclient/client/RealmsClient;Ljava/lang/String;)V
+accessible class net/minecraft/client/gui/components/toasts/ToastManager$ToastInstance
+accessible class net/minecraft/server/level/ChunkMap$TrackedEntity
+accessible field net/minecraft/server/level/ChunkMap entityMap Lit/unimi/dsi/fastutil/ints/Int2ObjectMap;
+accessible field net/minecraft/server/level/ChunkMap$TrackedEntity serverEntity Lnet/minecraft/server/level/ServerEntity;
+accessible field net/minecraft/server/level/ChunkMap$TrackedEntity seenBy Ljava/util/Set;
+
+accessible method com/mojang/blaze3d/platform/NativeImage setPixelABGR (III)V
+accessible method com/mojang/blaze3d/platform/NativeImage getPixelABGR (II)I
+
+accessible method net/minecraft/client/renderer/texture/SkinTextureDownloader downloadSkin (Ljava/nio/file/Path;Ljava/lang/String;)Lcom/mojang/blaze3d/platform/NativeImage;
+accessible field net/minecraft/client/renderer/texture/TextureManager byPath Ljava/util/Map;
+accessible field net/minecraft/client/renderer/texture/ReloadableTexture resourceId Lnet/minecraft/resources/Identifier;
+
+accessible field com/mojang/blaze3d/platform/NativeImage pixels J
+accessible method net/minecraft/client/renderer/texture/SkinTextureDownloader processLegacySkin (Lcom/mojang/blaze3d/platform/NativeImage;Ljava/lang/String;)Lcom/mojang/blaze3d/platform/NativeImage;
+accessible method net/minecraft/util/thread/ReentrantBlockableEventLoop doRunTask (Ljava/lang/Runnable;)V

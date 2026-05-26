@@ -2,12 +2,11 @@ package dev.imb11.skinshuffle.client.util;
 
 import dev.imb11.skinshuffle.client.preset.SkinPreset;
 import dev.imb11.skinshuffle.client.skin.*;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
-
 import java.nio.file.Path;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import net.minecraft.util.Util;
+import net.minecraft.resources.Identifier;
 
 /**
  * Utility class for loading skins from various sources.
@@ -48,7 +47,7 @@ public class SkinLoader {
             while (preset.getSkin().isLoading()) {
                 Thread.onSpinWait();
             }
-        }, Util.getIoWorkerExecutor());
+        }, Util.ioPool());
     }
 
     /**
