@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
+
+import dev.imb11.skinshuffle.client.util.KeybindManager;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.EditBox;
@@ -71,7 +73,7 @@ public class SkinCustomizationTabComponent extends TabComponent {
         if (currentIndex < 0) currentIndex = 0; // Fallback to "None" if not found
 
         // Create the cycling button
-        var keybindIdButton = CycleButton.builder(this::formatKeybindIdText, (Supplier<Integer>) ()->-1).withValues(availableKeybindIds).create(0, 0, 100, 30, Component.translatable("skinshuffle.edit.customize.keybind_id_prefix"), (button, value) -> {  // on value change
+        var keybindIdButton = CycleButton.builder(this::formatKeybindIdText, (Supplier<Integer>) ()->-1).withValues(availableKeybindIds).create(0, 0, 256, 20, Component.translatable("skinshuffle.edit.customize.keybind_id_prefix"), (button, value) -> {  // on value change
             preset.setKeybindId(value);
         });
         gridAdder.addChild(keybindIdButton);
@@ -84,8 +86,7 @@ public class SkinCustomizationTabComponent extends TabComponent {
      * @return Formatted text for the given keybind ID
      */
     private Component formatKeybindIdText(int keybindId) {
-        return keybindId < 0 ?
-                Component.translatable("skinshuffle.edit.customize.keybind_id.none") :
-                Component.nullToEmpty(String.valueOf(keybindId));
-    }
+		if (keybindId < 0) return Component.translatable("skinshuffle.edit.customize.keybind_id.none");
+	    return Component.translatable("skinshuffle.edit.customize.keybind_id.bound", String.valueOf(keybindId), Component.keybind(KeybindManager.presetKeybindings[keybindId-1].getName()));
+	}
 }

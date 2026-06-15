@@ -49,7 +49,7 @@ public class MojangSkinAPI {
                         .body(GSON.toJson(obj))
                         .contentType("application/json")
                         .header("Authorization", "Bearer " + token).asString().getBody();
-                SkinShuffle.LOGGER.info("Set player skin: " + skinURL);
+				SkinShuffle.LOGGER.info("Set player skin: {}", skinURL);
             } catch (Exception e) {
                 SkinShuffle.LOGGER.error("Cannot connect to Mojang API.", e);
                 return false;
@@ -144,7 +144,7 @@ public class MojangSkinAPI {
 
             return new SkinQueryResult(false, skinURL, modelType, textureSignature, textureValue, capeURL);
         } catch (Exception e) {
-            SkinShuffle.LOGGER.error(e.getMessage());
+            SkinShuffle.LOGGER.error("Could not get player skin texture - {}", e.getMessage());
             return SkinQueryResult.EMPTY_RESULT;
         }
     }
@@ -173,7 +173,7 @@ public class MojangSkinAPI {
                     "(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)", "$1-$2-$3-$4-$5"
             )));
         } catch (Exception e) {
-            SkinShuffle.LOGGER.error(e.toString());
+            SkinShuffle.LOGGER.error("Could not get UUID from username {} due to {}", username, e.toString());
             return Optional.empty();
         }
     }
@@ -220,11 +220,11 @@ public class MojangSkinAPI {
 
                 SkinCacheRegistry.saveUploadedSkin(skinFile, skinURL);
 
-                SkinShuffle.LOGGER.info("Uploaded texture: " + skinURL);
+				SkinShuffle.LOGGER.info("Uploaded texture: {}", skinURL);
                 SkinShuffle.LOGGER.info("Set player skin: " + skinURL);
                 return true;
             } catch (Exception e) {
-                SkinShuffle.LOGGER.error(e.toString());
+                SkinShuffle.LOGGER.error("Could not set skin texture due to {}", e.toString());
                 return false;
             }
         } else {
