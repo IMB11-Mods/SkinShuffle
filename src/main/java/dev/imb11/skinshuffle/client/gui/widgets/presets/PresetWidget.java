@@ -38,7 +38,7 @@ public abstract class PresetWidget<S extends CarouselScreen> extends AbstractCar
             this.editButton = new VariableButton(
                     Position.of(0, 0), 0, 0,
                     Component.translatable("skinshuffle.carousel.preset_widget.edit"),
-                    button -> client.setScreen(new PresetEditScreen(this, this.parent, this.skinPreset))
+                    button -> client.gui.setScreen(new PresetEditScreen(this, this.parent, this.skinPreset))
             );
 
             this.copyButton = new VariableButton(
@@ -61,9 +61,9 @@ public abstract class PresetWidget<S extends CarouselScreen> extends AbstractCar
                                 SkinPresetManager.deletePreset(this.skinPreset);
                             }
                             this.parent.refresh();
-                            this.client.setScreen(this.parent);
+                            this.client.gui.setScreen(this.parent);
                         }, Component.translatable("skinshuffle.carousel.confirmations.delete_preset.title"), Component.translatable("skinshuffle.carousel.confirmations.delete_preset.message"));
-                        this.client.setScreen(confirmScreen);
+                        this.client.gui.setScreen(confirmScreen);
                     }
             );
 

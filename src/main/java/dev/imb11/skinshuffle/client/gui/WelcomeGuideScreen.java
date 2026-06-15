@@ -40,14 +40,14 @@ public class WelcomeGuideScreen extends SpruceScreen {
                 Position.of(this.width / 2 - 128 - 5, this.height - 23),
                 128, 20,
                 CommonComponents.GUI_CONTINUE,
-                button -> this.minecraft.setScreen(parent)
+                button -> this.minecraft.gui.setScreen(parent)
         ));
 
         this.addRenderableWidget(new SpruceButtonWidget(
                 Position.of(this.width / 2 + 5, this.height - 23),
                 128, 20,
                 Component.translatable("skinshuffle.welcome.more_info"),
-                button -> this.minecraft.setScreen(
+                button -> this.minecraft.gui.setScreen(
                         new ConfirmLinkScreen(
                                 ignored -> onClose(),
                                 "https://youtu.be/CNMASU7GQBs",
@@ -77,7 +77,7 @@ public class WelcomeGuideScreen extends SpruceScreen {
 
     @Override
     public void onClose() {
-        this.minecraft.setScreen(parent);
+        this.minecraft.gui.setScreen(parent);
     }
 
     private static class ScrollableTextContainer extends SpruceContainerWidget {

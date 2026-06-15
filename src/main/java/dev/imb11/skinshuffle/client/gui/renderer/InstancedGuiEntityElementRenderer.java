@@ -169,7 +169,6 @@
 package dev.imb11.skinshuffle.client.gui.renderer;
 
 import net.minecraft.client.gui.render.pip.GuiEntityRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.state.gui.GuiRenderState;
 import net.minecraft.client.renderer.state.gui.pip.GuiEntityRenderState;
@@ -183,8 +182,8 @@ import net.minecraft.client.renderer.state.gui.pip.GuiEntityRenderState;
 public class InstancedGuiEntityElementRenderer extends GuiEntityRenderer {
     private boolean usedThisFrame;
 
-    public InstancedGuiEntityElementRenderer(MultiBufferSource.BufferSource vertexConsumers, EntityRenderDispatcher entityRenderDispatcher) {
-        super(vertexConsumers, entityRenderDispatcher);
+    public InstancedGuiEntityElementRenderer(EntityRenderDispatcher entityRenderDispatcher) {
+        super(entityRenderDispatcher);
     }
 
     public final boolean usedThisFrame() {

@@ -54,7 +54,7 @@ public class GeneratedScreens {
                     ClientSkinHandling.setReconnectRequired(true);
                 }
 
-                client.setScreen(target);
+                client.gui.setScreen(target);
             }
         }, Component.translatable("skinshuffle.reconnect.title",
                 client.isLocalServer() ? I18n.get("skinshuffle.reconnect.c_rejoin") : I18n.get("skinshuffle.reconnect.c_reconnect")).withStyle(ChatFormatting.RED, ChatFormatting.BOLD),

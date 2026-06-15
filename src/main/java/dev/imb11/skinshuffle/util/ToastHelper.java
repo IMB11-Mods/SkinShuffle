@@ -8,7 +8,7 @@ import net.minecraft.network.chat.Component;
 public class ToastHelper {
     public static void showToast(String id) {
         var client = Minecraft.getInstance();
-        client.getToastManager().addToast(SystemToast.multiline(client,
+        client.gui.toastManager().addToast(new SystemToast(
                 SystemToast.SystemToastId.PACK_LOAD_FAILURE,
                 Component.translatable(id + ".title"),
                 Component.translatable(id + ".message")));

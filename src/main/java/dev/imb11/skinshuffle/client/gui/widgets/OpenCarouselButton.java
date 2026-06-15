@@ -17,7 +17,7 @@ public class OpenCarouselButton extends Button {
     public OpenCarouselButton(int x, int y, int width, int height) {
         super(x, y, width, height, Component.translatable("skinshuffle.button"), (btn) -> {
             var client = Minecraft.getInstance();
-            client.setScreen(GeneratedScreens.getCarouselScreen(client.screen));
+            client.gui.setScreen(GeneratedScreens.getCarouselScreen(client.gui.screen()));
         }, textSupplier -> Component.empty());
 
         this.selectedPreset = SkinPresetManager.getChosenPreset();

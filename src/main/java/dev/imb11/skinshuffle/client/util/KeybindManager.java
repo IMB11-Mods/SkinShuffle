@@ -88,7 +88,7 @@ public class KeybindManager {
 
             // If the mod is not installed on server, prompt for reconnect
             if (client.level != null && !SkinShuffleConfig.get().disableAPIUpload && !ClientSkinHandling.isInstalledOnServer()) {
-                client.setScreen(GeneratedScreens.getReconnectScreen(client.screen));
+                client.gui.setScreen(GeneratedScreens.getReconnectScreen(client.gui.screen()));
             } else {
                 if (SkinShuffleConfig.get().playKeybindSoundEffect) {
                     if (client.player != null)

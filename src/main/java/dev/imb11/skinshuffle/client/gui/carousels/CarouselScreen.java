@@ -131,7 +131,7 @@ public abstract class CarouselScreen extends SpruceScreen {
 
     public void handleCloseBehaviour() {
         if (this.minecraft.level != null && !SkinShuffleConfig.get().disableAPIUpload && !ClientSkinHandling.isInstalledOnServer()) {
-            this.minecraft.setScreen(GeneratedScreens.getReconnectScreen(this.parent));
+            this.minecraft.gui.setScreen(GeneratedScreens.getReconnectScreen(this.parent));
         } else {
             this.onClose();
         }
@@ -139,7 +139,7 @@ public abstract class CarouselScreen extends SpruceScreen {
 
     @Override
     public void onClose() {
-        this.minecraft.setScreen(parent);
+        this.minecraft.gui.setScreen(parent);
 
         // Save all presets to config when closing the screen, skipping any we can't
         for (var preset : SkinPresetManager.getLoadedPresets()) {
@@ -337,6 +337,6 @@ public abstract class CarouselScreen extends SpruceScreen {
     public void refresh() {
         this.children().clear();
         this.init();
-        Minecraft.getInstance().setScreen(this);
+        Minecraft.getInstance().gui.setScreen(this);
     }
 }

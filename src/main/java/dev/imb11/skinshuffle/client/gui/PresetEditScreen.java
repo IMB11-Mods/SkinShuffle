@@ -13,7 +13,11 @@ import dev.lambdaurora.spruceui.screen.SpruceScreen;
 import java.nio.file.Path;
 import java.util.List;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.TabButton;
+import net.minecraft.client.gui.components.tabs.MenuTabBar;
+import net.minecraft.client.gui.components.tabs.Tab;
 import net.minecraft.client.gui.components.tabs.TabManager;
 import net.minecraft.client.gui.components.tabs.TabNavigationBar;
 import net.minecraft.client.gui.layouts.FrameLayout;
@@ -21,6 +25,7 @@ import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import org.jspecify.annotations.NonNull;
 
 /**
  * Screen for editing skin presets.
@@ -37,7 +42,7 @@ public class PresetEditScreen extends SpruceScreen {
     // Tabs and navigation
     private final TabManager tabManager = new TabManager(this::addRenderableWidget, this::removeWidget);
     private int sideMargins;
-    private TabNavigationBar tabNavigation;
+    private MenuTabBar tabNavigation;
     private SkinSourceTabComponent skinSourceTab;
     private SkinCustomizationTabComponent skinCustomizationTab;
 
@@ -77,7 +82,7 @@ public class PresetEditScreen extends SpruceScreen {
                 preset);
 
         // Set up tab navigation
-        this.tabNavigation = TabNavigationBar.builder(this.tabManager, this.width)
+        this.tabNavigation = MenuTabBar.builder(this.tabManager, this.width)
                 .addTabs(skinSourceTab, skinCustomizationTab).build();
         this.addRenderableWidget(this.tabNavigation);
 
@@ -109,6 +114,10 @@ public class PresetEditScreen extends SpruceScreen {
         this.tabNavigation.selectTab(0, false);
     }
 
+    private @NonNull TabButton getButton(Tab tab) {
+        return new MenuTabBar.MenuTabButton(tabManager, tab, width, height);
+    }
+
     /**
      * Initialize tab navigation and layout components.
      */
@@ -117,8 +126,8 @@ public class PresetEditScreen extends SpruceScreen {
 
         if (this.tabNavigation != null && this.actionButtonsGrid != null) {
             // Update tab navigation
-            this.tabNavigation.updateWidth(this.width);
-            this.tabNavigation.arrangeElements();
+//            this.tabNavigation.updateWidth(this.width);
+            this.tabNavigation.arrangeElements(this.width);
 
             // Position action buttons at the bottom
             this.actionButtonsGrid.arrangeElements();
@@ -221,7 +230,7 @@ public class PresetEditScreen extends SpruceScreen {
 
     @Override
     public void onClose() {
-        this.minecraft.setScreen(parent);
+        this.minecraft.gui.setScreen(parent);
     }
 }
 

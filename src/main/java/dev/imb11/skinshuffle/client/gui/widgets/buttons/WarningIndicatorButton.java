@@ -19,7 +19,7 @@ public class WarningIndicatorButton extends IconButtonWidget {
                 SkinShuffle.id("textures/gui/warning-icon.png"),
                 button -> {
                     var client = Minecraft.getInstance();
-                    client.setScreen(GeneratedScreens.getReconnectScreen(parent));
+                    client.gui.setScreen(GeneratedScreens.getReconnectScreen(parent));
                 }
         );
 

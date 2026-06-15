@@ -3,7 +3,6 @@ package dev.imb11.skinshuffle.mixin;
 import dev.imb11.skinshuffle.client.gui.renderer.InstancedGuiEntityElementRenderer;
 import dev.imb11.skinshuffle.client.gui.renderer.InstancedGuiEntityRenderState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.state.gui.pip.GuiEntityRenderState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -27,7 +26,7 @@ public class EntityGuiRenderStateMixin implements InstancedGuiEntityRenderState 
 
     @SuppressWarnings("AddedMixinMembersNamePattern")
     @Override
-    public InstancedGuiEntityElementRenderer newRenderer(MultiBufferSource.BufferSource vertexConsumers) {
-        return new InstancedGuiEntityElementRenderer(vertexConsumers, Minecraft.getInstance().getEntityRenderDispatcher());
+    public InstancedGuiEntityElementRenderer newRenderer() {
+        return new InstancedGuiEntityElementRenderer(Minecraft.getInstance().getEntityRenderDispatcher());
     }
 }

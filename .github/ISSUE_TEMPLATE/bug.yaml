@@ -51,6 +51,7 @@ body:
       description: What version of the game are you running?
       options:
         - "26.1"
+        - "26.2"
     validations:
       required: true
 
