@@ -1,4 +1,4 @@
 {
-  "edge": ["26.2-fabric"],
-  "main": ["26.1-fabric"]
+  "main": ["26.1-fabric"],
+  "edge": ["26.2-fabric"]
 }
