@@ -1,5 +1,3 @@
-modLoader="javafml"
-loaderVersion="${target_loader}"
 issueTrackerURL="https://github.com/IMB11/SkinShuffle/issues"
 displayURL="https://modrinth.com/mod/skinshuffle"
 logoFile= "/assets/skinshuffle/icon.png"
@@ -13,9 +11,9 @@ displayName="${mod_name}"
 description="${mod_description}"
 
 [[dependencies.skinshuffle]]
-modId="${loader}"
+modId="neoforge"
 type="required"
-versionRange="${target_loader}"
+versionRange="[4, )"
 ordering="NONE"
 side="CLIENT"
 
@@ -28,7 +26,7 @@ side="CLIENT"
 [[dependencies.skinshuffle]]
 modId="minecraft"
 type="required"
-versionRange="${target_minecraft}"
+versionRange="[26.1.2]"
 ordering="NONE"
 side="CLIENT"
 

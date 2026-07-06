@@ -87,6 +87,13 @@ repositories {
             includeGroupAndSubgroups("net.minecraftforge")
         }
     }
+    maven {
+        name = "Sinytra"
+        url = uri("https://maven.su5ed.dev/releases")
+        content {
+            includeGroupAndSubgroups("org.sinytra")
+        }
+    }
 }
 
 dependencies {
@@ -95,8 +102,8 @@ dependencies {
     implementation("net.fabricmc:fabric-loader:${property("deps.fabric_loader")}")
     implementation("net.fabricmc.fabric-api:fabric-api:${property("deps.fabric_api")}")
 
-    implementation("dev.isxander:yet-another-config-lib:${property("deps.yacl")}")
-    include("dev.isxander:yet-another-config-lib:${property("deps.yacl")}")
+    implementation("dev.isxander:yet-another-config-lib:${property("deps.yacl")}-fabric")
+    include("dev.isxander:yet-another-config-lib:${property("deps.yacl")}-fabric")
 
     compileOnly("maven.modrinth:modmenu:${property("runtime.modmenu")}")
     runtimeOnly("com.terraformersmc:modmenu:${property("runtime.modmenu")}")
@@ -126,6 +133,12 @@ dependencies {
 
     compileOnly("net.neoforged:neoforge:${property("deps.neoforge")}:universal")
     compileOnly("net.neoforged.fancymodloader:loader:${property("deps.fml")}")
+
+    // required for neo runtime
+    include("dev.isxander:yet-another-config-lib:${property("deps.yacl")}-neoforge")
+    include("org.sinytra.forgified-fabric-api:fabric-networking-api-v1:${property("deps.forgified_fabric_networking_api")}")
+    include("org.sinytra:forgified-fabric-loader:${property("deps.forgified_fabric_loader")}")
+    include("org.sinytra.forgified-fabric-api:fabric-api-base:${property("deps.forgified_fabric_api_base")}")
 }
 
 tasks {

@@ -1,0 +1,124 @@
+{
+  "jars": [
+    {
+      "identifier": {
+        "group": "com.drewnoakes",
+        "artifact": "metadata-extractor"
+      },
+      "version": {
+        "range": "[2.19.0,)",
+        "artifactVersion": "2.19.0"
+      },
+      "path": "META-INF/jars/metadata-extractor-2.19.0.jar",
+      "isObfuscated": false
+    },
+    {
+      "identifier": {
+        "group": "com.konghq",
+        "artifact": "unirest-java"
+      },
+      "version": {
+        "range": "[3.11.09,)",
+        "artifactVersion": "3.11.09"
+      },
+      "path": "META-INF/jars/unirest-java-3.11.09-standalone.jar",
+      "isObfuscated": false
+    },
+    {
+      "identifier": {
+        "group": "commons-validator",
+        "artifact": "commons-validator"
+      },
+      "version": {
+        "range": "[1.7,)",
+        "artifactVersion": "1.7"
+      },
+      "path": "META-INF/jars/commons-validator-1.7.jar",
+      "isObfuscated": false
+    },
+    {
+      "identifier": {
+        "group": "dev.isxander",
+        "artifact": "yet-another-config-lib"
+      },
+      "version": {
+        "range": "[3.9.5+26.1-neoforge,)",
+        "artifactVersion": "3.9.5+26.1-neoforge"
+      },
+      "path": "META-INF/jars/yet-another-config-lib-3.9.5+26.1-neoforge.jar",
+      "isObfuscated": false
+    },
+    {
+      "identifier": {
+        "group": "dev.lambdaurora",
+        "artifact": "spruceui"
+      },
+      "version": {
+        "range": "[10.0.0+26.1,)",
+        "artifactVersion": "10.0.0+26.1"
+      },
+      "path": "META-INF/jars/spruceui-10.0.0+26.1.jar",
+      "isObfuscated": false
+    },
+    {
+      "identifier": {
+        "group": "dev.yumi.mc.core",
+        "artifact": "yumi-mc-foundation"
+      },
+      "version": {
+        "range": "[1.0.0-beta.2+26.1,)",
+        "artifactVersion": "1.0.0-beta.2+26.1"
+      },
+      "path": "META-INF/jars/yumi-mc-foundation-1.0.0-beta.2+26.1.jar",
+      "isObfuscated": false
+    },
+    {
+      "identifier": {
+        "group": "org.jsoup",
+        "artifact": "jsoup"
+      },
+      "version": {
+        "range": "[1.16.1,)",
+        "artifactVersion": "1.16.1"
+      },
+      "path": "META-INF/jars/jsoup-1.16.1.jar",
+      "isObfuscated": false
+    },
+    {
+      "identifier": {
+        "group": "org.sinytra.forgified-fabric-api",
+        "artifact": "fabric-networking-api-v1"
+      },
+      "version": {
+        "range": "[6.3.1+134bcbaa4c,)",
+        "artifactVersion": "6.3.1+134bcbaa4c"
+      },
+      "path": "META-INF/jars/fabric-networking-api-v1-6.3.1+134bcbaa4c.jar",
+      "isObfuscated": false
+    },
+    {
+      "identifier": {
+        "group": "org.sinytra.forgified-fabric-api",
+        "artifact": "fabric_api_base"
+      },
+      "version": {
+        "range": "[2.0.3+b11575294c,)",
+        "artifactVersion": "2.0.3+b11575294c"
+      },
+      "path": "META-INF/jars/fabric-api-base-2.0.3+b11575294c.jar",
+      "isObfuscated": false
+    },
+    {
+      "identifier": {
+        "group": "org.sinytra",
+        "artifact": "forgified-fabric-loader"
+      },
+      "version": {
+        "range": "[2.5.84+0.19.3+26.1.2,)",
+        "artifactVersion": "2.5.84+0.19.3+26.1.2"
+      },
+      "path": "META-INF/jars/forgified-fabric-loader-2.5.84+0.19.3+26.1.2.jar",
+      "isObfuscated": false
+    }
+  ]
+}

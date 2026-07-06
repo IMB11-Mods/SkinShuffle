@@ -110,8 +110,8 @@ neoForge {
 
 dependencies {
 
-    implementation("dev.isxander:yet-another-config-lib:${property("deps.yacl")}")
-    jarJar("dev.isxander:yet-another-config-lib:${property("deps.yacl")}")
+    implementation("dev.isxander:yet-another-config-lib:${property("deps.yacl")}-neoforge")
+    jarJar("dev.isxander:yet-another-config-lib:${property("deps.yacl")}-neoforge")
 
     compileOnly("maven.modrinth:minecraftcapes:${property("runtime.minecraftcapes")}")
     compileOnly("maven.modrinth:capes:${property("runtime.capes")}")
@@ -140,11 +140,9 @@ dependencies {
 
     runtimeOnly("me.djtheredstoner:DevAuth-neoforge:1.2.1")
 
-    implementation("org.sinytra.forgified-fabric-api:fabric-networking-api-v1:6.3.1+134bcbaa4c")
-    implementation("org.sinytra:forgified-fabric-loader:2.5.84+0.19.3+26.1.2")
+    implementation("org.sinytra.forgified-fabric-api:fabric-networking-api-v1:${property("deps.forgified_fabric_networking_api")}")
+    implementation("org.sinytra:forgified-fabric-loader:${property("deps.forgified_fabric_loader")}")
 
-    jarJar("org.sinytra.forgified-fabric-api:fabric-networking-api-v1:6.3.1+134bcbaa4c")
-    jarJar("org.sinytra:forgified-fabric-loader:2.5.84+0.19.3+26.1.2")
 }
 
 tasks.named("processResources") {
