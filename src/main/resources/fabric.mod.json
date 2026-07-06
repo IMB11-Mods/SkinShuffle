@@ -12,7 +12,8 @@
     "cassiancc"
   ],
   "contact": {
-    "repo": "https://github.com/IMB11-Mods/SkinShuffle",
+    "homepage": "https://modrinth.com/mod/skinshuffle",
+    "sources": "https://github.com/IMB11-Mods/SkinShuffle",
     "issues": "https://github.com/IMB11-Mods/SkinShuffle/issues"
   },
   "license": "MIT",

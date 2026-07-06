@@ -1,9 +1,9 @@
 modLoader="javafml"
 loaderVersion="${target_loader}"
 issueTrackerURL="https://github.com/IMB11/SkinShuffle/issues"
-displayURL="http://IMB11.dev/"
+displayURL="https://modrinth.com/mod/skinshuffle"
 logoFile= "/assets/skinshuffle/icon.png"
-authors="IMB11, cassiancc"
+authors="IMB11, cassiancc, enjarai"
 license="${mod_license}"
 
 [[mods]]

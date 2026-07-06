@@ -5,11 +5,9 @@ import dev.imb11.skinshuffle.SkinShuffle;
 import dev.imb11.skinshuffle.client.config.SkinPresetManager;
 import dev.imb11.skinshuffle.client.config.SkinShuffleConfig;
 import dev.imb11.skinshuffle.client.gui.GeneratedScreens;
+import dev.imb11.skinshuffle.fabric.SkinShuffleFabric;
 import dev.imb11.skinshuffle.networking.ClientSkinHandling;
-//? fabric {
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
-//?}
+import dev.yumi.mc.core.api.YumiMods;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
@@ -47,17 +45,21 @@ public class KeybindManager {
                     KEYBIND_CATEGORY
             );
 
-            //? neoforge
-            /*presetKeybindings[i] = keyMapping;*/
-
-            //? fabric
-            presetKeybindings[i] = KeyMappingHelper.registerKeyMapping(keyMapping);
+            presetKeybindings[i] = registerKeyMapping(keyMapping);
         }
 
         // Register the tick event for checking keybinds
-        //? fabric
-        ClientTickEvents.END_CLIENT_TICK.register(KeybindManager::onEndTick);
+        if (YumiMods.get().isModLoaded("fabric-api")) {
+            SkinShuffleFabric.onEndTick();
+        }
     }
+
+	private static KeyMapping registerKeyMapping(KeyMapping keyMapping) {
+        if (YumiMods.get().isModLoaded("fabric-api")) {
+            return SkinShuffleFabric.registerKeyMapping(keyMapping);
+        }
+		return keyMapping;
+	}
 
     /**
      * Check if any keybinds are pressed and handle them.

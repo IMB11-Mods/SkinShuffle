@@ -11,9 +11,7 @@ import dev.imb11.skinshuffle.util.SkinCacheRegistry;
 import dev.yumi.mc.core.api.ModContainer;
 import dev.yumi.mc.core.api.YumiMods;
 import dev.yumi.mc.core.api.entrypoint.ModInitializer;
-//? fabric {
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
-//?}
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
@@ -39,7 +37,6 @@ public class SkinShuffle implements ModInitializer {
 
     @Override
     public void onInitialize(ModContainer container) {
-        //? fabric {
         PayloadTypeRegistry.serverboundPlay().register(
                 SkinRefreshPayload.PACKET_ID,
                 SkinRefreshPayload.PACKET_CODEC
@@ -52,7 +49,6 @@ public class SkinShuffle implements ModInitializer {
                 RefreshPlayerListEntryPayload.PACKET_ID,
                 RefreshPlayerListEntryPayload.PACKET_CODEC
         );
-        //?}
 
         ensureDataDir();
         SkinCacheRegistry.initialize();

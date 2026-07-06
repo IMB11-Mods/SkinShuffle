@@ -160,13 +160,8 @@ public class PresetEditScreen extends SpruceScreen {
     /**
      * Handle files dropped onto the screen.
      */
-    //? if <1.21.4 {
-    /*@Override
-    public void filesDragged(List<Path> paths) {
-    *///?} else {
     @Override
     public void onFilesDrop(List<Path> paths) {
-        //?}
         if (!paths.isEmpty()) {
             Path firstPath = paths.getFirst();
             this.tabNavigation.selectTab(0, false);

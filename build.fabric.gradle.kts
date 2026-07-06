@@ -78,6 +78,15 @@ repositories {
             includeGroupAndSubgroups("me.djtheredstoner")
         }
     }
+    maven {
+        name = "NeoForge"
+        url = uri("https://maven.neoforged.net/releases/")
+        content {
+            includeGroupAndSubgroups("net.neoforged")
+            includeGroupAndSubgroups("cpw.mods")
+            includeGroupAndSubgroups("net.minecraftforge")
+        }
+    }
 }
 
 dependencies {
@@ -114,12 +123,12 @@ dependencies {
 
     runtimeOnly("me.djtheredstoner:DevAuth-fabric:1.2.1")
     runtimeOnly("net.fabricmc:fabric-language-kotlin:1.13.2+kotlin.2.1.20")
+
+    compileOnly("net.neoforged:neoforge:${property("deps.neoforge")}:universal")
+    compileOnly("net.neoforged.fancymodloader:loader:${property("deps.fml")}")
 }
 
 tasks {
-    processResources {
-        exclude("**/neoforge.mods.toml", "**/mods.toml")
-    }
 
     register<Copy>("buildAndCollect") {
         group = "build"

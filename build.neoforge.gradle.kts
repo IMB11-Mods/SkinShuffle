@@ -72,6 +72,13 @@ repositories {
             includeGroupAndSubgroups("me.djtheredstoner")
         }
     }
+    maven {
+        name = "Sinytra"
+        url = uri("https://maven.su5ed.dev/releases")
+        content {
+            includeGroupAndSubgroups("org.sinytra")
+        }
+    }
 }
 
 neoForge {
@@ -132,6 +139,12 @@ dependencies {
     jarJar("com.drewnoakes:metadata-extractor:2.19.0")
 
     runtimeOnly("me.djtheredstoner:DevAuth-neoforge:1.2.1")
+
+    implementation("org.sinytra.forgified-fabric-api:fabric-networking-api-v1:6.3.1+134bcbaa4c")
+    implementation("org.sinytra:forgified-fabric-loader:2.5.84+0.19.3+26.1.2")
+
+    jarJar("org.sinytra.forgified-fabric-api:fabric-networking-api-v1:6.3.1+134bcbaa4c")
+    jarJar("org.sinytra:forgified-fabric-loader:2.5.84+0.19.3+26.1.2")
 }
 
 tasks.named("processResources") {

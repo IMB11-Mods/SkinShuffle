@@ -1,6 +1,5 @@
 package dev.imb11.skinshuffle.compat.api;
 
-import dev.imb11.skinshuffle.Platform;
 import dev.imb11.skinshuffle.compat.CapesCompat;
 import dev.yumi.mc.core.api.YumiMods;
 

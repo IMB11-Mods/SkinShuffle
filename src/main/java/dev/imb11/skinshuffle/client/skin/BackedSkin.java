@@ -36,11 +36,7 @@ public abstract class BackedSkin implements Skin, AutoCloseable {
         var id = SkinShuffle.id("skin/" + getSerializationId().getPath() + "/" + Math.abs(uniqueness.hashCode()));
         var textureManager = Minecraft.getInstance().getTextureManager();
 
-        //? if <1.21.4 {
-        /*if (textureManager.getOrDefault(id, null) == null) {
-         *///?} else {
         if (textureManager.byPath.get(id) == null) {
-            //?}
             // Texture doesn't exist, we need to fetch it.
             fetching = true;
 

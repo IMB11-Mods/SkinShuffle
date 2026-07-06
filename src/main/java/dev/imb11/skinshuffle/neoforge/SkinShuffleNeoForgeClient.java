@@ -1,5 +1,4 @@
-//? neoforge {
-/*package dev.imb11.skinshuffle.neoforge;
+package dev.imb11.skinshuffle.neoforge;
 
 import dev.imb11.skinshuffle.client.config.SkinPresetManager;
 import dev.imb11.skinshuffle.client.gui.GeneratedScreens;
@@ -40,15 +39,4 @@ public class SkinShuffleNeoForgeClient {
 		KeybindManager.onEndTick(Minecraft.getInstance());
 	}
 
-	@SubscribeEvent
-	public static void clientPlayConnectionEventsJoinAndInit(ClientPlayerNetworkEvent.LoggingIn event) {
-		ClientSkinHandling.onPlayInit();
-		SkinPresetManager.setApiPreset(null);
-	}
-
-	@SubscribeEvent
-	public static void clientPlayConnectionEventsDisconnect(ClientPlayerNetworkEvent.LoggingOut event) {
-		ClientSkinHandling.onPlayDisconnect();
-	}
 }
-*///?}
