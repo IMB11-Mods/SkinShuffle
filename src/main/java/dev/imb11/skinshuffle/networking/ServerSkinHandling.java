@@ -63,6 +63,7 @@ public class ServerSkinHandling {
         });
 
         ServerPlayNetworking.registerGlobalReceiver(SkinRefreshPayload.PACKET_ID, (payload, context) -> handleSkinRefreshPacket(payload, context.server(), context.player()));
+        ServerPlayNetworking.registerGlobalReceiver(SetCapePayload.PACKET_ID, ((payload, context) -> context.player().setAttached(SkinShuffle.CAPE_ATTACHMENT, payload.cape())));
         //?}
     }
 

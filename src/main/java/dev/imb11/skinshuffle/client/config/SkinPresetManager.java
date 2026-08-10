@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import net.minecraft.core.ClientAsset;
 import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
 
@@ -290,7 +291,8 @@ public class SkinPresetManager {
                         }
 
                         if (client.level != null && ClientSkinHandling.isInstalledOnServer()) {
-                            ClientSkinHandling.sendRefresh(result);
+                            ClientAsset.DownloadedTexture cape = configSkin.getSkinTextures().cape() instanceof ClientAsset.DownloadedTexture downloaded ? downloaded : null;
+                            ClientSkinHandling.sendRefresh(result, Optional.ofNullable(cape));
                         }
                     } catch (Exception e) {
                         SkinShuffle.LOGGER.error(e.getMessage());

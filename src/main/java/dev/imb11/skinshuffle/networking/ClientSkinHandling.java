@@ -10,9 +10,12 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.core.ClientAsset;
 import net.minecraft.world.entity.Entity;
 //? neoforge
 /*import net.neoforged.neoforge.client.network.ClientPacketDistributor;*/
+
+import java.util.Optional;
 
 public class ClientSkinHandling {
     private static boolean handshakeTakenPlace = false;
@@ -31,9 +34,10 @@ public class ClientSkinHandling {
         return handshakeTakenPlace;
     }
 
-    public static void sendRefresh(SkinQueryResult result) {
+    public static void sendRefresh(SkinQueryResult result, Optional<ClientAsset.DownloadedTexture> cape) {
         //? fabric
         ClientPlayNetworking.send(new SkinRefreshPayload(result.toProperty()));
+        cape.ifPresent(texture -> ClientPlayNetworking.send(new SetCapePayload(texture)));
         //? neoforge
         /*ClientPacketDistributor.sendToServer(new SkinRefreshPayload(result.toProperty()));*/
     }

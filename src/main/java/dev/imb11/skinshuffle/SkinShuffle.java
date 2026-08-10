@@ -3,18 +3,19 @@ package dev.imb11.skinshuffle;
 import com.mojang.authlib.GameProfile;
 import dev.imb11.skinshuffle.api.MojangSkinAPI;
 import dev.imb11.skinshuffle.compat.api.CompatLoader;
-import dev.imb11.skinshuffle.networking.HandshakePayload;
-import dev.imb11.skinshuffle.networking.RefreshPlayerListEntryPayload;
-import dev.imb11.skinshuffle.networking.ServerSkinHandling;
-import dev.imb11.skinshuffle.networking.SkinRefreshPayload;
+import dev.imb11.skinshuffle.networking.*;
 import dev.imb11.skinshuffle.util.SkinCacheRegistry;
 import dev.yumi.mc.core.api.ModContainer;
 import dev.yumi.mc.core.api.YumiMods;
 import dev.yumi.mc.core.api.entrypoint.ModInitializer;
 //? fabric {
+import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentSyncPredicate;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 //?}
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.ClientAsset;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.PlayerSkin;
@@ -32,6 +33,16 @@ public class SkinShuffle implements ModInitializer {
     public static final String MOD_ID = "skinshuffle";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
     public static final Path DATA_DIR = YumiMods.get().getConfigDirectory().resolve("skinshuffle");
+    //? fabric {
+    public static final AttachmentType<ClientAsset.DownloadedTexture> CAPE_ATTACHMENT = AttachmentRegistry.create(SkinShuffle.id("cape"), builder ->
+            builder.syncWith(StreamCodec.ofMember(
+                    (value, buf) -> {
+                            buf.writeIdentifier(value.texturePath());
+                            buf.writeUtf(value.url());
+                    },
+                    buf -> new ClientAsset.DownloadedTexture(buf.readIdentifier(), buf.readUtf())
+            ), AttachmentSyncPredicate.all()));
+    //?}
 
     public static Identifier id(String path) {
         return Identifier.fromNamespaceAndPath(MOD_ID, path);
@@ -43,6 +54,10 @@ public class SkinShuffle implements ModInitializer {
         PayloadTypeRegistry.serverboundPlay().register(
                 SkinRefreshPayload.PACKET_ID,
                 SkinRefreshPayload.PACKET_CODEC
+        );
+        PayloadTypeRegistry.serverboundPlay().register(
+                SetCapePayload.PACKET_ID,
+                SetCapePayload.PACKET_CODEC
         );
         PayloadTypeRegistry.clientboundPlay().register(
                 HandshakePayload.PACKET_ID,
