@@ -40,11 +40,7 @@ public abstract class FileBackedSkin extends BackedSkin {
 
             if (image == null) throw new RuntimeException("Texture is null!");
 
-            //? if <1.21.5 {
-            /*var texture = new NativeImageBackedTexture(image);
-             *///?} else {
             var texture = new DynamicTexture(() -> String.valueOf(Math.abs(getTextureUniqueness().hashCode())), image);
-            //?}
 
             completionCallback.run();
             return texture;

@@ -94,6 +94,7 @@
   "skinshuffle.edit.customize.keybind_id": "Quick Changer Keybind",
   "skinshuffle.edit.customize.keybind_id_prefix": "Keybind ID",
   "skinshuffle.edit.customize.keybind_id.none": "None",
+  "skinshuffle.edit.customize.keybind_id.bound": "%s (%s)",
   "skinshuffle.edit.source.username": "Username",
   "skinshuffle.edit.source.invalid_username": "§4§nInvalid Username§r\n\nUsername must only contain a-Z 0-9.\nUsername may contain underscores.\nUsername must be between 3-16 characters long.\nUsername must exist.",
   "skinshuffle.edit.source.file": "File",

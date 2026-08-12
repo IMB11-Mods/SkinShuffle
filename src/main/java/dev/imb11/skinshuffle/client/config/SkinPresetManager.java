@@ -295,7 +295,7 @@ public class SkinPresetManager {
                             ClientSkinHandling.sendRefresh(result, Optional.ofNullable(cape));
                         }
                     } catch (Exception e) {
-                        SkinShuffle.LOGGER.error(e.getMessage());
+                        SkinShuffle.LOGGER.error("Failed to apply skin preset due to {}",  e.getMessage());
                     }
                 }), Util.backgroundExecutor());
             } catch (Exception e) {
