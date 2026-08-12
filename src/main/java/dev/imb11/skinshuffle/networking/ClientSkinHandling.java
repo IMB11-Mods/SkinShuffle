@@ -35,15 +35,11 @@ public class ClientSkinHandling {
     }
 
     public static void sendRefresh(SkinQueryResult result, Optional<ClientAsset.DownloadedTexture> cape) {
-        //? fabric
         ClientPlayNetworking.send(new SkinRefreshPayload(result.toProperty()));
         cape.ifPresent(texture -> ClientPlayNetworking.send(new SetCapePayload(texture)));
-        //? neoforge
-        /*ClientPacketDistributor.sendToServer(new SkinRefreshPayload(result.toProperty()));*/
     }
 
     public static void init() {
-        //? fabric {
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> SkinPresetManager.setApiPreset(null));
 
         ClientPlayConnectionEvents.INIT.register(ClientSkinHandling::onPlayInit);
@@ -53,18 +49,11 @@ public class ClientSkinHandling {
         ClientPlayNetworking.registerGlobalReceiver(HandshakePayload.PACKET_ID, (payload, context) -> ClientSkinHandling.handshake());
 
         ClientPlayNetworking.registerGlobalReceiver(RefreshPlayerListEntryPayload.PACKET_ID, ClientSkinHandling::receive);
-        //?}
     }
 
-    public static void receive(RefreshPlayerListEntryPayload payload
-            //? fabric
-            , ClientPlayNetworking.Context context
-    ) {
+    public static void receive(RefreshPlayerListEntryPayload payload, ClientPlayNetworking.Context context) {
         int id = payload.entityID();
-        //? fabric
         Minecraft client = context.client();
-        //? neoforge
-        /*Minecraft client = Minecraft.getInstance();*/
         client.execute(() -> {
             ClientLevel world = client.level;
             if (world != null) {
