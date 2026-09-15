@@ -1,6 +1,6 @@
 package dev.imb11.skinshuffle.util;
 
-import com.mojang.authlib.yggdrasil.YggdrasilUserApiService;
+import com.mojang.authlib.services.MinecraftServicesUserApiService;
 import dev.imb11.skinshuffle.client.config.SkinPresetManager;
 import dev.imb11.skinshuffle.mixin.accessor.MinecraftClientAccessor;
 import dev.imb11.skinshuffle.networking.ClientSkinHandling;
@@ -13,7 +13,7 @@ import net.minecraft.world.level.storage.LevelResource;
 public class NetworkingUtil {
     public static boolean isLoggedIn() {
         Minecraft client = Minecraft.getInstance();
-        return ((MinecraftClientAccessor) client).getUserApiService() instanceof YggdrasilUserApiService;
+        return ((MinecraftClientAccessor) client).getUserApiService() instanceof MinecraftServicesUserApiService;
     }
 
     public static void handleReconnect(Minecraft client) {

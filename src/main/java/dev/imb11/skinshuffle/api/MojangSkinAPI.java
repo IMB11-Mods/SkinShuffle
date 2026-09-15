@@ -5,7 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.authlib.minecraft.UserApiService;
-import com.mojang.authlib.yggdrasil.YggdrasilUserApiService;
+import com.mojang.authlib.services.MinecraftServicesUserApiService;
 import dev.imb11.skinshuffle.SkinShuffle;
 import dev.imb11.skinshuffle.api.data.SkinQueryResult;
 import dev.imb11.skinshuffle.mixin.accessor.MinecraftClientAccessor;
@@ -37,7 +37,7 @@ public class MojangSkinAPI {
     public static boolean setSkinTexture(String skinURL, String model) {
         UserApiService service = ((MinecraftClientAccessor) Minecraft.getInstance()).getUserApiService();
 
-        if (service instanceof YggdrasilUserApiService apiService) {
+        if (service instanceof MinecraftServicesUserApiService apiService) {
             try {
                 com.mojang.authlib.minecraft.client.MinecraftClient client = ((YggdrasilUserApiServiceAccessor) apiService).getMinecraftClient();
                 String token = ((MinecraftClientAuthAccessor) client).getAccessToken();

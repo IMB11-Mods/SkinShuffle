@@ -36,7 +36,7 @@ public abstract class FileBackedSkin extends BackedSkin {
     @Override
     protected @Nullable AbstractTexture loadTexture(Runnable completionCallback) {
         try (var inputStream = Files.newInputStream(getFile())) {
-            var image = SkinTextureSafetyUtil.processTexture(NativeImage.read(NativeImage.Format.RGBA, inputStream));
+            var image = SkinTextureSafetyUtil.processTexture(NativeImage.read(inputStream));
 
             if (image == null) throw new RuntimeException("Texture is null!");
 

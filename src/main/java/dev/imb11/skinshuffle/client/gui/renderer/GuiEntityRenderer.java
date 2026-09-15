@@ -102,7 +102,6 @@ public class GuiEntityRenderer {
 
         // Biped state - keep everything neutral
         state.swimAmount = 0.0F;
-        state.attackTime = 0.0F;
         state.speedValue = 1.0F;
         state.maxCrossbowChargeDuration = 0.0F;
         state.ticksUsingItem = 0;

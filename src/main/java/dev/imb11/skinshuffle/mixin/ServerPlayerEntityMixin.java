@@ -36,6 +36,7 @@ import org.spongepowered.asm.mixin.Shadow;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Optional;
 
 
 /**
@@ -107,7 +108,7 @@ public abstract class ServerPlayerEntityMixin extends Player implements SkinShuf
                             level.dimension(),
                             BiomeManager.obfuscateSeed(level.getSeed()),
                             this.gameMode.getGameModeForPlayer(),
-                            this.gameMode.getPreviousGameModeForPlayer(),
+							Optional.ofNullable(this.gameMode.getPreviousGameModeForPlayer()),
                             level.isDebug(),
                             level.isFlat(),
                             this.getLastDeathLocation(),

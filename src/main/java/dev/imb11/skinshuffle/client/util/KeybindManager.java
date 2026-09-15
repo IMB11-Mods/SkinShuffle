@@ -15,7 +15,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import org.lwjgl.glfw.GLFW;
 
 /**
  * Manages keybinds for quickly switching between skin presets.
@@ -42,8 +41,8 @@ public class KeybindManager {
             // Create unbound keybinds for each preset slot
             KeyMapping keyMapping = new KeyMapping(
                     TRANSLATION_KEY_PREFIX + presetId,
-                    InputConstants.Type.KEYSYM,
-                    GLFW.GLFW_KEY_UNKNOWN, // Initially unbound
+                    InputConstants.Type.KEYBOARD,
+                    InputConstants.UNKNOWN.getValue(), // Initially unbound
                     KEYBIND_CATEGORY
             );
 

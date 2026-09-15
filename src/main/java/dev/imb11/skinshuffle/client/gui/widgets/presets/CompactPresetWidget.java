@@ -1,6 +1,7 @@
 package dev.imb11.skinshuffle.client.gui.widgets.presets;
 
 import com.mojang.blaze3d.Blaze3D;
+import com.mojang.blaze3d.platform.InputConstants;
 import dev.imb11.skinshuffle.client.config.SkinPresetManager;
 import dev.imb11.skinshuffle.client.gui.carousels.CompactCarouselScreen;
 import dev.imb11.skinshuffle.client.gui.widgets.buttons.VariableButton;
@@ -13,7 +14,6 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.RandomSource;
 import org.joml.Matrix3x2fStack;
-import org.lwjgl.glfw.GLFW;
 
 public class CompactPresetWidget extends PresetWidget<CompactCarouselScreen> {
     private static final RandomSource WIGGLE_RANDOM = RandomSource.create();
@@ -86,7 +86,7 @@ public class CompactPresetWidget extends PresetWidget<CompactCarouselScreen> {
             }
         }
 
-        if (event.button() == GLFW.GLFW_MOUSE_BUTTON_1) {
+        if (event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
             this.setDragging(true);
             this.setDragStart(event.x() - getX(), event.y() - getY());
             return true;

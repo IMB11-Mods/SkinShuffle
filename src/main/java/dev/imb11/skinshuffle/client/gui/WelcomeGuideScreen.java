@@ -13,6 +13,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 import org.jetbrains.annotations.NotNull;
 
+import java.net.URI;
+
 public class WelcomeGuideScreen extends SpruceScreen {
     private final Screen parent;
     private ScrollableTextContainer textContainer;
@@ -50,7 +52,7 @@ public class WelcomeGuideScreen extends SpruceScreen {
                 button -> this.minecraft.gui.setScreen(
                         new ConfirmLinkScreen(
                                 ignored -> onClose(),
-                                "https://youtu.be/CNMASU7GQBs",
+                                URI.create("https://youtu.be/CNMASU7GQBs"),
                                 true
                         )
                 )
