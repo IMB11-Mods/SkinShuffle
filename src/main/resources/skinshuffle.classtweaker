@@ -19,3 +19,6 @@ accessible field net/minecraft/client/renderer/texture/ReloadableTexture resourc
 accessible field com/mojang/blaze3d/platform/NativeImage pixels J
 accessible method net/minecraft/client/renderer/texture/SkinTextureDownloader processLegacySkin (Lcom/mojang/blaze3d/platform/NativeImage;Ljava/lang/String;)Lcom/mojang/blaze3d/platform/NativeImage;
 accessible method net/minecraft/util/thread/ReentrantBlockableEventLoop doRunTask (Ljava/lang/Runnable;)V
+
+accessible class net/minecraft/client/resources/SkinManager$TextureCache
+accessible field net/minecraft/client/resources/SkinManager capeTextures Lnet/minecraft/client/resources/SkinManager$TextureCache;

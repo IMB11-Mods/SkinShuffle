@@ -1,6 +1,8 @@
 package dev.imb11.skinshuffle.mixin;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.minecraft.MinecraftProfileTexture;
+import dev.imb11.skinshuffle.SkinShuffle;
 import dev.imb11.skinshuffle.client.config.SkinPresetManager;
 import dev.imb11.skinshuffle.client.preset.SkinPreset;
 import dev.imb11.skinshuffle.compat.CapesCompat;
@@ -9,6 +11,7 @@ import dev.imb11.skinshuffle.util.SkinShuffleClientPlayer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.core.ClientAsset;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.PlayerSkin;
 import net.minecraft.world.level.Level;
@@ -19,6 +22,8 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.Map;
 
 @Mixin(AbstractClientPlayer.class)
 public abstract class PlayerEntityMixin extends Player implements SkinShuffleClientPlayer {
@@ -54,6 +59,15 @@ public abstract class PlayerEntityMixin extends Player implements SkinShuffleCli
                 prevTextures = textures;
                 cir.setReturnValue(textures);
             }
+            //? fabric {
+            else if (this.getAttached(SkinShuffle.CAPE_ATTACHMENT) instanceof ClientAsset.DownloadedTexture texture) {
+                var returned = cir.getReturnValue();
+                var capeFuture = Minecraft.getInstance().getSkinManager().capeTextures.getOrLoad(new MinecraftProfileTexture(texture.url(), Map.of()));
+                capeFuture.thenAccept(cape -> {
+                    cir.setReturnValue(new PlayerSkin(returned.body(), cape, returned.elytra(), returned.model(), returned.secure()));
+                });
+            }
+            //?}
         }
     }
 
