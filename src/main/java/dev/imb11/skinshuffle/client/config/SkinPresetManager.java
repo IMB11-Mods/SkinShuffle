@@ -261,7 +261,31 @@ public class SkinPresetManager {
      * uploads a built-in default (Steve/Alex) skin, which would otherwise overwrite the account's real skin
      * when the preset list was regenerated or the real skin could not be fetched.
      */
+    /**
+     * Picks a random preset to use, preferring presets that have a keybind ID (so users can choose which presets
+     * take part in the shuffle). Falls back to all presets if none have a keybind. Does not apply the result.
+     *
+     * @return true if a different preset was chosen.
+     */
+    public static boolean shuffleChosenPreset() {
+        if (loadedPresets.size() < 2) return false;
+
+        List<SkinPreset> pool = loadedPresets.stream().filter(preset -> preset.getKeybindId() >= 0).toList();
+        if (pool.isEmpty()) pool = loadedPresets;
+
+        SkinPreset picked = pool.get(java.util.concurrent.ThreadLocalRandom.current().nextInt(pool.size()));
+        if (picked == chosenPreset) return false;
+
+        chosenPreset = picked;
+        savePresets();
+        return true;
+    }
+
     public static void applyOnStartup() {
+        if (SkinShuffleConfig.get().shufflePresetOnStartup) {
+            shuffleChosenPreset();
+        }
+
         if (!SkinShuffleConfig.get().applyPresetOnStartup) {
             SkinShuffle.LOGGER.info("Skipping startup skin preset application due to user preference.");
             return;
