@@ -38,6 +38,8 @@ public class SkinShuffleConfig {
     @SerialEntry
     public boolean disableAPIUpload = false;
     @SerialEntry
+    public boolean applyPresetOnStartup = true;
+    @SerialEntry
     public boolean displayInPauseMenu = true;
     @SerialEntry
     public boolean displayInTitleScreen = true;
@@ -126,6 +128,13 @@ public class SkinShuffleConfig {
                             .binding(defaults.showCapeInPreview, () -> config.showCapeInPreview, val -> config.showCapeInPreview = val)
                             .controller(TickBoxControllerBuilder::create).build();
 
+                    var applyOnStartup = Option.<Boolean>createBuilder()
+                            .name(translatable("skinshuffle.config.general.apply_on_startup.name"))
+                            .description(OptionDescription.createBuilder()
+                                    .text(translatable("skinshuffle.config.general.apply_on_startup.description")).build())
+                            .binding(defaults.applyPresetOnStartup, () -> config.applyPresetOnStartup, val -> config.applyPresetOnStartup = val)
+                            .controller(TickBoxControllerBuilder::create).build();
+
                     var disableApi = Option.<Boolean>createBuilder()
                             .name(translatable("skinshuffle.config.general.disable_api.name"))
                             .description(OptionDescription.createBuilder()
@@ -196,7 +205,7 @@ public class SkinShuffleConfig {
                                     .tooltip(translatable("skinshuffle.config.general.description"))
                                     .group(OptionGroup.createBuilder()
                                             .name(translatable("skinshuffle.config.general.behaviour.title"))
-                                            .options(List.of(disableApi, carouselScrollSensitivity, invertCarouselScroll, invertCarouselHorizontalScroll))
+                                            .options(List.of(disableApi, applyOnStartup, carouselScrollSensitivity, invertCarouselScroll, invertCarouselHorizontalScroll))
                                             .build())
                                     .group(OptionGroup.createBuilder()
                                             .name(translatable("skinshuffle.config.general.display.title"))

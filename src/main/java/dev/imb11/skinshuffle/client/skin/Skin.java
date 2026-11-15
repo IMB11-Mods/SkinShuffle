@@ -3,6 +3,7 @@ package dev.imb11.skinshuffle.client.skin;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import dev.imb11.skinshuffle.MixinStatics;
+import dev.imb11.skinshuffle.SkinShuffle;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -46,14 +47,31 @@ public interface Skin {
                 client.getSkinManager().get(client.getGameProfile());
 
         CompletableFuture<Optional<PlayerSkin>> clientTexture;
-        if (MixinStatics.INITIAL_SKIN_TEXTURES.isDone()) clientTexture = MixinStatics.INITIAL_SKIN_TEXTURES.join();
-        else clientTexture = textureSupplier;
-
-        try {
-            return new PlayerSkin(this.getTextureAsset(), clientTexture.get().get().cape(), clientTexture.get().get().elytra(), getModelEnum(), false);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        if (MixinStatics.INITIAL_SKIN_TEXTURES != null
+                && MixinStatics.INITIAL_SKIN_TEXTURES.isDone()
+                && !MixinStatics.INITIAL_SKIN_TEXTURES.isCompletedExceptionally()) {
+            clientTexture = MixinStatics.INITIAL_SKIN_TEXTURES.join();
+        } else {
+            clientTexture = textureSupplier;
         }
+
+        // The vanilla skin lookup can fail or come back empty (offline mode, auth failure, API outage). That
+        // must not crash rendering: just render the preset's skin without the account's cape/elytra.
+        ClientAsset.Texture cape = null;
+        ClientAsset.Texture elytra = null;
+        try {
+            if (clientTexture != null && clientTexture.isDone() && !clientTexture.isCompletedExceptionally()) {
+                Optional<PlayerSkin> vanilla = clientTexture.get();
+                if (vanilla.isPresent()) {
+                    cape = vanilla.get().cape();
+                    elytra = vanilla.get().elytra();
+                }
+            }
+        } catch (Exception e) {
+            SkinShuffle.LOGGER.debug("Could not read the account's vanilla cape textures", e);
+        }
+
+        return new PlayerSkin(this.getTextureAsset(), cape, elytra, getModelEnum(), false);
     }
 
     default PlayerModelType getModelEnum() {

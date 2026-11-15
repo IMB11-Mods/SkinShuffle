@@ -10,6 +10,7 @@ import dev.imb11.skinshuffle.api.SkinShuffleAPI;
 import dev.imb11.skinshuffle.api.data.SkinQueryResult;
 import dev.imb11.skinshuffle.client.preset.SkinPreset;
 import dev.imb11.skinshuffle.client.skin.ConfigSkin;
+import dev.imb11.skinshuffle.client.skin.ResourceSkin;
 import dev.imb11.skinshuffle.client.skin.UrlSkin;
 import dev.imb11.skinshuffle.networking.ClientSkinHandling;
 import dev.imb11.skinshuffle.util.NetworkingUtil;
@@ -247,6 +248,25 @@ public class SkinPresetManager {
             chosenPreset = loadedPresets.getFirst();
         }
         savePresets();
+    }
+
+    /**
+     * Applies the chosen preset when the game launches. Respects the "apply on startup" option, and never
+     * uploads a built-in default (Steve/Alex) skin, which would otherwise overwrite the account's real skin
+     * when the preset list was regenerated or the real skin could not be fetched.
+     */
+    public static void applyOnStartup() {
+        if (!SkinShuffleConfig.get().applyPresetOnStartup) {
+            SkinShuffle.LOGGER.info("Skipping startup skin preset application due to user preference.");
+            return;
+        }
+
+        if (getChosenPreset().getSkin() instanceof ResourceSkin) {
+            SkinShuffle.LOGGER.info("Skipping startup skin preset application: the chosen preset is a built-in default skin.");
+            return;
+        }
+
+        apply();
     }
 
     public static void apply() {
