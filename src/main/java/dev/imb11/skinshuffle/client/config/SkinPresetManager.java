@@ -36,6 +36,11 @@ public class SkinPresetManager {
     private static SkinPreset chosenPreset = null;
     private static SkinPreset apiPreset = null;
     private static SkinShuffleAPI SKIN_SHUFFLE_API;
+    private static final ExecutorService REFRESH_EXECUTOR = Executors.newSingleThreadExecutor(runnable -> {
+        Thread thread = new Thread(runnable, "SkinShuffle-Refresh");
+        thread.setDaemon(true);
+        return thread;
+    });
     private static final ExecutorService APPLY_EXECUTOR = Executors.newSingleThreadExecutor(runnable -> {
         Thread thread = new Thread(runnable, "SkinShuffle-Apply");
         thread.setDaemon(true);
@@ -310,6 +315,27 @@ public class SkinPresetManager {
         MojangSkinAPI.setActiveCape(capeId.equals(SkinPreset.NO_CAPE) ? null : capeId);
     }
 
+    private static void refreshServerSkin(Minecraft client, SkinPreset preset, ConfigSkin configSkin) {
+        try {
+            String cachedURL = SkinCacheRegistry.getCachedUploadedSkin(configSkin.getFile().toFile());
+
+            SkinQueryResult result;
+            if (cachedURL != null) {
+                result = SKIN_SHUFFLE_API.uploadUrlSkin(cachedURL, preset.getSkin().getModel());
+            } else {
+                result = SKIN_SHUFFLE_API.uploadFileSkin(configSkin.getFile(), preset.getSkin().getModel());
+            }
+
+            if (result == null) {
+                throw new Exception("Failed to upload skin to MineSkin proxy.");
+            }
+
+            client.execute(() -> ClientSkinHandling.sendRefresh(result));
+        } catch (Exception e) {
+            SkinShuffle.LOGGER.error("Failed to refresh the skin on the server due to {}", e.toString());
+        }
+    }
+
     public static void apply() {
         Minecraft client = Minecraft.getInstance();
         SkinPreset preset = getChosenPreset();
@@ -336,30 +362,20 @@ public class SkinPresetManager {
                     if (preset.getSkin() instanceof UrlSkin urlSkin) {
                         successful = MojangSkinAPI.setSkinTexture(urlSkin.getUrl(), urlSkin.getModel());
                     } else {
+                        successful = false;
+                    }
+                    // Skin-by-URL can be rejected by Mojang, so fall back to uploading the downloaded skin file.
+                    if (!successful) {
                         successful = MojangSkinAPI.setSkinTexture(configSkin.getFile().toFile(), configSkin.getModel());
                     }
                     if (successful) client.execute(() -> setApiPreset(preset));
                     applyCape(preset);
 
-                    try {
-                        String cachedURL = SkinCacheRegistry.getCachedUploadedSkin(configSkin.getFile().toFile());
-
-                        SkinQueryResult result;
-                        if (cachedURL != null) {
-                            result = SKIN_SHUFFLE_API.uploadUrlSkin(cachedURL, preset.getSkin().getModel());
-                        } else {
-                            result = SKIN_SHUFFLE_API.uploadFileSkin(configSkin.getFile(), preset.getSkin().getModel());
-                        }
-
-                        if (result == null) {
-                            throw new Exception("Failed to upload skin to MineSkin proxy.");
-                        }
-
-                        if (client.level != null && ClientSkinHandling.isInstalledOnServer()) {
-                            client.execute(() -> ClientSkinHandling.sendRefresh(result));
-                        }
-                    } catch (Exception e) {
-                        SkinShuffle.LOGGER.error("Failed to apply skin preset due to {}", e.getMessage());
+                    // The MineSkin proxy is only needed to tell a server that has SkinShuffle installed about the
+                    // new skin. It can be slow (or time out), so it runs on its own worker and never delays the
+                    // Mojang skin/cape updates above.
+                    if (client.level != null && ClientSkinHandling.isInstalledOnServer()) {
+                        REFRESH_EXECUTOR.execute(() -> refreshServerSkin(client, preset, configSkin));
                     }
                 } catch (Exception e) {
                     SkinShuffle.LOGGER.error("Failed to apply skin preset.", e);

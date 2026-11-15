@@ -31,6 +31,9 @@ import java.util.UUID;
 public class MojangSkinAPI {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
+    /** Set once Mojang rejects a JSON skin-by-URL request, so we stop trying it and upload files instead. */
+    private static volatile boolean urlSkinBlocked = false;
+
     /**
      * Set the player's skin texture from a URL.
      *
@@ -38,6 +41,10 @@ public class MojangSkinAPI {
      * @param model   The skin model type.
      */
     public static boolean setSkinTexture(String skinURL, String model) {
+        if (urlSkinBlocked) {
+            return false;
+        }
+
         UserApiService service = ((MinecraftClientAccessor) Minecraft.getInstance()).getUserApiService();
 
         if (service instanceof YggdrasilUserApiService apiService) {
@@ -48,10 +55,21 @@ public class MojangSkinAPI {
                 JsonObject obj = new JsonObject();
                 obj.addProperty("variant", model);
                 obj.addProperty("url", skinURL);
-                var result = Unirest.post("https://api.minecraftservices.com/minecraft/profile/skins")
+                HttpResponse<String> response = Unirest.post("https://api.minecraftservices.com/minecraft/profile/skins")
                         .body(GSON.toJson(obj))
                         .contentType("application/json")
-                        .header("Authorization", "Bearer " + token).asString().getBody();
+                        .header("Authorization", "Bearer " + token).asString();
+                if (!response.isSuccess()) {
+                    if (response.getStatus() == 403) {
+                        // Mojang's firewall rejects JSON skin-by-URL requests ("The request is blocked"), while
+                        // multipart file uploads still work. Remember that so callers fall back to uploading the file.
+                        urlSkinBlocked = true;
+                        SkinShuffle.LOGGER.warn("Mojang blocked the skin-by-URL request (403); uploading skin files instead.");
+                    } else {
+                        SkinShuffle.LOGGER.error("Could not set player skin, status {}: {}", response.getStatus(), response.getBody());
+                    }
+                    return false;
+                }
 				SkinShuffle.LOGGER.info("Set player skin: {}", skinURL);
             } catch (Exception e) {
                 SkinShuffle.LOGGER.error("Cannot connect to Mojang API.", e);
@@ -154,7 +172,7 @@ public class MojangSkinAPI {
             }
 
             if (!response.isSuccess()) {
-                SkinShuffle.LOGGER.error("Could not set cape, status {}", response.getStatus());
+                SkinShuffle.LOGGER.error("Could not set cape, status {}: {}", response.getStatus(), response.getBody());
                 return false;
             }
 
@@ -297,8 +315,8 @@ public class MojangSkinAPI {
 
         try {
             var cachedURL = SkinCacheRegistry.getCachedUploadedSkin(skinFile);
-            if (cachedURL != null) {
-                return setSkinTexture(cachedURL, model);
+            if (cachedURL != null && setSkinTexture(cachedURL, model)) {
+                return true;
             }
         } catch (IOException e) {
             SkinShuffle.LOGGER.error("Failed to hash file.");
