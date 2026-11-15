@@ -40,6 +40,10 @@ public class SkinShuffleConfig {
     @SerialEntry
     public boolean applyPresetOnStartup = true;
     @SerialEntry
+    public boolean shufflePresetOnStartup = false;
+    @SerialEntry
+    public boolean shufflePresetOnJoin = false;
+    @SerialEntry
     public boolean displayInPauseMenu = true;
     @SerialEntry
     public boolean displayInTitleScreen = true;
@@ -128,6 +132,20 @@ public class SkinShuffleConfig {
                             .binding(defaults.showCapeInPreview, () -> config.showCapeInPreview, val -> config.showCapeInPreview = val)
                             .controller(TickBoxControllerBuilder::create).build();
 
+                    var shuffleOnStartup = Option.<Boolean>createBuilder()
+                            .name(translatable("skinshuffle.config.general.shuffle_on_startup.name"))
+                            .description(OptionDescription.createBuilder()
+                                    .text(translatable("skinshuffle.config.general.shuffle_on_startup.description")).build())
+                            .binding(defaults.shufflePresetOnStartup, () -> config.shufflePresetOnStartup, val -> config.shufflePresetOnStartup = val)
+                            .controller(TickBoxControllerBuilder::create).build();
+
+                    var shuffleOnJoin = Option.<Boolean>createBuilder()
+                            .name(translatable("skinshuffle.config.general.shuffle_on_join.name"))
+                            .description(OptionDescription.createBuilder()
+                                    .text(translatable("skinshuffle.config.general.shuffle_on_join.description")).build())
+                            .binding(defaults.shufflePresetOnJoin, () -> config.shufflePresetOnJoin, val -> config.shufflePresetOnJoin = val)
+                            .controller(TickBoxControllerBuilder::create).build();
+
                     var applyOnStartup = Option.<Boolean>createBuilder()
                             .name(translatable("skinshuffle.config.general.apply_on_startup.name"))
                             .description(OptionDescription.createBuilder()
@@ -205,7 +223,7 @@ public class SkinShuffleConfig {
                                     .tooltip(translatable("skinshuffle.config.general.description"))
                                     .group(OptionGroup.createBuilder()
                                             .name(translatable("skinshuffle.config.general.behaviour.title"))
-                                            .options(List.of(disableApi, applyOnStartup, carouselScrollSensitivity, invertCarouselScroll, invertCarouselHorizontalScroll))
+                                            .options(List.of(disableApi, applyOnStartup, shuffleOnStartup, shuffleOnJoin, carouselScrollSensitivity, invertCarouselScroll, invertCarouselHorizontalScroll))
                                             .build())
                                     .group(OptionGroup.createBuilder()
                                             .name(translatable("skinshuffle.config.general.display.title"))

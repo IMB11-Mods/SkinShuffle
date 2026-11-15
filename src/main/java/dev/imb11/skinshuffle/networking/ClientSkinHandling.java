@@ -2,6 +2,7 @@ package dev.imb11.skinshuffle.networking;
 
 import dev.imb11.skinshuffle.api.data.SkinQueryResult;
 import dev.imb11.skinshuffle.client.config.SkinPresetManager;
+import dev.imb11.skinshuffle.client.config.SkinShuffleConfig;
 import dev.imb11.skinshuffle.util.SkinShuffleClientPlayer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -33,7 +34,13 @@ public class ClientSkinHandling {
     }
 
     public static void init() {
-        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> SkinPresetManager.setApiPreset(null));
+        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
+            SkinPresetManager.setApiPreset(null);
+
+            if (SkinShuffleConfig.get().shufflePresetOnJoin && SkinPresetManager.shuffleChosenPreset()) {
+                SkinPresetManager.apply();
+            }
+        });
 
         ClientPlayConnectionEvents.INIT.register(ClientSkinHandling::onPlayInit);
 

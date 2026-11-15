@@ -1,6 +1,7 @@
 package dev.imb11.skinshuffle.compat.api;
 
 import dev.imb11.skinshuffle.compat.CapesCompat;
+import dev.imb11.skinshuffle.compat.MinecraftCapesCompat;
 import dev.yumi.mc.core.api.YumiMods;
 
 import java.util.ArrayList;
@@ -9,8 +10,7 @@ public class CompatLoader {
     private static final ArrayList<CompatHandler> HELPERS = new ArrayList<>();
 
     static {
-        //FIXME this is probably broken
-//        HELPERS.add(new MinecraftCapesCompat());
+        HELPERS.add(new MinecraftCapesCompat());
         HELPERS.add(new CapesCompat());
     }
 

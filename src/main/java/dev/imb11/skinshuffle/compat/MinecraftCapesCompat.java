@@ -18,30 +18,12 @@ public class MinecraftCapesCompat implements CompatHandler {
         ClientAsset.Texture capeTexture = textures.cape();
         ClientAsset.Texture elytraTexture = textures.elytra();
 
-        if (MinecraftCapesConfig.isCapeVisible() && playerHandler.getCapeLocation() != null) {
-            PlayerSkin finalTextures = textures;
-            capeTexture = new ClientAsset.Texture() {
-                @Override
-                public Identifier texturePath() {
-                    return playerHandler.getCapeLocation();
-                }
-
-                @Override
-                public Identifier id() {
-                    return finalTextures.cape().id();
-                }
-            };
-            elytraTexture = new ClientAsset.Texture() {
-                @Override
-                public Identifier texturePath() {
-                    return finalTextures.elytra().texturePath();
-                }
-
-                @Override
-                public Identifier id() {
-                    return finalTextures.elytra().id();
-                }
-            };
+        Identifier capeLocation = playerHandler == null ? null : playerHandler.getCapeLocation();
+        if (capeLocation != null && MinecraftCapesConfig.isCapeVisible()) {
+            // MinecraftCapes registers its own texture, so point the cape (and elytra) at it. The vanilla
+            // cape/elytra may be null when the account has no cape, so never dereference them.
+            capeTexture = new CapeTexture(capeLocation);
+            elytraTexture = new CapeTexture(capeLocation);
         }
 
         textures = new PlayerSkin(
@@ -53,6 +35,13 @@ public class MinecraftCapesCompat implements CompatHandler {
         );
 
         return textures;
+    }
+
+    private record CapeTexture(Identifier id) implements ClientAsset.Texture {
+        @Override
+        public Identifier texturePath() {
+            return id;
+        }
     }
 
     @Override

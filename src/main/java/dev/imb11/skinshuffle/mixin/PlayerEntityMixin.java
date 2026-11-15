@@ -1,6 +1,7 @@
 package dev.imb11.skinshuffle.mixin;
 
 import com.mojang.authlib.GameProfile;
+import dev.imb11.skinshuffle.SkinShuffle;
 import dev.imb11.skinshuffle.client.config.SkinPresetManager;
 import dev.imb11.skinshuffle.client.preset.SkinPreset;
 import dev.imb11.skinshuffle.client.skin.CapeManager;
@@ -41,10 +42,15 @@ public abstract class PlayerEntityMixin extends Player implements SkinShuffleCli
                 SkinPreset currentPreset = SkinPresetManager.getChosenPreset();
                 var textures = currentPreset.getSkin().getSkinTextures();
 
-                if (CapesCompat.IS_INSTALLED) {
-                    textures = CapesCompat.loadTextures(this.getGameProfile(), textures);
-                } else if (MinecraftCapesCompat.IS_INSTALLED) {
-                    textures = MinecraftCapesCompat.loadTextures(uuid, textures);
+                // Cape mods are optional and their APIs change often: never let one crash rendering.
+                try {
+                    if (CapesCompat.IS_INSTALLED) {
+                        textures = CapesCompat.loadTextures(this.getGameProfile(), textures);
+                    } else if (MinecraftCapesCompat.IS_INSTALLED) {
+                        textures = MinecraftCapesCompat.loadTextures(uuid, textures);
+                    }
+                } catch (Exception | LinkageError e) {
+                    SkinShuffle.LOGGER.debug("Cape mod compatibility failed", e);
                 }
 
                 // Show the preset's own cape on the local player right away, without waiting for the
