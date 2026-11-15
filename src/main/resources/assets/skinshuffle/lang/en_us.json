@@ -142,6 +142,7 @@
   "skinshuffle.config.mineskin_proxy_port.description": "The port number to connect to when uploading skins to the MineSkin proxy. Please do not modify this unless you know what you're doing or the mod will break.",
   "skinshuffle.config.popups.keybind_sound.name": "Enable Quick Change Keybind Sound",
   "skinshuffle.config.popups.keybind_sound.description": "Should a sound play when you switch skins using a keybind?",
+  "key.skinshuffle.reload": "Reload Skins",
   "key.skinshuffle.preset_1": "Preset Keybind 1",
   "key.skinshuffle.preset_2": "Preset Keybind 2",
   "key.skinshuffle.preset_3": "Preset Keybind 3",

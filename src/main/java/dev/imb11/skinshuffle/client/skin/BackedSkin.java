@@ -75,6 +75,19 @@ public abstract class BackedSkin implements Skin, AutoCloseable {
         }
     }
 
+    /**
+     * Forgets the loaded texture so it is fetched again the next time it is needed. Used to pick up edits to
+     * a skin file on disk without restarting the game.
+     */
+    public void reload() {
+        if (textureId != null) {
+            decrementInstanceCountAndCleanup(textureId);
+            textureId = null;
+        }
+        fetching = false;
+        fetched = false;
+    }
+
     @Override
     public ClientAsset.@Nullable Texture getTextureAsset() {
         // Fetch the skin if it hasn't been fetched yet and isn't being fetched

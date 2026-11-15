@@ -5,6 +5,8 @@ import dev.imb11.skinshuffle.SkinShuffle;
 import dev.imb11.skinshuffle.client.config.SkinPresetManager;
 import dev.imb11.skinshuffle.client.config.SkinShuffleConfig;
 import dev.imb11.skinshuffle.client.gui.GeneratedScreens;
+import dev.imb11.skinshuffle.client.preset.SkinPreset;
+import dev.imb11.skinshuffle.client.skin.BackedSkin;
 import dev.imb11.skinshuffle.networking.ClientSkinHandling;
 //? fabric {
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -26,6 +28,7 @@ public class KeybindManager {
     private static final KeyMapping.Category KEYBIND_CATEGORY = KeyMapping.Category.register(Identifier.fromNamespaceAndPath("skinshuffle", "presets"));
 
     public static KeyMapping[] presetKeybindings;
+    public static KeyMapping reloadKeybinding;
 
     /**
      * Initialize all keybindings for skin presets.
@@ -53,6 +56,20 @@ public class KeybindManager {
             presetKeybindings[i] = KeyMappingHelper.registerKeyMapping(keyMapping);
         }
 
+        // Unbound by default: reloads every preset's skin from disk and re-applies the chosen one
+        KeyMapping reloadMapping = new KeyMapping(
+                "key.skinshuffle.reload",
+                InputConstants.Type.KEYBOARD,
+                InputConstants.UNKNOWN.getValue(),
+                KEYBIND_CATEGORY
+        );
+
+        //? neoforge
+        /*reloadKeybinding = reloadMapping;*/
+
+        //? fabric
+        reloadKeybinding = KeyMappingHelper.registerKeyMapping(reloadMapping);
+
         // Register the tick event for checking keybinds
         //? fabric
         ClientTickEvents.END_CLIENT_TICK.register(KeybindManager::onEndTick);
@@ -64,6 +81,10 @@ public class KeybindManager {
      * @param client The Minecraft client instance
      */
     private static void checkKeybindings(Minecraft client) {
+        if (reloadKeybinding != null && reloadKeybinding.consumeClick()) {
+            reloadSkins();
+        }
+
         for (int i = 0; i < presetKeybindings.length; i++) {
             if (presetKeybindings[i].consumeClick()) {
                 int presetId = i + 1;
@@ -95,6 +116,19 @@ public class KeybindManager {
                 }
             }
         }
+    }
+
+    /**
+     * Reloads the textures of all presets (picking up edited skin files) and re-applies the chosen preset.
+     */
+    private static void reloadSkins() {
+        for (SkinPreset preset : SkinPresetManager.getLoadedPresets()) {
+            if (preset.getSkin() instanceof BackedSkin backedSkin) {
+                backedSkin.reload();
+            }
+        }
+        SkinPresetManager.apply();
+        SkinShuffle.LOGGER.info("Reloaded skin presets.");
     }
 
     public static void onEndTick(Minecraft client) {
