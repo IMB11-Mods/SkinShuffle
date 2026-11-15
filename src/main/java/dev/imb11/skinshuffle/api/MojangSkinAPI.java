@@ -72,7 +72,7 @@ public class MojangSkinAPI {
     private static String getAccessToken() {
         UserApiService service = ((MinecraftClientAccessor) Minecraft.getInstance()).getUserApiService();
 
-        if (service instanceof YggdrasilUserApiService apiService) {
+        if (service instanceof MinecraftServicesUserApiService apiService) {
             com.mojang.authlib.minecraft.client.MinecraftClient client = ((YggdrasilUserApiServiceAccessor) apiService).getMinecraftClient();
             return ((MinecraftClientAuthAccessor) client).getAccessToken();
         }

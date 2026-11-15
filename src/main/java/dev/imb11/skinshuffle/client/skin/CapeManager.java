@@ -113,7 +113,7 @@ public final class CapeManager {
 
     private static void register(String url, byte[] bytes) {
         try (var in = new ByteArrayInputStream(bytes)) {
-            NativeImage image = NativeImage.read(NativeImage.Format.RGBA, in);
+            NativeImage image = NativeImage.read(in);
             Identifier id = SkinShuffle.id("cape/" + Math.abs(url.hashCode()));
             Minecraft.getInstance().getTextureManager().register(id, new DynamicTexture(() -> id.toString(), image));
             TEXTURES.put(url, id);
