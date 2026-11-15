@@ -32,6 +32,7 @@ public class SkinShuffleNeoForgeClient {
 		for (KeyMapping presetKeybinding : KeybindManager.presetKeybindings) {
 			event.register(presetKeybinding);
 		}
+		event.register(KeybindManager.reloadKeybinding);
 	}
 
 	@SubscribeEvent
