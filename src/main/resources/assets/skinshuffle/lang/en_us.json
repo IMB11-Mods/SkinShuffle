@@ -74,6 +74,7 @@
   "skinshuffle.config.rendering.show_cape_in_preview.description": "Should the currently selected cape (selected via minecraft.net or Minecraft Launcher) be shown in the skin preview in the preset edit screen?",
   "skinshuffle.button": "Skins",
   "skinshuffle.carousel.title": "Skin Presets",
+  "skinshuffle.carousel.search": "Search presets...",
   "skinshuffle.carousel.config_button.tooltip": "Open the config screen.",
   "skinshuffle.carousel.view_type_button.large.tooltip": "Large view.",
   "skinshuffle.carousel.view_type_button.compact.tooltip": "Compact view.",

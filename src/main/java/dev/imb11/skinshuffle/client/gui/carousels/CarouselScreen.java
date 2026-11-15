@@ -26,6 +26,7 @@ import java.util.Optional;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.CommonComponents;
@@ -43,6 +44,7 @@ public abstract class CarouselScreen extends SpruceScreen {
     protected SpruceIconButtonWidget viewTypeButton;
     protected SpruceButtonWidget cancelButton;
     protected SpruceButtonWidget selectButton;
+    protected EditBox searchBox;
     private double cardIndex = -1;
     private double lastCardIndex = 0;
     private double lastCardSwitchTime = 0;
@@ -107,6 +109,14 @@ public abstract class CarouselScreen extends SpruceScreen {
             SkinShuffleConfig.save();
         }, (btn) -> viewType.iconTexture));
         this.viewTypeButton.setTooltip(viewType.tooltip);
+
+        // Search box: scrolls the carousel to the first preset whose name matches.
+        int searchWidth = Math.min(140, this.width / 4);
+        this.searchBox = this.addRenderableWidget(new EditBox(this.font, this.width - searchWidth - 2, 2, searchWidth, 20,
+                Component.translatable("skinshuffle.carousel.search")));
+        this.searchBox.setHint(Component.translatable("skinshuffle.carousel.search"));
+        this.searchBox.setMaxLength(64);
+        this.searchBox.setResponder(this::jumpToMatchingPreset);
 
         this.selectButton = this.addRenderableWidget(new SpruceButtonWidget(Position.of(this.width / 2 + 5, this.height - 23), 128, 20, Component.translatable("skinshuffle.carousel.save_button"), button -> {
             if (Math.round(cardIndex) >= 0 && Math.round(cardIndex) < this.carouselWidgets.size()) {
@@ -244,6 +254,19 @@ public abstract class CarouselScreen extends SpruceScreen {
         cardIndex = Mth.clamp(cardIndex, 0, (this.carouselWidgets.size() - 1) / getRows() * getRows());
 
         setCardIndex(cardIndex);
+    }
+
+    private void jumpToMatchingPreset(String query) {
+        String needle = query.trim().toLowerCase(java.util.Locale.ROOT);
+        if (needle.isEmpty()) return;
+
+        for (int i = 0; i < this.carouselWidgets.size(); i++) {
+            if (this.carouselWidgets.get(i) instanceof PresetWidget<?> presetWidget
+                    && presetWidget.getPreset().getName().toLowerCase(java.util.Locale.ROOT).contains(needle)) {
+                setCardIndex(i / getRows() * getRows());
+                return;
+            }
+        }
     }
 
     public void snapCarousel() {
