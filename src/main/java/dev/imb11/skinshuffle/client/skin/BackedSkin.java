@@ -3,8 +3,10 @@ package dev.imb11.skinshuffle.client.skin;
 import dev.imb11.skinshuffle.SkinShuffle;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import java.util.UUID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.AbstractTexture;
+import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.core.ClientAsset;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
@@ -80,15 +82,21 @@ public abstract class BackedSkin implements Skin, AutoCloseable {
             fetchSkin();
         }
 
+        // If loading finished without producing a texture (e.g. the skin URL was unreachable or the file is
+        // unreadable), fall back to a default skin so the renderer never receives a null texture path.
+        final Identifier resolvedId = (textureId == null && fetched && !fetching)
+                ? DefaultPlayerSkin.get(UUID.nameUUIDFromBytes(getSerializationId().toString().getBytes())).body().texturePath()
+                : textureId;
+
         return new ClientAsset.Texture() {
             @Override
             public Identifier texturePath() {
-                return textureId;
+                return resolvedId;
             }
 
             @Override
             public Identifier id() {
-                return textureId;
+                return resolvedId;
             }
         };
     }

@@ -36,7 +36,7 @@ public class TitleScreenMixin extends Screen {
     public void refreshConfig(CallbackInfo ci) {
         if (!MixinStatics.APPLIED_SKIN_MANAGER_CONFIGURATION && this.fading) {
             MixinStatics.APPLIED_SKIN_MANAGER_CONFIGURATION = true;
-            SkinPresetManager.apply();
+            SkinPresetManager.applyOnStartup();
 
             if (!NetworkingUtil.isLoggedIn()) {
                 ToastHelper.showOfflineModeToast();

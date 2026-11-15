@@ -23,7 +23,7 @@ public abstract class AccessibilityOnboardingScreenMixin extends Screen {
         if (!MixinStatics.APPLIED_SKIN_MANAGER_CONFIGURATION) {
             MixinStatics.APPLIED_SKIN_MANAGER_CONFIGURATION = true;
 
-            SkinPresetManager.apply();
+            SkinPresetManager.applyOnStartup();
 
             if (!NetworkingUtil.isLoggedIn()) {
                 ToastHelper.showOfflineModeToast();

@@ -37,6 +37,8 @@
   "skinshuffle.config.general.description": "General configuration options that change or toggle functionality.",
   "skinshuffle.config.general.behaviour.title": "Behaviour",
   "skinshuffle.config.general.display.title": "Display",
+  "skinshuffle.config.general.apply_on_startup.name": "Apply Preset on Startup",
+  "skinshuffle.config.general.apply_on_startup.description": "Should SkinShuffle upload your selected preset to your Minecraft account when the game launches?\n\nDisable this if you change your skin outside of the game and don't want it overwritten.",
   "skinshuffle.config.general.disable_api.name": "Disable Mojang API Uploading",
   "skinshuffle.config.general.disable_api.description": "Should SkinShuffle not upload your skin to the Mojang API?\n\nIf enabled, this will mean that your skin will not be visible to yourself or other players.",
   "skinshuffle.config.general.display_title_screen.name": "Display Widget In Title Screen",

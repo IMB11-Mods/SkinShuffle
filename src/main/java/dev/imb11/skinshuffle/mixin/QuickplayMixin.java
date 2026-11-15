@@ -17,7 +17,7 @@ public class QuickplayMixin {
         if (!MixinStatics.APPLIED_SKIN_MANAGER_CONFIGURATION) {
             MixinStatics.APPLIED_SKIN_MANAGER_CONFIGURATION = true;
 
-            SkinPresetManager.apply();
+            SkinPresetManager.applyOnStartup();
 
             if (!NetworkingUtil.isLoggedIn()) {
                 ToastHelper.showOfflineModeToast();
