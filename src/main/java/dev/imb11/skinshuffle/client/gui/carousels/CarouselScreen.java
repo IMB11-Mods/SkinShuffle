@@ -45,6 +45,7 @@ public abstract class CarouselScreen extends SpruceScreen {
     protected SpruceButtonWidget cancelButton;
     protected SpruceButtonWidget selectButton;
     protected EditBox searchBox;
+    private boolean draggingScrollbar = false;
     private double cardIndex = -1;
     private double lastCardIndex = 0;
     private double lastCardSwitchTime = 0;
@@ -230,6 +231,7 @@ public abstract class CarouselScreen extends SpruceScreen {
         }
 
         this.extractWidgets(graphics, mouseX, mouseY, delta);
+        this.renderScrollbar(graphics);
 
         this.renderTitle(graphics.vanilla(), mouseX, mouseY, delta);
         Tooltip.extractAllRenderStates(graphics.vanilla());
@@ -283,8 +285,88 @@ public abstract class CarouselScreen extends SpruceScreen {
         return true;
     }
 
+    private int scrollbarX() {
+        return this.width / 4;
+    }
+
+    private int scrollbarWidth() {
+        return this.width / 2;
+    }
+
+    private int scrollbarY() {
+        return this.height - 30;
+    }
+
+    /**
+     * @return The highest card index the carousel can scroll to, or 0 if there is nothing to scroll.
+     */
+    private int maxCardIndex() {
+        return Math.max(0, (this.carouselWidgets.size() - 1) / getRows() * getRows());
+    }
+
+    private int scrollbarThumbWidth() {
+        int steps = maxCardIndex() / getRows() + 1;
+        return Mth.clamp(scrollbarWidth() / steps, 20, scrollbarWidth());
+    }
+
+    private void renderScrollbar(SpruceGuiGraphics graphics) {
+        int max = maxCardIndex();
+        if (max <= 0) return;
+
+        int x = scrollbarX();
+        int y = scrollbarY();
+        int thumbWidth = scrollbarThumbWidth();
+        double progress = Mth.clamp(getDeltaScrollIndex() / max, 0, 1);
+        int thumbX = x + (int) Math.round((scrollbarWidth() - thumbWidth) * progress);
+
+        graphics.fill(x, y, x + scrollbarWidth(), y + 6, 0x7F000000);
+        graphics.fill(thumbX, y, thumbX + thumbWidth, y + 6, this.draggingScrollbar ? 0xFFFFFFFF : 0xBFAAAAAA);
+    }
+
+    private boolean isOverScrollbar(double mouseX, double mouseY) {
+        // A slightly taller hit box than the visible bar makes it easier to grab.
+        return maxCardIndex() > 0
+                && mouseX >= scrollbarX() && mouseX <= scrollbarX() + scrollbarWidth()
+                && mouseY >= scrollbarY() - 4 && mouseY <= scrollbarY() + 10;
+    }
+
+    private void dragScrollbarTo(double mouseX) {
+        int max = maxCardIndex();
+        int travel = scrollbarWidth() - scrollbarThumbWidth();
+        if (max <= 0 || travel <= 0) return;
+
+        double progress = Mth.clamp((mouseX - scrollbarX() - scrollbarThumbWidth() / 2.0) / travel, 0, 1);
+        int rows = getRows();
+        int target = (int) Math.round(progress * max / rows) * rows;
+        if (target != Math.round(this.cardIndex)) {
+            setCardIndex(target);
+        }
+    }
+
+    @Override
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if (event.button() == 0 && isOverScrollbar(event.x(), event.y())) {
+            this.draggingScrollbar = true;
+            dragScrollbarTo(event.x());
+            return true;
+        }
+
+        return super.mouseClicked(event, doubleClick);
+    }
+
+    @Override
+    public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
+        if (this.draggingScrollbar) {
+            dragScrollbarTo(event.x());
+            return true;
+        }
+
+        return super.mouseDragged(event, dragX, dragY);
+    }
+
     @Override
     public boolean mouseReleased(MouseButtonEvent event) {
+        this.draggingScrollbar = false;
         carouselWidgets.forEach(widget -> widget.setDragging(false));
 
         return super.mouseReleased(event);
