@@ -6,7 +6,10 @@ import dev.imb11.skinshuffle.client.skin.Skin;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.state.gui.pip.GuiEntityRenderState;
+import net.minecraft.core.ClientAsset;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.PlayerSkin;
+import org.jetbrains.annotations.Nullable;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Pose;
 import org.joml.Quaternionf;
@@ -16,6 +19,16 @@ public class GuiEntityRenderer {
 
     public static void drawEntity(GuiGraphicsExtractor context, int x1, int y1, int x2, int y2, int size,
                                   float rotation, double mouseX, double mouseY, Skin skin,
+                                  SkinShuffleConfig.SkinRenderStyle style, float alpha) {
+        drawEntity(context, x1, y1, x2, y2, size, rotation, mouseX, mouseY, skin, null, style, alpha);
+    }
+
+    /**
+     * @param cape A cape to render on the model instead of the account's current one, or null to use the default.
+     */
+    public static void drawEntity(GuiGraphicsExtractor context, int x1, int y1, int x2, int y2, int size,
+                                  float rotation, double mouseX, double mouseY, Skin skin,
+                                  @Nullable ClientAsset.Texture cape,
                                   SkinShuffleConfig.SkinRenderStyle style, float alpha) {
 
         // Calculate center position
@@ -39,7 +52,7 @@ public class GuiEntityRenderer {
         }
 
         // Create player render state
-        AvatarRenderState renderState = createPlayerRenderState(skin, headYaw, headPitch, rotation);
+        AvatarRenderState renderState = createPlayerRenderState(skin, cape, headYaw, headPitch, rotation);
 
         // Create base rotation quaternion (try Z-axis rotation if Y-axis doesn't work)
 //        System.out.println(rotation);
@@ -60,7 +73,7 @@ public class GuiEntityRenderer {
         context.disableScissor();
     }
 
-    private static AvatarRenderState createPlayerRenderState(Skin skin, float headYaw, float headPitch, float rotation) {
+    private static AvatarRenderState createPlayerRenderState(Skin skin, @Nullable ClientAsset.Texture cape, float headYaw, float headPitch, float rotation) {
         AvatarRenderState state = new AvatarRenderState();
 
         // Basic entity properties
@@ -115,7 +128,11 @@ public class GuiEntityRenderer {
         state.elytraRotZ = 0.0F;
 
         // Player-specific properties
-        state.skin = skin.getSkinTextures();
+        PlayerSkin skinTextures = skin.getSkinTextures();
+        if (cape != null) {
+            skinTextures = new PlayerSkin(skinTextures.body(), cape, skinTextures.elytra(), skinTextures.model(), skinTextures.secure());
+        }
+        state.skin = skinTextures;
         state.scoreText = Component.nullToEmpty(String.valueOf(skin.hashCode()));
         state.isSpectator = false;
         state.arrowCount = 0;
@@ -131,7 +148,7 @@ public class GuiEntityRenderer {
         state.showRightPants = true;
         state.showLeftSleeve = true;
         state.showRightSleeve = true;
-        state.showCape = SkinShuffleConfig.get().showCapeInPreview;
+        state.showCape = SkinShuffleConfig.get().showCapeInPreview || cape != null;
 
         // Misc properties
         state.scoreText = null;

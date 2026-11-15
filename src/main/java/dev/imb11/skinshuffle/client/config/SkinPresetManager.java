@@ -23,9 +23,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import net.minecraft.core.ClientAsset;
-import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
 
 public class SkinPresetManager {
@@ -37,6 +37,11 @@ public class SkinPresetManager {
     private static SkinPreset chosenPreset = null;
     private static SkinPreset apiPreset = null;
     private static SkinShuffleAPI SKIN_SHUFFLE_API;
+    private static final ExecutorService APPLY_EXECUTOR = Executors.newSingleThreadExecutor(runnable -> {
+        Thread thread = new Thread(runnable, "SkinShuffle-Apply");
+        thread.setDaemon(true);
+        return thread;
+    });
 
     public static List<SkinPreset> getLoadedPresets() {
         return Collections.unmodifiableList(loadedPresets);
@@ -270,6 +275,18 @@ public class SkinPresetManager {
         apply();
     }
 
+    /**
+     * Equips (or hides) the cape chosen by the preset on the account. Presets that don't manage the cape,
+     * such as ones created before cape support, leave the account's cape untouched.
+     * Blocks on network I/O, so only call this off the render thread.
+     */
+    private static void applyCape(SkinPreset preset) {
+        String capeId = preset.getCapeId();
+        if (capeId == null) return;
+
+        MojangSkinAPI.setActiveCape(capeId.equals(SkinPreset.NO_CAPE) ? null : capeId);
+    }
+
     public static void apply() {
         Minecraft client = Minecraft.getInstance();
         SkinPreset preset = getChosenPreset();
@@ -284,18 +301,23 @@ public class SkinPresetManager {
             return;
         }
 
-        try {
-            ConfigSkin configSkin = preset.getSkin().saveToConfig();
-
+        // Everything below talks to the network (downloading the skin, the Mojang API and the MineSkin proxy),
+        // so it runs off the render thread on a single worker. That keeps the game from freezing on slow or
+        // proxied connections, and keeps rapid successive applies in order.
+        APPLY_EXECUTOR.execute(() -> {
             try {
-                boolean successful;
-                if (preset.getSkin() instanceof UrlSkin urlSkin) {
-                    successful = MojangSkinAPI.setSkinTexture(urlSkin.getUrl(), urlSkin.getModel());
-                } else {
-                    successful = MojangSkinAPI.setSkinTexture(configSkin.getFile().toFile(), configSkin.getModel());
-                }
-                if (successful) setApiPreset(preset);
-                CompletableFuture.runAsync(() -> client.doRunTask(() -> {
+                ConfigSkin configSkin = preset.getSkin().saveToConfig();
+
+                try {
+                    boolean successful;
+                    if (preset.getSkin() instanceof UrlSkin urlSkin) {
+                        successful = MojangSkinAPI.setSkinTexture(urlSkin.getUrl(), urlSkin.getModel());
+                    } else {
+                        successful = MojangSkinAPI.setSkinTexture(configSkin.getFile().toFile(), configSkin.getModel());
+                    }
+                    if (successful) client.execute(() -> setApiPreset(preset));
+                    applyCape(preset);
+
                     try {
                         String cachedURL = SkinCacheRegistry.getCachedUploadedSkin(configSkin.getFile().toFile());
 
@@ -311,19 +333,21 @@ public class SkinPresetManager {
                         }
 
                         if (client.level != null && ClientSkinHandling.isInstalledOnServer()) {
-                            ClientAsset.DownloadedTexture cape = configSkin.getSkinTextures().cape() instanceof ClientAsset.DownloadedTexture downloaded ? downloaded : null;
-                            ClientSkinHandling.sendRefresh(result, Optional.ofNullable(cape));
+                            client.execute(() -> {
+                                ClientAsset.DownloadedTexture cape = configSkin.getSkinTextures().cape() instanceof ClientAsset.DownloadedTexture downloaded ? downloaded : null;
+                                ClientSkinHandling.sendRefresh(result, Optional.ofNullable(cape));
+                            });
                         }
                     } catch (Exception e) {
-                        SkinShuffle.LOGGER.error("Failed to apply skin preset due to {}",  e.getMessage());
+                        SkinShuffle.LOGGER.error("Failed to apply skin preset due to {}", e.getMessage());
                     }
-                }), Util.backgroundExecutor());
-            } catch (Exception e) {
-                SkinShuffle.LOGGER.error("Failed to apply skin preset.", e);
+                } catch (Exception e) {
+                    SkinShuffle.LOGGER.error("Failed to apply skin preset.", e);
+                }
+            } catch (Exception ignored) {
+                SkinShuffle.LOGGER.info("Skipping skin preset application due to skin not being fully loaded. If this is first startup, please ignore this message.");
             }
-        } catch (Exception ignored) {
-            SkinShuffle.LOGGER.info("Skipping skin preset application due to skin not being fully loaded. If this is first startup, please ignore this message.");
-        }
+        });
 
         savePresets();
     }

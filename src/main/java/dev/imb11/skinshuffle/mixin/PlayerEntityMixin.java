@@ -5,6 +5,7 @@ import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import dev.imb11.skinshuffle.SkinShuffle;
 import dev.imb11.skinshuffle.client.config.SkinPresetManager;
 import dev.imb11.skinshuffle.client.preset.SkinPreset;
+import dev.imb11.skinshuffle.client.skin.CapeManager;
 import dev.imb11.skinshuffle.compat.CapesCompat;
 import dev.imb11.skinshuffle.compat.MinecraftCapesCompat;
 import dev.imb11.skinshuffle.util.SkinShuffleClientPlayer;
@@ -49,6 +50,17 @@ public abstract class PlayerEntityMixin extends Player implements SkinShuffleCli
                     textures = CapesCompat.loadTextures(this.getGameProfile(), textures);
                 } else if (MinecraftCapesCompat.IS_INSTALLED) {
                     textures = MinecraftCapesCompat.loadTextures(uuid, textures);
+                }
+
+                // Show the preset's own cape on the local player right away, without waiting for the
+                // account's cape change to round-trip through Mojang's servers.
+                if (currentPreset.hasCape()) {
+                    var presetCape = CapeManager.getTexture(currentPreset);
+                    if (presetCape != null) {
+                        textures = new PlayerSkin(textures.body(), presetCape, textures.elytra(), textures.model(), textures.secure());
+                    }
+                } else if (SkinPreset.NO_CAPE.equals(currentPreset.getCapeId())) {
+                    textures = new PlayerSkin(textures.body(), null, textures.elytra(), textures.model(), textures.secure());
                 }
 
                 if (currentPreset.getSkin().isLoading()) {

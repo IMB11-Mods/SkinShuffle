@@ -40,7 +40,9 @@ public class NetworkingUtil {
         }
 
 
-        if (client.isLocalServer()) {
+        // Use the value captured before disconnecting: once the client has disconnected the integrated server
+        // is gone, so isLocalServer() is false and singleplayer would wrongly try to join a null server address.
+        if (isSingleplayer) {
             client.doRunTask(() -> {
                 try {
                     Thread.sleep(250);
