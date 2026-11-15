@@ -48,10 +48,14 @@ public class MojangSkinAPI {
                 JsonObject obj = new JsonObject();
                 obj.addProperty("variant", model);
                 obj.addProperty("url", skinURL);
-                var result = Unirest.post("https://api.minecraftservices.com/minecraft/profile/skins")
+                HttpResponse<String> response = Unirest.post("https://api.minecraftservices.com/minecraft/profile/skins")
                         .body(GSON.toJson(obj))
                         .contentType("application/json")
-                        .header("Authorization", "Bearer " + token).asString().getBody();
+                        .header("Authorization", "Bearer " + token).asString();
+                if (!response.isSuccess()) {
+                    SkinShuffle.LOGGER.error("Could not set player skin, status {}: {}", response.getStatus(), response.getBody());
+                    return false;
+                }
 				SkinShuffle.LOGGER.info("Set player skin: {}", skinURL);
             } catch (Exception e) {
                 SkinShuffle.LOGGER.error("Cannot connect to Mojang API.", e);
@@ -154,7 +158,7 @@ public class MojangSkinAPI {
             }
 
             if (!response.isSuccess()) {
-                SkinShuffle.LOGGER.error("Could not set cape, status {}", response.getStatus());
+                SkinShuffle.LOGGER.error("Could not set cape, status {}: {}", response.getStatus(), response.getBody());
                 return false;
             }
 
