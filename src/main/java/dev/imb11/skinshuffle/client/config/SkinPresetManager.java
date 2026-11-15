@@ -275,7 +275,7 @@ public class SkinPresetManager {
                     successful = MojangSkinAPI.setSkinTexture(configSkin.getFile().toFile(), configSkin.getModel());
                 }
                 if (successful) setApiPreset(preset);
-                CompletableFuture.runAsync(() -> client.doRunTask(() -> {
+                CompletableFuture.runAsync(() -> {
                     try {
                         String cachedURL = SkinCacheRegistry.getCachedUploadedSkin(configSkin.getFile().toFile());
 
@@ -290,14 +290,17 @@ public class SkinPresetManager {
                             throw new Exception("Failed to upload skin to MineSkin proxy.");
                         }
 
-                        if (client.level != null && ClientSkinHandling.isInstalledOnServer()) {
-                            ClientAsset.DownloadedTexture cape = configSkin.getSkinTextures().cape() instanceof ClientAsset.DownloadedTexture downloaded ? downloaded : null;
-                            ClientSkinHandling.sendRefresh(result, Optional.ofNullable(cape));
-                        }
-                    } catch (Exception e) {
+                        client.doRunTask(() -> {
+                            if (client.level != null && ClientSkinHandling.isInstalledOnServer()) {
+                                ClientAsset.DownloadedTexture cape = configSkin.getSkinTextures().cape() instanceof ClientAsset.DownloadedTexture downloaded ? downloaded : null;
+                                ClientSkinHandling.sendRefresh(result, Optional.ofNullable(cape));
+                            }
+                        });
+                    }
+                    catch (Exception e) {
                         SkinShuffle.LOGGER.error("Failed to apply skin preset due to {}",  e.getMessage());
                     }
-                }), Util.backgroundExecutor());
+                }, Util.backgroundExecutor());
             } catch (Exception e) {
                 SkinShuffle.LOGGER.error("Failed to apply skin preset.", e);
             }
