@@ -4,6 +4,7 @@ import com.mojang.blaze3d.Blaze3D;
 import dev.imb11.skinshuffle.client.SkinShuffleClient;
 import dev.imb11.skinshuffle.client.config.SkinShuffleConfig;
 import dev.imb11.skinshuffle.client.preset.SkinPreset;
+import dev.imb11.skinshuffle.client.skin.CapeManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -89,7 +90,7 @@ public class SkinPreviewRenderer {
         // Pass the raw mouse coordinates - let GuiEntityRenderer handle the mouse calculations
         GuiEntityRenderer.drawEntity(
                 graphics, x1, y1, x2, y2, size,
-                rotation, mouseX, mouseY, preset.getSkin(), renderStyle, alpha
+                rotation, mouseX, mouseY, preset.getSkin(), CapeManager.getTexture(preset), renderStyle, alpha
         );
     }
 

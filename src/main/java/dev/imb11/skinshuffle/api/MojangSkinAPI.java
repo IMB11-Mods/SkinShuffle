@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import com.mojang.authlib.minecraft.UserApiService;
 import com.mojang.authlib.yggdrasil.YggdrasilUserApiService;
 import dev.imb11.skinshuffle.SkinShuffle;
+import dev.imb11.skinshuffle.api.data.OwnedCape;
 import dev.imb11.skinshuffle.api.data.SkinQueryResult;
 import dev.imb11.skinshuffle.mixin.accessor.MinecraftClientAccessor;
 import dev.imb11.skinshuffle.mixin.accessor.MinecraftClientAuthAccessor;
@@ -21,7 +22,9 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -60,6 +63,107 @@ public class MojangSkinAPI {
         }
 
         return true;
+    }
+
+    /**
+     * @return The current account's access token, or null if offline mode is active.
+     */
+    @Nullable
+    private static String getAccessToken() {
+        UserApiService service = ((MinecraftClientAccessor) Minecraft.getInstance()).getUserApiService();
+
+        if (service instanceof YggdrasilUserApiService apiService) {
+            com.mojang.authlib.minecraft.client.MinecraftClient client = ((YggdrasilUserApiServiceAccessor) apiService).getMinecraftClient();
+            return ((MinecraftClientAuthAccessor) client).getAccessToken();
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the capes owned by the current account.
+     *
+     * @return The owned capes, or an empty list if they could not be fetched (offline, API failure).
+     */
+    public static List<OwnedCape> getOwnedCapes() {
+        try {
+            String token = getAccessToken();
+            if (token == null) {
+                SkinShuffle.LOGGER.warn("Cannot fetch owned capes - offline mode is active.");
+                return List.of();
+            }
+
+            HttpResponse<String> response = Unirest.get("https://api.minecraftservices.com/minecraft/profile")
+                    .header("Authorization", "Bearer " + token)
+                    .asString();
+
+            if (!response.isSuccess()) {
+                SkinShuffle.LOGGER.warn("Could not fetch owned capes, status {}", response.getStatus());
+                return List.of();
+            }
+
+            JsonObject profile = GSON.fromJson(response.getBody(), JsonObject.class);
+            if (profile == null || !profile.has("capes") || !profile.get("capes").isJsonArray()) {
+                return List.of();
+            }
+
+            List<OwnedCape> capes = new ArrayList<>();
+            for (JsonElement element : profile.getAsJsonArray("capes")) {
+                JsonObject cape = element.getAsJsonObject();
+                capes.add(new OwnedCape(
+                        cape.get("id").getAsString(),
+                        cape.has("alias") ? cape.get("alias").getAsString() : cape.get("id").getAsString(),
+                        cape.get("url").getAsString(),
+                        cape.has("state") && cape.get("state").getAsString().equalsIgnoreCase("ACTIVE")
+                ));
+            }
+            return capes;
+        } catch (Exception e) {
+            SkinShuffle.LOGGER.error("Could not fetch owned capes due to {}", e.toString());
+            return List.of();
+        }
+    }
+
+    /**
+     * Equip a cape on the current account, or hide the current cape.
+     *
+     * @param capeId The id of an owned cape to equip, or null to hide the equipped cape.
+     * @return Whether the request succeeded.
+     */
+    public static boolean setActiveCape(@Nullable String capeId) {
+        try {
+            String token = getAccessToken();
+            if (token == null) {
+                SkinShuffle.LOGGER.error("Cannot set cape - offline mode is active.");
+                return false;
+            }
+
+            HttpResponse<String> response;
+            if (capeId == null) {
+                response = Unirest.delete("https://api.minecraftservices.com/minecraft/profile/capes/active")
+                        .header("Authorization", "Bearer " + token)
+                        .asString();
+            } else {
+                JsonObject obj = new JsonObject();
+                obj.addProperty("capeId", capeId);
+                response = Unirest.put("https://api.minecraftservices.com/minecraft/profile/capes/active")
+                        .body(GSON.toJson(obj))
+                        .contentType("application/json")
+                        .header("Authorization", "Bearer " + token)
+                        .asString();
+            }
+
+            if (!response.isSuccess()) {
+                SkinShuffle.LOGGER.error("Could not set cape, status {}", response.getStatus());
+                return false;
+            }
+
+            SkinShuffle.LOGGER.info("Set player cape: {}", capeId == null ? "none" : capeId);
+            return true;
+        } catch (Exception e) {
+            SkinShuffle.LOGGER.error("Could not set cape due to {}", e.toString());
+            return false;
+        }
     }
 
     /**

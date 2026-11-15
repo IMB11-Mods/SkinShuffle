@@ -8,7 +8,11 @@ import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 import dev.imb11.skinshuffle.client.util.KeybindManager;
+import dev.imb11.skinshuffle.api.data.OwnedCape;
+import dev.imb11.skinshuffle.client.skin.CapeManager;
+import java.util.Optional;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.StringWidget;
@@ -20,6 +24,8 @@ import net.minecraft.network.chat.Component;
 public class SkinCustomizationTabComponent extends TabComponent {
 
     private static final int MAX_KEYBIND_ID = 9;
+
+    private Button capeButton;
 
     /**
      * Constructor for the skin customization tab component.
@@ -77,6 +83,70 @@ public class SkinCustomizationTabComponent extends TabComponent {
             preset.setKeybindId(value);
         });
         gridAdder.addChild(keybindIdButton);
+
+        // Add cape selector
+        gridAdder.addChild(new StringWidget(Component.translatable("skinshuffle.edit.customize.cape"), textRenderer));
+        this.capeButton = Button.builder(Component.empty(), button -> cycleCape()).width(256).build();
+        gridAdder.addChild(this.capeButton);
+        updateCapeButton();
+
+        // Owned capes come from the Mojang API, so they might not be available yet.
+        CapeManager.loadOwnedCapes(false, this::updateCapeButton);
+    }
+
+    /**
+     * The cape choices: leave the account's cape alone (null), hide the cape, or one of the owned capes.
+     */
+    private List<Optional<OwnedCape>> capeChoices() {
+        List<Optional<OwnedCape>> choices = new ArrayList<>();
+        choices.add(Optional.empty());
+        choices.addAll(CapeManager.getOwnedCapes().stream().map(Optional::of).toList());
+        return choices;
+    }
+
+    private int currentCapeChoice() {
+        String capeId = preset.getCapeId();
+        if (capeId == null) return 0;
+        if (capeId.equals(SkinPreset.NO_CAPE)) return 1;
+
+        List<OwnedCape> owned = CapeManager.getOwnedCapes();
+        for (int i = 0; i < owned.size(); i++) {
+            if (owned.get(i).id().equals(capeId)) return i + 2;
+        }
+        return 0;
+    }
+
+    private void cycleCape() {
+        // Index 0 = unchanged, 1 = no cape, 2+ = owned capes
+        int count = CapeManager.getOwnedCapes().size() + 2;
+        int next = (currentCapeChoice() + 1) % count;
+
+        if (next == 0) {
+            preset.setCape(null, null);
+        } else if (next == 1) {
+            preset.setCape(SkinPreset.NO_CAPE, null);
+        } else {
+            OwnedCape cape = CapeManager.getOwnedCapes().get(next - 2);
+            preset.setCape(cape.id(), cape.url());
+        }
+        updateCapeButton();
+    }
+
+    private void updateCapeButton() {
+        if (this.capeButton == null) return;
+
+        int choice = currentCapeChoice();
+        Component value;
+        if (choice == 0) {
+            value = Component.translatable("skinshuffle.edit.customize.cape.unchanged");
+        } else if (choice == 1) {
+            value = Component.translatable("skinshuffle.edit.customize.cape.none");
+        } else {
+            value = Component.literal(CapeManager.getOwnedCapes().get(choice - 2).alias());
+        }
+
+        Component prefix = Component.translatable("skinshuffle.edit.customize.cape_prefix");
+        this.capeButton.setMessage(Component.empty().append(prefix).append(value));
     }
 
     /**
