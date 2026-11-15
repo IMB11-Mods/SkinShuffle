@@ -366,6 +366,10 @@ public class SkinPresetManager {
                     if (preset.getSkin() instanceof UrlSkin urlSkin) {
                         successful = MojangSkinAPI.setSkinTexture(urlSkin.getUrl(), urlSkin.getModel());
                     } else {
+                        successful = false;
+                    }
+                    // Skin-by-URL can be rejected by Mojang, so fall back to uploading the downloaded skin file.
+                    if (!successful) {
                         successful = MojangSkinAPI.setSkinTexture(configSkin.getFile().toFile(), configSkin.getModel());
                     }
                     if (successful) client.execute(() -> setApiPreset(preset));
