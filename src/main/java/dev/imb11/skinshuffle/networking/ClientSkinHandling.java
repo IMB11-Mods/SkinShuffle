@@ -18,9 +18,9 @@ import net.minecraft.world.entity.Entity;
 import java.util.Optional;
 
 public class ClientSkinHandling {
-    private static boolean handshakeTakenPlace = false;
+    private static volatile boolean handshakeTakenPlace = false;
 
-    private static boolean reconnectRequired = false;
+    private static volatile boolean reconnectRequired = false;
 
     public static boolean isReconnectRequired() {
         return reconnectRequired;
@@ -46,7 +46,8 @@ public class ClientSkinHandling {
 
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> onPlayDisconnect());
 
-        ClientPlayNetworking.registerGlobalReceiver(HandshakePayload.PACKET_ID, (payload, context) -> ClientSkinHandling.handshake());
+        ClientPlayNetworking.registerGlobalReceiver(HandshakePayload.PACKET_ID, (payload, context) ->
+                context.client().execute(ClientSkinHandling::handshake));
 
         ClientPlayNetworking.registerGlobalReceiver(RefreshPlayerListEntryPayload.PACKET_ID, ClientSkinHandling::receive);
     }

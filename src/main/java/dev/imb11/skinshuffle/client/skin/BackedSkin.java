@@ -7,17 +7,21 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.core.ClientAsset;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 
 public abstract class BackedSkin implements Skin, AutoCloseable {
     // Keep track of how many instances exist for each texture id, so we can clean them up when they're no longer used
     // It should be fine to use the same map for all subclasses, since the texture ids will be unique anyway
     public static final Object2IntMap<Identifier> INSTANCE_COUNTS = new Object2IntOpenHashMap<>();
 
-    private boolean fetching = false;
-    private boolean fetched = false;
+    private volatile boolean fetching = false;
+    private volatile boolean fetched = false;
     @Nullable
-    private Identifier textureId;
+    private volatile Identifier textureId;
 
     private static void incrementInstanceCount(Identifier id) {
         INSTANCE_COUNTS.compute(id, (k, v) -> v == null ? 1 : v + 1);
@@ -44,28 +48,39 @@ public abstract class BackedSkin implements Skin, AutoCloseable {
             // Texture doesn't exist, we need to fetch it.
             fetching = true;
 
-            Minecraft.getInstance().execute(() -> {
+            CompletableFuture.runAsync(() -> {
                 try {
-                    var texture = loadTexture(() -> {
-                        fetching = false;
-                        fetched = true;
-                        setTexture(id);
-                    });
+                    var textureFactory = loadTextureFactory();
 
-                    if (texture != null) {
-                        textureManager.register(id, texture);
-                    } else {
+                    Minecraft.getInstance().execute(() -> {
+                        try {
+                            var texture = textureFactory != null ? textureFactory.get() : null;
+                            if (texture != null) {
+                                textureManager.register(id, texture);
+                                fetching = false;
+                                fetched = true;
+                                setTexture(id);
+                            } else {
+                                fetching = false;
+                                fetched = true;
+                                setTexture(null);
+                            }
+                        } catch (Exception e) {
+                            SkinShuffle.LOGGER.warn("Failed to register skin texture", e);
+                            fetching = false;
+                            fetched = true;
+                            setTexture(null);
+                        }
+                    });
+                } catch (Exception e) {
+                    SkinShuffle.LOGGER.warn("Failed to load skin texture", e);
+                    Minecraft.getInstance().execute(() -> {
                         fetching = false;
                         fetched = true;
                         setTexture(null);
-                    }
-                } catch (Exception e) {
-                    SkinShuffle.LOGGER.warn("Failed to load skin texture", e);
-                    fetching = false;
-                    fetched = true;
-                    setTexture(null);
+                    });
                 }
-            });
+            }, Util.ioPool());
         } else {
             // Texture already exists, we still set it
             fetched = true;
@@ -109,7 +124,9 @@ public abstract class BackedSkin implements Skin, AutoCloseable {
             decrementInstanceCountAndCleanup(this.textureId);
         }
         this.textureId = textureId;
-        incrementInstanceCount(textureId);
+        if (textureId != null) {
+            incrementInstanceCount(textureId);
+        }
     }
 
     @Override
@@ -119,7 +136,7 @@ public abstract class BackedSkin implements Skin, AutoCloseable {
 
     protected abstract Object getTextureUniqueness();
 
-    protected abstract @Nullable AbstractTexture loadTexture(Runnable completionCallback);
+    protected abstract @Nullable Supplier<AbstractTexture> loadTextureFactory();
 
     @Override
     public void close() {

@@ -18,6 +18,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 public class UrlSkin extends FileBackedSkin {
     public static final Int2ObjectMap<String> MODEL_CACHE = new Int2ObjectOpenHashMap<>();
@@ -91,7 +92,7 @@ public class UrlSkin extends FileBackedSkin {
     }
 
     @Override
-    protected @Nullable AbstractTexture loadTexture(Runnable completionCallback) {
+    protected @Nullable Supplier<AbstractTexture> loadTextureFactory() {
         try {
             Path cacheFolder = SkinShuffle.DATA_DIR.resolve("skins/downloaded");
             if (!cacheFolder.toFile().exists()) {
@@ -105,7 +106,7 @@ public class UrlSkin extends FileBackedSkin {
             Files.copy(in, temporaryFilePath, StandardCopyOption.REPLACE_EXISTING);
             in.close();
 
-            return super.loadTexture(completionCallback);
+            return super.loadTextureFactory();
         } catch (Exception e) {
             SkinShuffle.LOGGER.warn("Failed to load skin from URL: {}", url, e);
             return null;

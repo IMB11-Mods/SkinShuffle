@@ -8,7 +8,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.GenericMessageScreen;
 import net.minecraft.client.quickplay.QuickPlay;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Util;
 import net.minecraft.world.level.storage.LevelResource;
+
+import java.util.concurrent.CompletableFuture;
 
 public class NetworkingUtil {
     public static boolean isLoggedIn() {
@@ -40,24 +43,24 @@ public class NetworkingUtil {
         }
 
 
-        if (client.isLocalServer()) {
-            client.doRunTask(() -> {
+        if (isSingleplayer) {
+            CompletableFuture.runAsync(() -> {
                 try {
                     Thread.sleep(250);
                     client.execute(() -> QuickPlay.joinSingleplayerWorld(client, folderName));
                 } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+                    Thread.currentThread().interrupt();
                 }
-            });
+            }, Util.ioPool());
         } else {
-            client.doRunTask(() -> {
+            CompletableFuture.runAsync(() -> {
                 try {
                     Thread.sleep(250);
                     client.execute(() -> QuickPlay.joinMultiplayerWorld(client, serverAddress));
                 } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+                    Thread.currentThread().interrupt();
                 }
-            });
+            }, Util.ioPool());
         }
     }
 }

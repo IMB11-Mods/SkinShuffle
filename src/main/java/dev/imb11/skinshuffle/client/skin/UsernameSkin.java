@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Supplier;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.resources.Identifier;
 
@@ -48,7 +49,7 @@ public class UsernameSkin extends UUIDSkin {
     }
 
     @Override
-    protected @Nullable AbstractTexture loadTexture(Runnable completionCallback) {
+    protected @Nullable Supplier<AbstractTexture> loadTextureFactory() {
         var uuid = MojangSkinAPI.getUUIDFromUsername(username);
 
         if (uuid.isPresent()) {
@@ -57,7 +58,7 @@ public class UsernameSkin extends UUIDSkin {
             return null;
         }
 
-        return super.loadTexture(completionCallback);
+        return super.loadTextureFactory();
     }
 
     @Override

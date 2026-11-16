@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.function.Supplier;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 
@@ -34,16 +35,14 @@ public abstract class FileBackedSkin extends BackedSkin {
     }
 
     @Override
-    protected @Nullable AbstractTexture loadTexture(Runnable completionCallback) {
+    protected @Nullable Supplier<AbstractTexture> loadTextureFactory() {
         try (var inputStream = Files.newInputStream(getFile())) {
             var image = SkinTextureSafetyUtil.processTexture(NativeImage.read(inputStream));
 
             if (image == null) throw new RuntimeException("Texture is null!");
 
-            var texture = new DynamicTexture(() -> String.valueOf(Math.abs(getTextureUniqueness().hashCode())), image);
-
-            completionCallback.run();
-            return texture;
+            String label = String.valueOf(Math.abs(getTextureUniqueness().hashCode()));
+            return () -> new DynamicTexture(() -> label, image);
         } catch (Exception e) {
             SkinShuffle.LOGGER.warn("Failed to load skin from file: " + getFile(), e);
             return null;

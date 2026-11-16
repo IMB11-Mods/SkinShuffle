@@ -42,18 +42,22 @@ public interface Skin {
 
     default PlayerSkin getSkinTextures() {
         Minecraft client = Minecraft.getInstance();
-        CompletableFuture<Optional<PlayerSkin>> textureSupplier =
-                client.getSkinManager().get(client.getGameProfile());
+        Optional<PlayerSkin> resolved = Optional.empty();
 
-        CompletableFuture<Optional<PlayerSkin>> clientTexture;
-        if (MixinStatics.INITIAL_SKIN_TEXTURES.isDone()) clientTexture = MixinStatics.INITIAL_SKIN_TEXTURES.join();
-        else clientTexture = textureSupplier;
-
-        try {
-            return new PlayerSkin(this.getTextureAsset(), clientTexture.get().get().cape(), clientTexture.get().get().elytra(), getModelEnum(), false);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        if (MixinStatics.INITIAL_SKIN_TEXTURES != null && MixinStatics.INITIAL_SKIN_TEXTURES.isDone()) {
+            CompletableFuture<Optional<PlayerSkin>> inner = MixinStatics.INITIAL_SKIN_TEXTURES.getNow(null);
+            if (inner != null) {
+                resolved = inner.getNow(Optional.empty());
+            }
         }
+
+        if (resolved.isEmpty()) {
+            resolved = client.getSkinManager().get(client.getGameProfile()).getNow(Optional.empty());
+        }
+
+        ClientAsset.Texture cape = resolved.map(PlayerSkin::cape).orElse(null);
+        ClientAsset.Texture elytra = resolved.map(PlayerSkin::elytra).orElse(null);
+        return new PlayerSkin(this.getTextureAsset(), cape, elytra, getModelEnum(), false);
     }
 
     default PlayerModelType getModelEnum() {

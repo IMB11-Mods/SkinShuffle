@@ -28,20 +28,22 @@ public class MinecraftCapesCompat implements CompatHandler {
 
                 @Override
                 public Identifier id() {
-                    return finalTextures.cape().id();
+                    return finalTextures.cape() != null ? finalTextures.cape().id() : playerHandler.getCapeLocation();
                 }
             };
-            elytraTexture = new ClientAsset.Texture() {
-                @Override
-                public Identifier texturePath() {
-                    return finalTextures.elytra().texturePath();
-                }
+            if (finalTextures.elytra() != null) {
+                elytraTexture = new ClientAsset.Texture() {
+                    @Override
+                    public Identifier texturePath() {
+                        return finalTextures.elytra().texturePath();
+                    }
 
-                @Override
-                public Identifier id() {
-                    return finalTextures.elytra().id();
-                }
-            };
+                    @Override
+                    public Identifier id() {
+                        return finalTextures.elytra().id();
+                    }
+                };
+            }
         }
 
         textures = new PlayerSkin(

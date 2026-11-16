@@ -10,6 +10,7 @@ import dev.imb11.skinshuffle.api.SkinShuffleAPI;
 import dev.imb11.skinshuffle.api.data.SkinQueryResult;
 import dev.imb11.skinshuffle.client.preset.SkinPreset;
 import dev.imb11.skinshuffle.client.skin.ConfigSkin;
+import dev.imb11.skinshuffle.client.skin.Skin;
 import dev.imb11.skinshuffle.client.skin.UrlSkin;
 import dev.imb11.skinshuffle.networking.ClientSkinHandling;
 import dev.imb11.skinshuffle.util.NetworkingUtil;
@@ -23,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicLong;
 import net.minecraft.core.ClientAsset;
 import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
@@ -34,8 +36,9 @@ public class SkinPresetManager {
     public static boolean LOADING_LOCK = false;
     private static Path PRESETS = SkinShuffle.DATA_DIR.resolve("presets.json");
     private static SkinPreset chosenPreset = null;
-    private static SkinPreset apiPreset = null;
+    private static volatile SkinPreset apiPreset = null;
     private static SkinShuffleAPI SKIN_SHUFFLE_API;
+    private static final AtomicLong APPLY_GENERATION = new AtomicLong(0);
 
     public static List<SkinPreset> getLoadedPresets() {
         return Collections.unmodifiableList(loadedPresets);
@@ -264,47 +267,70 @@ public class SkinPresetManager {
             return;
         }
 
-        try {
-            ConfigSkin configSkin = preset.getSkin().saveToConfig();
-
-            try {
-                boolean successful;
-                if (preset.getSkin() instanceof UrlSkin urlSkin) {
-                    successful = MojangSkinAPI.setSkinTexture(urlSkin.getUrl(), urlSkin.getModel());
-                } else {
-                    successful = MojangSkinAPI.setSkinTexture(configSkin.getFile().toFile(), configSkin.getModel());
-                }
-                if (successful) setApiPreset(preset);
-                CompletableFuture.runAsync(() -> client.doRunTask(() -> {
-                    try {
-                        String cachedURL = SkinCacheRegistry.getCachedUploadedSkin(configSkin.getFile().toFile());
-
-                        SkinQueryResult result;
-                        if (cachedURL != null) {
-                            result = SKIN_SHUFFLE_API.uploadUrlSkin(cachedURL, preset.getSkin().getModel());
-                        } else {
-                            result = SKIN_SHUFFLE_API.uploadFileSkin(configSkin.getFile(), preset.getSkin().getModel());
-                        }
-
-                        if (result == null) {
-                            throw new Exception("Failed to upload skin to MineSkin proxy.");
-                        }
-
-                        if (client.level != null && ClientSkinHandling.isInstalledOnServer()) {
-                            ClientAsset.DownloadedTexture cape = configSkin.getSkinTextures().cape() instanceof ClientAsset.DownloadedTexture downloaded ? downloaded : null;
-                            ClientSkinHandling.sendRefresh(result, Optional.ofNullable(cape));
-                        }
-                    } catch (Exception e) {
-                        SkinShuffle.LOGGER.error("Failed to apply skin preset due to {}",  e.getMessage());
-                    }
-                }), Util.backgroundExecutor());
-            } catch (Exception e) {
-                SkinShuffle.LOGGER.error("Failed to apply skin preset.", e);
-            }
-        } catch (Exception ignored) {
-            SkinShuffle.LOGGER.info("Skipping skin preset application due to skin not being fully loaded. If this is first startup, please ignore this message.");
+        if (SKIN_SHUFFLE_API == null) {
+            SKIN_SHUFFLE_API = new SkinShuffleAPI(SkinShuffleConfig.get().mineskinProxyDomain);
         }
 
+        final long generation = APPLY_GENERATION.incrementAndGet();
+        final Skin skin = preset.getSkin();
+
         savePresets();
+
+        CompletableFuture.runAsync(() -> {
+            if (generation != APPLY_GENERATION.get()) return;
+
+            ConfigSkin configSkin;
+            try {
+                configSkin = skin.saveToConfig();
+            } catch (Exception ignored) {
+                SkinShuffle.LOGGER.info("Skipping skin preset application due to skin not being fully loaded. If this is first startup, please ignore this message.");
+                return;
+            }
+
+            if (generation != APPLY_GENERATION.get()) return;
+
+            try {
+                String resolvedModel = configSkin.getModel();
+                boolean successful;
+                if (skin instanceof UrlSkin urlSkin && urlSkin.getUrl() != null) {
+                    successful = MojangSkinAPI.setSkinTexture(urlSkin.getUrl(), resolvedModel);
+                } else {
+                    successful = MojangSkinAPI.setSkinTexture(configSkin.getFile().toFile(), resolvedModel);
+                }
+
+                if (successful) {
+                    client.execute(() -> {
+                        if (generation == APPLY_GENERATION.get() && getChosenPreset() == preset) {
+                            setApiPreset(preset);
+                            savePresets();
+                        }
+                    });
+                }
+
+                if (generation != APPLY_GENERATION.get()) return;
+
+                String cachedURL = SkinCacheRegistry.getCachedUploadedSkin(configSkin.getFile().toFile());
+
+                SkinQueryResult result;
+                if (cachedURL != null) {
+                    result = SKIN_SHUFFLE_API.uploadUrlSkin(cachedURL, resolvedModel);
+                } else {
+                    result = SKIN_SHUFFLE_API.uploadFileSkin(configSkin.getFile(), resolvedModel);
+                }
+
+                if (result == null) {
+                    throw new Exception("Failed to upload skin to MineSkin proxy.");
+                }
+
+                client.execute(() -> {
+                    if (generation == APPLY_GENERATION.get() && client.level != null && ClientSkinHandling.isInstalledOnServer()) {
+                        ClientAsset.DownloadedTexture cape = configSkin.getSkinTextures().cape() instanceof ClientAsset.DownloadedTexture downloaded ? downloaded : null;
+                        ClientSkinHandling.sendRefresh(result, Optional.ofNullable(cape));
+                    }
+                });
+            } catch (Exception e) {
+                SkinShuffle.LOGGER.error("Failed to apply skin preset due to {}", e.getMessage(), e);
+            }
+        }, Util.ioPool());
     }
 }

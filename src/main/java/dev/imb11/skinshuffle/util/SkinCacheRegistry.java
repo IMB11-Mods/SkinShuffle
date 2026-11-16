@@ -22,7 +22,7 @@ public class SkinCacheRegistry {
     private static final HashMap<String, Path> DOWNLOADED_SKIN_CACHES = new HashMap<>();
     private static final HashMap<String, String> UPLOADED_SKIN_CACHES = new HashMap<>();
 
-    private static void saveCache() {
+    private static synchronized void saveCache() {
         try {
             JsonObject object = new JsonObject();
             JsonObject uploaded = new JsonObject();
@@ -75,12 +75,12 @@ public class SkinCacheRegistry {
         }
     }
 
-    public static @Nullable String getCachedUploadedSkin(File skinTexture) throws IOException {
+    public static synchronized @Nullable String getCachedUploadedSkin(File skinTexture) throws IOException {
         String hash = getHash(Files.readAllBytes(skinTexture.toPath()));
         return UPLOADED_SKIN_CACHES.get(hash);
     }
 
-    public static void saveUploadedSkin(File skinTexture, String url) throws IOException {
+    public static synchronized void saveUploadedSkin(File skinTexture, String url) throws IOException {
         String hash = getHash(Files.readAllBytes(skinTexture.toPath()));
         UPLOADED_SKIN_CACHES.put(hash, url);
         saveCache();

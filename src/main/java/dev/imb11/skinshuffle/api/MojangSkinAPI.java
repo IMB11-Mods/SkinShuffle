@@ -24,9 +24,33 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import net.minecraft.util.Util;
 
 public class MojangSkinAPI {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    private static final int CONNECT_TIMEOUT_MS = 5000;
+    private static final int SOCKET_TIMEOUT_MS = 10000;
+
+    /**
+     * Set the player's skin texture from a URL asynchronously.
+     *
+     * @param skinURL The URL of the skin texture.
+     * @param model   The skin model type.
+     */
+    public static CompletableFuture<Boolean> setSkinTextureAsync(String skinURL, String model) {
+        return CompletableFuture.supplyAsync(() -> setSkinTexture(skinURL, model), Util.ioPool());
+    }
+
+    /**
+     * Set a skin texture from a file asynchronously.
+     *
+     * @param skinFile The file to upload.
+     * @param model    The type of skin model.
+     */
+    public static CompletableFuture<Boolean> setSkinTextureAsync(File skinFile, String model) {
+        return CompletableFuture.supplyAsync(() -> setSkinTexture(skinFile, model), Util.ioPool());
+    }
 
     /**
      * Set the player's skin texture from a URL.
@@ -45,10 +69,17 @@ public class MojangSkinAPI {
                 JsonObject obj = new JsonObject();
                 obj.addProperty("variant", model);
                 obj.addProperty("url", skinURL);
-                var result = Unirest.post("https://api.minecraftservices.com/minecraft/profile/skins")
+                HttpResponse<String> response = Unirest.post("https://api.minecraftservices.com/minecraft/profile/skins")
+                        .connectTimeout(CONNECT_TIMEOUT_MS)
+                        .socketTimeout(SOCKET_TIMEOUT_MS)
                         .body(GSON.toJson(obj))
                         .contentType("application/json")
-                        .header("Authorization", "Bearer " + token).asString().getBody();
+                        .header("Authorization", "Bearer " + token)
+                        .asString();
+                if (!response.isSuccess()) {
+                    SkinShuffle.LOGGER.error("Failed to set player skin via Mojang API (status {}): {}", response.getStatus(), response.getBody());
+                    return false;
+                }
 				SkinShuffle.LOGGER.info("Set player skin: {}", skinURL);
             } catch (Exception e) {
                 SkinShuffle.LOGGER.error("Cannot connect to Mojang API.", e);
@@ -71,6 +102,8 @@ public class MojangSkinAPI {
     public static SkinQueryResult getPlayerSkinTexture(String uuid) {
         try {
             String jsonResponse = Unirest.get("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid + "?unsigned=false")
+                    .connectTimeout(CONNECT_TIMEOUT_MS)
+                    .socketTimeout(SOCKET_TIMEOUT_MS)
                     .asString().getBody();
 
             if (jsonResponse.isBlank()) {
@@ -158,6 +191,8 @@ public class MojangSkinAPI {
     public static Optional<UUID> getUUIDFromUsername(String username) {
         try {
             String jsonResponse = Unirest.get("https://api.mojang.com/users/profiles/minecraft/" + username)
+                    .connectTimeout(CONNECT_TIMEOUT_MS)
+                    .socketTimeout(SOCKET_TIMEOUT_MS)
                     .asString().getBody();
 
             Gson gson = new Gson();
@@ -201,16 +236,22 @@ public class MojangSkinAPI {
             return false;
         }
 
-        if (NetworkingUtil.isLoggedIn()) {
+        if (service instanceof MinecraftServicesUserApiService apiService) {
             try {
-                com.mojang.authlib.minecraft.client.MinecraftClient client = ((YggdrasilUserApiServiceAccessor) service).getMinecraftClient();
+                com.mojang.authlib.minecraft.client.MinecraftClient client = ((YggdrasilUserApiServiceAccessor) apiService).getMinecraftClient();
                 String token = ((MinecraftClientAuthAccessor) client).getAccessToken();
 
                 HttpResponse<String> response = Unirest.post("https://api.minecraftservices.com/minecraft/profile/skins")
+                        .connectTimeout(CONNECT_TIMEOUT_MS)
+                        .socketTimeout(SOCKET_TIMEOUT_MS)
                         .header("Authorization", "Bearer " + token)
                         .field("variant", model)
                         .field("file", skinFile)
                         .asString();
+                if (!response.isSuccess()) {
+                    SkinShuffle.LOGGER.error("Failed to upload skin to Mojang API (status {}): {}", response.getStatus(), response.getBody());
+                    return false;
+                }
                 JsonObject responseObject = GSON.fromJson(response.getBody(), JsonObject.class);
 
                 String skinURL = responseObject
